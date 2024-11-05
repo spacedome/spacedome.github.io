@@ -24,3 +24,11 @@ toSlug :: T.Text -> T.Text
 toSlug =
   T.intercalate (T.singleton '-') . T.words . T.toLower . clean
 ```
+
+Math!
+$$ y = mx +b $$
+$$ \ln x = \int_{-\infty}^\infty x \, dx $$
+
+
+
+\\[ \ln x = \int_{-\infty}^x \frac 1 y \, dy . \\]

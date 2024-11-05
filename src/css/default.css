@@ -1,54 +1,76 @@
-:root {
-  font-size: 62.5%;
-  box-sizing: border-box;
-  -ms-text-size-adjust: 100%;
-  -webkit-text-size-adjust: 100%;
-}
-*,
-*:before,
-*:after {
-  box-sizing: inherit;
-}
-html,
+
 body {
-  min-height: 100vh;
+    margin: 1em auto;
+    max-width: 40em;
+    min-width: 24em;
+    font-size:1.1em;
+    line-height: 1.4;
+    font-family: "Noto Serif", "Source Serif Pro", "Literata", "Georgia", serif;
+    color: #131516;
+    background-color: #E1E2F3;
 }
-body {
-  font-kerning: normal;
-  -moz-font-feature-settings: "kern", "liga", "clig", "calt";
-  -ms-font-feature-settings: "kern", "liga", "clig", "calt";
-  -webkit-font-feature-settings: "kern", "liga", "clig", "calt";
-  font-feature-settings: "kern", "liga", "clig", "calt";
-  scroll-behavior: smooth;
-  font-size: 2rem;
+footer {
+    padding-top: 1.5em;
+    font-size: 0.8em;
+    color: #a5a6af;
+    font-variant: small-caps;
 }
-body,
-input,
-button {
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+.bar, header, footer { text-align: center; }
+.bar {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    font-variant: small-caps;
+    padding: 0;
+    margin: 0.25em 0 1.5em;
+    grid-gap: 5px;
 }
-h1,
-h2 {
-  font-family: "Palatino Linotype", "Book Antiqua", Palatino, serif;
+.bar li { 
+    display: inline-block; 
+    background-color: #131516;
+    padding: 0.1em 0em 0.2em 0em;
 }
-h1 {
-  font-size: 4.0rem;
+.bar a {
+    text-decoration: none;
+    color: #E1E2F3;
 }
-h2 {
-  font-size: 2.6rem;
+.bar li:hover {
+    background: #2e3235;
+} 
+.homepage-content{
+    margin: 0em 0.2em; 
 }
-small,
-p {
-  font-family: Tahoma, Arial, sans-serif;
+hr {
+    border-style: dashed;
+    color: #131516;
 }
-small {
-  font-size: 1.6rem;
-  font-style: italic;
+.logo {
+    text-align: center;
+    height: 8em;
 }
-p {
-  font-size: 1.8rem;
+.frog {
+    width: 50%;
+    padding: 2em 25% 1em 25%;
 }
-pre.sourceCode {
-  padding: 2rem 1.5rem;
+img, iframe, video { max-width: 100%; }
+@media print {
+    body{
+        max-width:none
+    }
 }
+@media only screen and (max-width: 600px) {
+    body {
+        min-width: 310px;
+        font-size:1.0em;
+        margin: 0 5px;
+    }
+    .bar {
+        grid-template-columns: repeat(3, 1fr);
+        grid-auto-rows: repeat(2, 1fr);
+    }
+    .logo {
+        height: minmax(auto, 8em);
+        /* width: 90%; */
+    }
+}
+
+main { hyphens: auto; }

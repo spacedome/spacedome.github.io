@@ -8,7 +8,7 @@ import qualified Data.Text as T
 import qualified Data.Text.Slugger as Slugger
 import System.FilePath (takeFileName)
 import Text.Pandoc
-  ( Extension (Ext_fenced_code_attributes, Ext_footnotes, Ext_gfm_auto_identifiers, Ext_implicit_header_references, Ext_smart),
+  ( Extension (Ext_fenced_code_attributes, Ext_footnotes, Ext_gfm_auto_identifiers, Ext_implicit_header_references, Ext_smart, Ext_tex_math_dollars, Ext_tex_math_double_backslash, Ext_tex_math_single_backslash),
     Extensions,
     ReaderOptions,
     WriterOptions (writerHighlightStyle),
@@ -23,10 +23,10 @@ import Text.Pandoc.Highlighting (Style, breezeDark, styleToCss)
 -- PERSONALIZATION
 
 mySiteName :: String
-mySiteName = "My Site Name"
+mySiteName = "Spacedome"
 
 mySiteRoot :: String
-mySiteRoot = "https://my-site.com"
+mySiteRoot = "https://spacedome.tv"
 
 myFeedTitle :: String
 myFeedTitle = "My Feed Title"
@@ -35,10 +35,10 @@ myFeedDescription :: String
 myFeedDescription = "My Site Description"
 
 myFeedAuthorName :: String
-myFeedAuthorName = "My Name"
+myFeedAuthorName = "Julien"
 
 myFeedAuthorEmail :: String
-myFeedAuthorEmail = "me@myemail.com"
+myFeedAuthorEmail = "julien@spacedome.tv"
 
 myFeedRoot :: String
 myFeedRoot = mySiteRoot
@@ -99,6 +99,22 @@ main = hakyllWith config $ do
         >>= loadAndApplyTemplate "templates/post.html" ctx
         >>= saveSnapshot "content"
         >>= loadAndApplyTemplate "templates/default.html" ctx
+
+  match "posts.html" $ do
+    route idRoute
+    compile $ do
+      posts <- recentFirst =<< loadAll "posts/*"
+
+      let indexCtx =
+            listField "posts" postCtx (return posts)
+              <> constField "root" mySiteRoot
+              <> constField "feedTitle" myFeedTitle
+              <> constField "siteName" mySiteName
+              <> defaultContext
+
+      getResourceBody
+        >>= applyAsTemplate indexCtx
+        >>= loadAndApplyTemplate "templates/default.html" indexCtx
 
   match "index.html" $ do
     route idRoute
@@ -208,6 +224,9 @@ pandocExtensionsCustom =
       , Ext_implicit_header_references
       , Ext_smart
       , Ext_footnotes
+      , Ext_tex_math_dollars
+      , Ext_tex_math_double_backslash
+      , Ext_tex_math_single_backslash
       ]
 
 pandocReaderOpts :: ReaderOptions

@@ -26,17 +26,6 @@
     <meta property="og:type" content="website">
     $endif$
 
-    $if(image)$
-    <meta property="twitter:card" content="summary_large_image">
-    <meta property="twitter:image" content="$root$$image$">
-    $endif$
-    <meta property="twitter:site" content="$siteName$">
-    <meta property="twitter:title" content="$title$">
-    <meta property="twitter:description" content="$desc$">
-    $if(authorTwitter)$
-    <meta property="twitter:creator" content="$authorTwitter$">
-    $endif$
-
     <link rel="shortcut icon" href="/favicon.ico">
     <link rel="canonical" href="$root$$url$">
 
@@ -46,8 +35,30 @@
     <link rel="stylesheet" href="./css/default.css" />
     <link rel="stylesheet" href="./css/code.css" />
   </head>
+  <header>
+      <a href="/" >
+          <img src="./images/spacedome.svg" alt="spacedome.tv" class="logo">
+      </a>
+  </header>
+  <nav>
+      <ul class="bar">
+          <li><a href="./posts.html">Posts</a></li>
+          <li><a href="./projects.html">Project</a></li>
+          <li><a href="./projects.html">Research</a></li>
+          <li><a href="./artwork.html">Artwork</a></li>
+          <li><a href="https://github.com/spacedome">Github</a></li>
+          <li><a href="./">About</a></li>
+      </ul>
+  </nav>
   <body>
     $body$
     <script defer src="./js/script.js"></script>
   </body>
+  <footer>
+  <div>
+      <p>
+      Generated with Hakyll &copy 2024
+      </p>
+  </div>
+  </footer>
 </html>
