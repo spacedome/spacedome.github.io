@@ -51,6 +51,12 @@ hr {
     width: 50%;
     padding: 2em 25% 1em 25%;
 }
+div.sourceCode {
+  background-color:#ededf8;
+  padding: 10px;
+  border-radius: 10px;
+  border: 1px solid #9295d3;
+}
 img, iframe, video { max-width: 100%; }
 @media print {
     body{

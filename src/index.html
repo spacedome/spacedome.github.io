@@ -6,24 +6,23 @@ stylesheet: "default"
 title: "Hello, world!"
 ---
 
+<main>
+  <section>
+    <p>
+      Currently leading backend development at a medical data startup.
+    </p>
+    <p>
+      Previously I was a graduate student in the Mathematics department at UMass Amherst.
+      While no longer in academia, I am still interested in eigensolvers, if you want to talk about contour based algorithms please reach out.
+    </p>
+    <p>You can contact me at julien at spacedome dot tv.</p>
+  </section>
+</main>
 <header>
-  <h1>Hello, world!</h1>
   <img
+    class="frog"
     alt="frog"
     src="./images/frog1.svg"
     height="300"
   />
 </header>
-<main>
-  <section>
-    <h2>Blog Posts</h2>
-    <ul>
-      $for(posts)$
-        <li>
-          <div><a href=".$url$">$title$</a></div>
-          <small>$date$</small>
-        </li>
-      $endfor$
-    </ul>
-  </section>
-</main>

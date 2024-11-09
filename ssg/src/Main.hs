@@ -8,16 +8,16 @@ import qualified Data.Text as T
 import qualified Data.Text.Slugger as Slugger
 import System.FilePath (takeFileName)
 import Text.Pandoc
-  ( Extension (Ext_fenced_code_attributes, Ext_footnotes, Ext_gfm_auto_identifiers, Ext_implicit_header_references, Ext_smart, Ext_tex_math_dollars, Ext_tex_math_double_backslash, Ext_tex_math_single_backslash),
+  ( Extension (Ext_fenced_code_attributes, Ext_footnotes, Ext_gfm_auto_identifiers, Ext_implicit_header_references, Ext_smart, Ext_tex_math_dollars, Ext_tex_math_double_backslash),
     Extensions,
     ReaderOptions,
-    WriterOptions (writerHighlightStyle),
+    WriterOptions (writerHighlightStyle, writerHTMLMathMethod),
     extensionsFromList,
     githubMarkdownExtensions,
     readerExtensions,
-    writerExtensions,
+    writerExtensions, HTMLMathMethod (MathML),
   )
-import Text.Pandoc.Highlighting (Style, breezeDark, styleToCss)
+import Text.Pandoc.Highlighting (Style, tango, styleToCss)
 
 --------------------------------------------------------------------------------
 -- PERSONALIZATION
@@ -29,10 +29,10 @@ mySiteRoot :: String
 mySiteRoot = "https://spacedome.tv"
 
 myFeedTitle :: String
-myFeedTitle = "My Feed Title"
+myFeedTitle = "Spacedome.tv"
 
 myFeedDescription :: String
-myFeedDescription = "My Site Description"
+myFeedDescription = "Recent Posts"
 
 myFeedAuthorName :: String
 myFeedAuthorName = "Julien"
@@ -41,7 +41,7 @@ myFeedAuthorEmail :: String
 myFeedAuthorEmail = "julien@spacedome.tv"
 
 myFeedRoot :: String
-myFeedRoot = mySiteRoot
+myFeedRoot = mySiteRoot ++ "/posts"
 
 --------------------------------------------------------------------------------
 -- CONFIG
@@ -226,7 +226,6 @@ pandocExtensionsCustom =
       , Ext_footnotes
       , Ext_tex_math_dollars
       , Ext_tex_math_double_backslash
-      , Ext_tex_math_single_backslash
       ]
 
 pandocReaderOpts :: ReaderOptions
@@ -240,11 +239,12 @@ pandocWriterOpts =
   defaultHakyllWriterOptions
     { writerExtensions = pandocExtensionsCustom
     , writerHighlightStyle = Just pandocHighlightStyle
+    , writerHTMLMathMethod = MathML
     }
 
 pandocHighlightStyle :: Style
 pandocHighlightStyle =
-  breezeDark -- https://hackage.haskell.org/package/pandoc/docs/Text-Pandoc-Highlighting.html
+  tango -- https://hackage.haskell.org/package/pandoc/docs/Text-Pandoc-Highlighting.html
 
 --------------------------------------------------------------------------------
 -- FEEDS
