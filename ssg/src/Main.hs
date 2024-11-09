@@ -276,8 +276,8 @@ feedConfiguration =
 
 fileNameFromTitle :: Metadata -> FilePath
 fileNameFromTitle =
-  T.unpack . (`T.append` ".html") . Slugger.toSlug . T.pack . safeTitle
+  T.unpack . T.append "posts/" . (`T.append` ".html") . Slugger.toSlug . T.pack . safeTitle
 
 titleRoute :: Metadata -> Routes
 titleRoute =
-  constRoute . fileNameFromTitle
+  constRoute  . fileNameFromTitle

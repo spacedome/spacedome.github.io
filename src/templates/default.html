@@ -29,30 +29,36 @@
     <link rel="shortcut icon" href="/favicon.ico">
     <link rel="canonical" href="$root$$url$">
 
-    <link rel="alternate" href="./atom.xml" title="$feedTitle$" type="application/atom+xml">
-    <link rel="alternate" href="./rss.xml" title="$feedTitle$" type="application/rss+xml">
+    <link rel="alternate" href="/atom.xml" title="$feedTitle$" type="application/atom+xml">
+    <link rel="alternate" href="/rss.xml" title="$feedTitle$" type="application/rss+xml">
 
-    <link rel="stylesheet" href="./css/code.css" />
-    <link rel="stylesheet" href="./css/default.css" />
+    <link rel="stylesheet" href="/css/code.css" />
+    <link rel="stylesheet" href="/css/default.css" />
+
+    $if(mathjax)$
+    <script type="text/javascript" id="MathJax-script" async
+      src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/mml-chtml.min.js">
+    </script>
+    $endif$
   </head>
   <header>
       <a href="/" >
-          <img src="./images/spacedome.svg" alt="spacedome.tv" class="logo">
+          <img src="/images/spacedome.svg" alt="spacedome.tv" class="logo">
       </a>
   </header>
   <nav>
       <ul class="bar">
-          <li><a href="./posts.html">Posts</a></li>
-          <li><a href="./projects.html">Project</a></li>
-          <li><a href="./projects.html">Research</a></li>
-          <li><a href="./artwork.html">Artwork</a></li>
+          <li><a href="/posts.html">Posts</a></li>
+          <li><a href="/projects.html">Projects</a></li>
+          <li><a href="/research.html">Research</a></li>
+          <li><a href="/artwork.html">Artwork</a></li>
           <li><a href="https://github.com/spacedome">Github</a></li>
-          <li><a href="./">About</a></li>
+          <li><a href="/">About</a></li>
       </ul>
   </nav>
   <body>
     $body$
-    <script defer src="./js/script.js"></script>
+    <script defer src="/js/script.js"></script>
   </body>
   <footer>
   <div>
