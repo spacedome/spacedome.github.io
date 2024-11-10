@@ -99,6 +99,7 @@ main = hakyllWith config $ do
         >>= loadAndApplyTemplate "templates/post.html" ctx
         >>= saveSnapshot "content"
         >>= loadAndApplyTemplate "templates/default.html" ctx
+        >>= relativizeUrls
 
   match "posts.html" $ do
     route idRoute
@@ -115,22 +116,33 @@ main = hakyllWith config $ do
       getResourceBody
         >>= applyAsTemplate indexCtx
         >>= loadAndApplyTemplate "templates/default.html" indexCtx
+        >>= relativizeUrls
 
-  match "index.html" $ do
+  match "*.html" $ do
     route idRoute
     compile $ do
-      posts <- recentFirst =<< loadAll "posts/*"
-
       let indexCtx =
-            listField "posts" postCtx (return posts)
-              <> constField "root" mySiteRoot
+              constField "root" mySiteRoot
               <> constField "feedTitle" myFeedTitle
               <> constField "siteName" mySiteName
               <> defaultContext
-
       getResourceBody
         >>= applyAsTemplate indexCtx
         >>= loadAndApplyTemplate "templates/default.html" indexCtx
+        >>= relativizeUrls
+
+  match "*.md" $ do
+    route idRoute
+    compile $ do
+      let indexCtx =
+              constField "root" mySiteRoot
+              <> constField "feedTitle" myFeedTitle
+              <> constField "siteName" mySiteName
+              <> defaultContext
+      getResourceBody
+        >>= applyAsTemplate indexCtx
+        >>= loadAndApplyTemplate "templates/default.html" indexCtx
+        >>= relativizeUrls
 
   match "templates/*" $
     compile templateBodyCompiler
