@@ -81,6 +81,8 @@ main = hakyllWith config $ do
     , "images/*"
     , "js/*"
     , "fonts/*"
+    , "app/**/*"
+    , "pdf/*"
     ]
     $ \f -> match f $ do
       route idRoute
