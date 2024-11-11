@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"
+    xmlns:dc="http://purl.org/dc/elements/1.1/">
+    <channel>
+        <title>Spacedome.tv</title>
+        <link>https://spacedome.tv/posts</link>
+        <description><![CDATA[Recent Posts]]></description>
+        <atom:link href="https://spacedome.tv/posts/rss.xml" rel="self"
+                   type="application/rss+xml" />
+        <lastBuildDate>2024-11-09 10:59</lastBuildDate>
+        <item>
+    <title>Moving from Hugo to Hakyll</title>
+    <link>https://spacedome.tv/posts/moving-from-hugo-to-hakyll.html</link>
+    <description><![CDATA[<main>
+  <article>
+    <header>
+    <h1>Moving from Hugo to Hakyll</h1>
+    <p><i>2024-11-09 (updated: 2024-11-09 10:59)</i></p>
+    <hr/>
+    </header>
+    <section>
+      <p>Five years ago I decided to rewrite this website with a static site generator, and chose Hugo on a whim.
+After letting it sit around unused for far too long, I moved it to <a href="https://jaspervdj.be/hakyll/">Hakyll</a>.
+Now that I’m getting back into Haskell, it was a perfect small project, and Pandoc is unbeatable as a document conversion backend.</p>
+<p>The built in code highlighter works well enough if you override some of the styling.
+It is aparently also possible to use pygmentize if you want to go through the trouble.</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ot">toSlug ::</span> <span class="dt">T.Text</span> <span class="ot">-&gt;</span> <span class="dt">T.Text</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>toSlug <span class="ot">=</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>  T.intercalate (T.singleton <span class="ch">&#39;-&#39;</span>) <span class="op">.</span> T.words <span class="op">.</span> T.toLower <span class="op">.</span> clean</span></code></pre></div>
+<p>I chose a perfect time to move, as MathML finally has full support across all browsers as of Chromium 109, so the whole MathJax/KaTeX and JS rendering question is finally over.
+We are free!
+Here is an example and the associated markdown:</p>
+<p>Inline math with MathML: <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>y</mi><mo>=</mo><mi>m</mi><mi>x</mi><mo>+</mo><mi>b</mi></mrow><annotation encoding="application/x-tex">y = mx +b</annotation></semantics></math>.
+Block/display style:
+<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>ln</mo><mi>x</mi><mo>=</mo><msubsup><mo>∫</mo><mrow><mo>−</mo><mi>∞</mi></mrow><mi>x</mi></msubsup><mfrac><mn>1</mn><mi>y</mi></mfrac><mspace width="0.167em"></mspace><mstyle mathvariant="normal"><mi>d</mi></mstyle><mi>y</mi><mi>.</mi></mrow><annotation encoding="application/x-tex"> \ln x = \int_{-\infty}^x \frac 1 y \, \mathrm{d}y . </annotation></semantics></math></p>
+<pre class="text"><code>Inline math with MathML: \\( y = mx +b \\). Block/display style:
+\\[ \ln x = \int_{-\infty}^x \frac 1 y \, \mathrm{d}y . \\]</code></pre>
+<p>This is as easy as enabling the <code>Ext_tex_math_double_backslash</code> Pandoc extension and setting <code>writerHTMLMathMethod = MathML</code> in the Pandoc writer options.
+It is significantly uglier than what TeX would give you, but this is the price you pay if you want to avoid javascript or prerendering SVGs.</p>
+<p>If you do want your math to look nice, instead of using the MathJax Pandoc writer, you can use MathML and put the MathJax CDN script in your header for drop in MathJax rendering that falls back gracefully to MathML instead of the typical raw LaTeX text.
+Why this isn’t the default behavior of the MathJax writer in Pandoc, who knows.
+You can also pre-render with KaTeX to get pretty HTML results, but this involves running javascript during the build process.</p>
+<p>To see what this page looks like redered as pure MathML, just disable javascript.
+Thankfully, while still a real Hog coming in around 250kB compressed, MathJax 3 is much faster than it used to be.
+Definitely make sure to have this included only on the necessary pages.</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mrow><mo stretchy="true" form="prefix">(</mo><munderover><mo>∑</mo><mrow><mi>k</mi><mo>=</mo><mn>1</mn></mrow><mi>n</mi></munderover><msub><mi>a</mi><mi>k</mi></msub><msub><mi>b</mi><mi>k</mi></msub><mo stretchy="true" form="postfix">)</mo></mrow><mn>2</mn></msup><mo>≤</mo><mrow><mo stretchy="true" form="prefix">(</mo><munderover><mo>∑</mo><mrow><mi>k</mi><mo>=</mo><mn>1</mn></mrow><mi>n</mi></munderover><msubsup><mi>a</mi><mi>k</mi><mn>2</mn></msubsup><mo stretchy="true" form="postfix">)</mo></mrow><mrow><mo stretchy="true" form="prefix">(</mo><munderover><mo>∑</mo><mrow><mi>k</mi><mo>=</mo><mn>1</mn></mrow><mi>n</mi></munderover><msubsup><mi>b</mi><mi>k</mi><mn>2</mn></msubsup><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">\left( \sum_{k=1}^n a_k b_k \right)^2 \leq \left( \sum_{k=1}^n a_k^2 \right) \left( \sum_{k=1}^n b_k^2 \right) </annotation></semantics></math></p>
+    </section>
+  </article>
+</main>
+]]></description>
+    <pubDate>Sat, 09 Nov 2024 00:00:00 UT</pubDate>
+    <guid>https://spacedome.tv/posts/moving-from-hugo-to-hakyll.html</guid>
+    <dc:creator>Julien</dc:creator>
+</item>
+<item>
+    <title>Cross-Validation Methodology in Materials Science</title>
+    <link>https://spacedome.tv/posts/cross-validation-methodology-in-materials-science.html</link>
+    <description><![CDATA[<main>
+  <article>
+    <header>
+    <h1>Cross-Validation Methodology in Materials Science</h1>
+    <p><i>2018-09-01 </i></p>
+    <hr/>
+    </header>
+    <section>
+      <p>Cross-validation is a critical part of statistical methodology, for ad hoc models cross-validation may be the only indication of model performance, and without a reasonable cross-validation methodology serious over-fitting can go undetected.
+This issue is particularly relevant to domains where small data-sets with a comparatively large number of features is common, for example Materials Science or Genomics.
+If the cross-validation method does not take into consideration the feature selection (that is, considering feature selection as part of model selection), a significant selection bias can occur, see <a href="https://doi.org/10.1073/pnas.102102699">this paper</a> for an example with gene-expression data.
+In general, a reasonably robust validation methodology should be chosen before model selection, and final hold-out sets should be used when possible.</p>
+<h1 id="poster-pdf"><a href="/pdf/poster_SULI.pdf">Poster PDF</a></h1>
+    </section>
+  </article>
+</main>
+]]></description>
+    <pubDate>Sat, 01 Sep 2018 00:00:00 UT</pubDate>
+    <guid>https://spacedome.tv/posts/cross-validation-methodology-in-materials-science.html</guid>
+    <dc:creator>Julien</dc:creator>
+</item>
+<item>
+    <title>Learning Hyper-Parameters with Bayesian Optimization</title>
+    <link>https://spacedome.tv/posts/learning-hyper-parameters-with-bayesian-optimization.html</link>
+    <description><![CDATA[<main>
+  <article>
+    <header>
+    <h1>Learning Hyper-Parameters with Bayesian Optimization</h1>
+    <p><i>2018-05-01 </i></p>
+    <hr/>
+    </header>
+    <section>
+      <p>It is well known in the Machine Learning literature that a Grid Search for optimizing parameters is sub-optimal, and generally outperformed by a Random Search.
+This project explored using Bayesian Optimization as a sequential search strategy, testing the method on the hyper-parameters of a relatively simple Neural Network performing image classification.</p>
+<p>The main conclusion of this research is that incredible computational resources are needed to characterize NN hyper-parameter optimization methods, see the Google Vizier “paper” for context.
+Despite this, Bayesian Optimization is a promising technique for sequential, potentially stochastic, optimization problems where the cost of sampling is a limiting factor.
+For example, see my paper with Alex Dunn, <em>Rocketsled</em>, on applications of Bayesian Optimization to Computational Materials Science.</p>
+<p>In a broader context, stop searching for parameters by hand, and consider random search over grid search if the relative importance of each parameter is unknown (for example some may not be important at all).
+See the <a href="http://www.jmlr.org/papers/v13/bergstra12a.html">paper</a> by Bergstra and Bengio for reference.
+There is no reason to search parameters manually, there are many easy to use optimization codes to choose from, for example <a href="https://scikit-optimize.github.io/">skopt</a>.</p>
+<h1 id="poster-pdf"><a href="/pdf/poster_CS682.pdf">Poster PDF</a></h1>
+    </section>
+  </article>
+</main>
+]]></description>
+    <pubDate>Tue, 01 May 2018 00:00:00 UT</pubDate>
+    <guid>https://spacedome.tv/posts/learning-hyper-parameters-with-bayesian-optimization.html</guid>
+    <dc:creator>Julien</dc:creator>
+</item>
+
+    </channel>
+</rss>
