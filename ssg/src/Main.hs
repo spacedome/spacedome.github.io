@@ -3,21 +3,22 @@
 import Control.Monad (forM_)
 import Data.List (isPrefixOf, isSuffixOf)
 import Data.Maybe (fromMaybe)
-import Hakyll
 import qualified Data.Text as T
 import qualified Data.Text.Slugger as Slugger
+import Hakyll
 import System.FilePath (takeFileName)
-import Text.Pandoc
-  ( Extension (Ext_fenced_code_attributes, Ext_footnotes, Ext_gfm_auto_identifiers, Ext_implicit_header_references, Ext_smart, Ext_tex_math_dollars, Ext_tex_math_double_backslash),
-    Extensions,
-    ReaderOptions,
-    WriterOptions (writerHighlightStyle, writerHTMLMathMethod),
-    extensionsFromList,
-    githubMarkdownExtensions,
-    readerExtensions,
-    writerExtensions, HTMLMathMethod (MathML),
-  )
-import Text.Pandoc.Highlighting (Style, tango, styleToCss)
+import Text.Pandoc (
+  Extension (Ext_fenced_code_attributes, Ext_footnotes, Ext_gfm_auto_identifiers, Ext_implicit_header_references, Ext_smart, Ext_tex_math_dollars, Ext_tex_math_double_backslash),
+  Extensions,
+  HTMLMathMethod (MathML),
+  ReaderOptions,
+  WriterOptions (writerHTMLMathMethod, writerHighlightStyle),
+  extensionsFromList,
+  githubMarkdownExtensions,
+  readerExtensions,
+  writerExtensions,
+ )
+import Text.Pandoc.Highlighting (Style, styleToCss, tango)
 
 --------------------------------------------------------------------------------
 -- PERSONALIZATION
@@ -58,15 +59,15 @@ config =
     , storeDirectory = "ssg/_cache"
     , tmpDirectory = "ssg/_tmp"
     }
-  where
-    ignoreFile' path
-      | "."    `isPrefixOf` fileName = False
-      | "#"    `isPrefixOf` fileName = True
-      | "~"    `isSuffixOf` fileName = True
-      | ".swp" `isSuffixOf` fileName = True
-      | otherwise = False
-      where
-        fileName = takeFileName path
+ where
+  ignoreFile' path
+    | "." `isPrefixOf` fileName = False
+    | "#" `isPrefixOf` fileName = True
+    | "~" `isSuffixOf` fileName = True
+    | ".swp" `isSuffixOf` fileName = True
+    | otherwise = False
+   where
+    fileName = takeFileName path
 
 --------------------------------------------------------------------------------
 -- BUILD
@@ -120,24 +121,23 @@ main = hakyllWith config $ do
         >>= loadAndApplyTemplate "templates/default.html" indexCtx
         >>= relativizeUrls
 
-  match "*.html" $ do
+  match "404.html" $ do
     route idRoute
     compile $ do
       let indexCtx =
-              constField "root" mySiteRoot
+            constField "root" mySiteRoot
               <> constField "feedTitle" myFeedTitle
               <> constField "siteName" mySiteName
               <> defaultContext
       getResourceBody
         >>= applyAsTemplate indexCtx
         >>= loadAndApplyTemplate "templates/default.html" indexCtx
-        >>= relativizeUrls
 
-  match "*.md" $ do
+  match "*.html" $ do
     route idRoute
     compile $ do
       let indexCtx =
-              constField "root" mySiteRoot
+            constField "root" mySiteRoot
               <> constField "feedTitle" myFeedTitle
               <> constField "siteName" mySiteName
               <> defaultContext
@@ -294,4 +294,4 @@ fileNameFromTitle =
 
 titleRoute :: Metadata -> Routes
 titleRoute =
-  constRoute  . fileNameFromTitle
+  constRoute . fileNameFromTitle
