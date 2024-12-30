@@ -8,6 +8,8 @@ body {
     font-family: "Noto Serif", "Source Serif Pro", "Literata", "Georgia", serif;
     color: #131516;
     background-color: #E1E2F3;
+    text-align: justify;
+    text-justify: inter-word;
 }
 footer {
     padding-top: 1.5em;

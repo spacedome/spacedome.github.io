@@ -12,7 +12,7 @@ The Fourier transform is one of the fundamental tools in analysis.
 From the perspective of approximation theory, it gives us one of the orthogonal function bases, the natural basis for periodic functions.
 To use this numerically, as with any basis, we must sample from the function to be approximated, and periodic functions have a wonderful property that the optimal points to sample are uniformly spaced on the interval.
 This is very different from polynomial bases like Chebyshev or Legendre polynomials, where choosing the points is somewhat involved.
-For Fourier, choosing to sample at \\(N\\) points leads to the Discrete Fourier Transform (DFT), a cornerstone of signal processing.
+For Fourier, this leads us to the Discrete Fourier Transform (DFT), a cornerstone of signal processing.
 
 Let \\(x_n\\) be our signal sampled at \\(N\\) points, i.e. \\(x\\) is a sequence of \\(N\\) real or complex numbers.
 Let \\(\omega = \omega_N = e^{-2\pi i / N}\\) be the \\(N^\text{th}\\) root of unity, the powers of which are sometimes called "twiddle" factors in this context.
@@ -75,6 +75,7 @@ This is not entirely intuitive and I encourage you to look in an introductory nu
 Note that the last equality is just using \\(\omega_N^{N/2} = -1\\) to simplify, this is very helpful computationally, as the bottom half and top half of the vector are now much more similar.
 From this we have the motivation for the recursive definition we will implement.
 Let \\(u = F(x^e), v = F(x^o)\\) and \\(T = [\omega^0, ..., \omega^{N/2-1}]\\) be a vector of twiddle factors, with \\(\odot\\) being element-wise "broadcasting" multiplication.
+Then we can derive the following, abusing matrix notation somewhat.
 \\[
 y = \begin{bmatrix}
 u + T \odot v \\
@@ -110,9 +111,12 @@ One might immediately ask about performance, and yes, this implementation is mea
 The first place to look is FFTW, the state of the art software FFT library, which takes a "bag of algorithms + planner" approach.
 It is implemented with OCaml for code generation with many passes of optimization to create a portable C library, and many of the variants are recursive.
 
-The obvious suspects in a numerical optimization such as this are
-- Avoiding memory reallocation and optimizing cache locality (with algorithm variants such as Stockham)
-- Using lookup tables or otherwise avoiding trigonometric calculation 
+The obvious suspects in a numerical algorithm optimization such as this are:
+
++ Avoiding memory reallocation and optimizing cache locality.
++ Using lookup tables or otherwise avoiding trigonometric calculation.
+
+## Implementing the FFT in Futhark
 
 I wanted to try Futhark, the pure functional array based language implemented in Haskell that compiles to C or Cuda/OpenCL, and thought this algorithm would be a good fit.
 There is a Stockham variant in the Futhark packages for reference, but I implemented Cooley-Tukey Radix-2. 
