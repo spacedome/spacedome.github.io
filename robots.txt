@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /projects.html
+Allow: /research.html
+Allow: /posts.html
+Allow: /posts/
+Allow: /index.html
+Disallow: /
