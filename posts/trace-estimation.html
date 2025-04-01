@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Trace Estimation</title>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Trace Estimation">
+    
+    <meta name="author" content="Spacedome">
+    
+    
+    <meta name="keywords" content="haskell, blog, nla, algorithms, numerical">
+    
+
+    <meta property="og:site_name" content="Spacedome">
+    <meta property="og:title" content="Trace Estimation">
+    <meta property="og:url" content="https://spacedome.tv/posts/trace-estimation.html">
+    <meta property="og:description" content="Trace Estimation">
+    
+    
+    <meta property="og:type" content="article">
+    
+
+    <link rel="shortcut icon" href="../favicon.ico">
+    <link rel="canonical" href="https://spacedome.tv/posts/trace-estimation.html">
+
+    <link rel="alternate" href="../atom.xml" title="Spacedome.tv" type="application/atom+xml">
+    <link rel="alternate" href="../rss.xml" title="Spacedome.tv" type="application/rss+xml">
+
+    <link rel="stylesheet" href="../css/code.css" />
+    <link rel="stylesheet" href="../css/default.css" />
+
+    
+    <script type="text/javascript" id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/mml-chtml.min.js">
+    </script>
+    
+  </head>
+  <header>
+      <a href="../">
+          <img src="../images/spacedome.svg" alt="spacedome.tv" class="logo">
+      </a>
+  </header>
+  <nav>
+      <ul class="bar">
+          <li><a href="../posts.html">Posts</a></li>
+          <li><a href="../projects.html">Projects</a></li>
+          <li><a href="../research.html">Research</a></li>
+          <li><a href="../artwork.html">Artwork</a></li>
+          <li><a href="https://github.com/spacedome">Github</a></li>
+          <li><a href="../">About</a></li>
+      </ul>
+  </nav>
+  <body>
+    <main>
+  <article>
+    <header>
+    <h1>Trace Estimation</h1>
+    <p><i>2025-01-11 </i></p>
+    <hr />
+    </header>
+    <section>
+      <p>The other day on twitter, I got involved in a discussion about trace estimation, and decided to write down some thoughts on the matter.</p>
+<p>Typically this is posed as follows.
+You are given a matrix <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>A</mi><mo>∈</mo><msup><mi>F</mi><mrow><mi>N</mi><mo>×</mo><mi>N</mi></mrow></msup></mrow><annotation encoding="application/x-tex">A \in F^{N\times N}</annotation></semantics></math> such that we can only access it through matrix-vector multiplication <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>x</mi><mo>↦</mo><mi>A</mi><mi>x</mi></mrow><annotation encoding="application/x-tex">x \mapsto Ax</annotation></semantics></math>. Estimate the trace of the matrix.
+<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mtext mathvariant="normal">tr</mtext><mi>A</mi><mo>=</mo><munderover><mo>∑</mo><mrow><mi>i</mi><mo>=</mo><mn>1</mn></mrow><mi>N</mi></munderover><msub><mi>A</mi><mrow><mi>i</mi><mo>,</mo><mi>i</mi></mrow></msub></mrow><annotation encoding="application/x-tex"> \text{tr} A = \sum_{i=1}^N A_{i,i} </annotation></semantics></math>
+We may not be able to take this sum directly either due to size or representation of <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>A</mi><annotation encoding="application/x-tex">A</annotation></semantics></math>, this constraint of only accessing the matrix through it’s vector product is familiar in numerical linear algebra.</p>
+<p>An easy false start, for someone mainly experienced with eigenvalue problems, is to remember that the trace of a matrix is exactly the sum of the eigenvalues.
+One would then ask, how can the eigenvalues be computed using only matrix-vector operations, and remember the Arnoldi iteration, an extension of the power method that constructs the Krylov subspace.
+<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>K</mi><mi>m</mi></msub><mo>=</mo><mrow><mo stretchy="true" form="prefix">[</mo><mi>x</mi><mo>,</mo><mi>A</mi><mi>x</mi><mo>,</mo><msup><mi>A</mi><mn>2</mn></msup><mi>x</mi><mo>,</mo><mi>…</mi><mo>,</mo><msup><mi>A</mi><mi>m</mi></msup><mi>x</mi><mo stretchy="true" form="postfix">]</mo></mrow></mrow><annotation encoding="application/x-tex"> K_m = [x, A x, A^2 x, \dots, A^m x] </annotation></semantics></math>
+After orthogonalizing the Krylov subspace with a Gram-Shmidt process into <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>Q</mi><mi>m</mi></msub><annotation encoding="application/x-tex">Q_m</annotation></semantics></math>, we can create an upper Hessenburg matrix <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>H</mi><mi>m</mi></msub><mo>=</mo><msubsup><mi>Q</mi><mi>m</mi><mo>*</mo></msubsup><mi>A</mi><msub><mi>Q</mi><mi>m</mi></msub></mrow><annotation encoding="application/x-tex">H_m = Q^*_m A Q_m</annotation></semantics></math>.
+We can then apply QR to this smaller matrix ( <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>m</mi><mo>&lt;</mo><mo>&lt;</mo><mi>n</mi></mrow><annotation encoding="application/x-tex">m &lt;&lt; n</annotation></semantics></math>) and use Rayleigh-Ritz to recover the associated eigenvalues of <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>A</mi><annotation encoding="application/x-tex">A</annotation></semantics></math>.</p>
+<p>Does this help us estimate the trace? Not really!
+We most likely have recovered the eigenvalues of greatest magnitude (remember, power method), and to recover the rest of them, we either need to expand the Krylov subspace such that <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>m</mi><mo>=</mo><mi>n</mi></mrow><annotation encoding="application/x-tex">m = n</annotation></semantics></math>, which is totally intractable in this scenario, or we need to do restarted Arnoldi while shifting out converged eigenvalues, also likely intractable.
+The usefulness of Arnoldi and other iterative eigenvalue algorithms is largely due to <em>not</em> needing all of the eigenvalues of these matrices.
+This is not an entirely fruitless direction though, as the Rayleigh-Ritz procedure gives us a hint.</p>
+<p>Let us recall the Rayleigh quotient, and how it can be written in terms of the eigenbasis <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>λ</mi><mi>i</mi></msub><mo>,</mo><msub><mi>v</mi><mi>i</mi></msub><mo stretchy="true" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">(\lambda_i, v_i)</annotation></semantics></math>.
+<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mfrac><mrow><msup><mi>x</mi><mo>*</mo></msup><mi>A</mi><mi>x</mi></mrow><mrow><msup><mi>x</mi><mo>*</mo></msup><mi>x</mi></mrow></mfrac><mo>=</mo><mfrac><mrow><munderover><mo>∑</mo><mrow><mi>i</mi><mo>=</mo><mn>1</mn></mrow><mi>N</mi></munderover><msub><mi>λ</mi><mi>i</mi></msub><msup><mrow><mo stretchy="true" form="prefix">(</mo><msubsup><mi>v</mi><mi>i</mi><mo>*</mo></msubsup><mi>x</mi><mo stretchy="true" form="postfix">)</mo></mrow><mn>2</mn></msup></mrow><mrow><munderover><mo>∑</mo><mrow><mi>i</mi><mo>=</mo><mn>1</mn></mrow><mi>N</mi></munderover><msup><mrow><mo stretchy="true" form="prefix">(</mo><msubsup><mi>v</mi><mi>i</mi><mo>*</mo></msubsup><mi>x</mi><mo stretchy="true" form="postfix">)</mo></mrow><mn>2</mn></msup></mrow></mfrac></mrow><annotation encoding="application/x-tex"> \frac{x^* A x}{x^* x} = \frac{\sum_{i=1}^N \lambda_i (v_i^* x)^2}{\sum_{i=1}^N (v_i^* x)^2} </annotation></semantics></math>
+If we then choose <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>x</mi><annotation encoding="application/x-tex">x</annotation></semantics></math> such that <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>E</mi><mrow><mo stretchy="true" form="prefix">[</mo><msup><mrow><mo stretchy="true" form="prefix">(</mo><msubsup><mi>v</mi><mi>i</mi><mo>*</mo></msubsup><mi>x</mi><mo stretchy="true" form="postfix">)</mo></mrow><mn>2</mn></msup><mo stretchy="true" form="postfix">]</mo></mrow><mo>=</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">E[(v_i^* x)^2] = 1</annotation></semantics></math> we get (henceforth ignoring the denominator which is basically one-ish).
+<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>E</mi><mrow><mo stretchy="true" form="prefix">[</mo><msup><mi>x</mi><mo>*</mo></msup><mi>A</mi><mi>x</mi><mo stretchy="true" form="postfix">]</mo></mrow><mo>=</mo><mo>∑</mo><msub><mi>λ</mi><mi>i</mi></msub><mo>=</mo><mtext mathvariant="normal">tr</mtext><mi>A</mi></mrow><annotation encoding="application/x-tex"> E[x^* A x] = \sum \lambda_i = \text{tr} A </annotation></semantics></math>
+We then use this to construct an estimator, using linearity.
+<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mover><mtext mathvariant="normal">tr</mtext><mo accent="true">̂</mo></mover><mi>A</mi><mo>=</mo><mfrac><mn>1</mn><mi>M</mi></mfrac><munderover><mo>∑</mo><mrow><mi>i</mi><mo>=</mo><mn>1</mn></mrow><mi>M</mi></munderover><msubsup><mi>x</mi><mi>i</mi><mo>*</mo></msubsup><mi>A</mi><msub><mi>x</mi><mi>i</mi></msub></mrow><annotation encoding="application/x-tex"> \hat{\text{tr}} A = \frac{1}{M} \sum_{i=1}^M x_i^* A x_i </annotation></semantics></math></p>
+<p>Let us take a detour and think how else we might come to this kind of conclusion.
+What if we use indicator vectors <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>e</mi><mi>i</mi></msub><annotation encoding="application/x-tex">e_i</annotation></semantics></math> to recover the diagonal elements of <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>A</mi><annotation encoding="application/x-tex">A</annotation></semantics></math>?
+<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mtext mathvariant="normal">tr</mtext><mi>A</mi><mo>=</mo><munderover><mo>∑</mo><mrow><mi>i</mi><mo>=</mo><mn>1</mn></mrow><mi>N</mi></munderover><msubsup><mi>e</mi><mi>i</mi><mi>T</mi></msubsup><mi>A</mi><msub><mi>e</mi><mi>i</mi></msub></mrow><annotation encoding="application/x-tex"> \text{tr} A = \sum_{i=1}^N e_i^T A e_i  </annotation></semantics></math>
+Given the constraints, it is unlikely doing <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>N</mi><annotation encoding="application/x-tex">N</annotation></semantics></math> matrix-vector multiplications is feasible, but we can choose a random sampling of the <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>e</mi><mi>i</mi></msub><annotation encoding="application/x-tex">e_i</annotation></semantics></math> for an approximate answer.</p>
+<p>In light of sampling from the diagonal directly, our Arnoldi approach can be viewed as (biased) sampling from the diagonal in the eigenbasis, and the Rayleigh quotient approach is like sampling from the diagonal in a random basis.
+All of the important analysis of this problem comes from the choice of distribution of <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>x</mi><annotation encoding="application/x-tex">x</annotation></semantics></math>.</p>
+<p>In the literature, the standard method is due to Hutchinson, where he chooses <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>x</mi><annotation encoding="application/x-tex">x</annotation></semantics></math> with elements sampled from the Rademacher distribution, that is, each element is <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>±</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">\pm 1</annotation></semantics></math> with equal odds.
+The general requirement for the estimator to be unbiased is <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>E</mi><mrow><mo stretchy="true" form="prefix">[</mo><mi>x</mi><msup><mi>x</mi><mo>*</mo></msup><mo stretchy="true" form="postfix">]</mo></mrow><mo>=</mo><mi>I</mi></mrow><annotation encoding="application/x-tex">E[x x^*] = I</annotation></semantics></math>, the expectation of the outer product being the identity. This is more general than our previous constraint.</p>
+<p>Here is a simple implementation in Haskell using hmatrix.</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co">-- | Generate a random Rademacher vector (+1/-1 with equal probability)</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="ot">generateRademacherVector ::</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> (<span class="dt">Vector</span> <span class="dt">R</span>)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>generateRademacherVector n <span class="ot">=</span> <span class="kw">do</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>    signs <span class="ot">&lt;-</span> replicateM n randomIO</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">return</span> <span class="op">$</span> vector <span class="op">$</span> <span class="fu">map</span> (\b <span class="ot">-&gt;</span> <span class="kw">if</span> b <span class="kw">then</span> <span class="dv">1</span> <span class="kw">else</span> <span class="op">-</span><span class="dv">1</span>) signs</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="co">-- | Estimate the trace using the Girard-Hutchinson estimator</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="ot">estimateTrace ::</span> <span class="dt">Matrix</span> <span class="dt">R</span>   <span class="co">-- ^ Matrix</span></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>              <span class="ot">-&gt;</span> <span class="dt">Int</span>        <span class="co">-- ^ Matrix Dimension</span></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>              <span class="ot">-&gt;</span> <span class="dt">Int</span>        <span class="co">-- ^ Number of samples</span></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>              <span class="ot">-&gt;</span> <span class="dt">IO</span> <span class="dt">R</span>       <span class="co">-- ^ Estimated trace</span></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>estimateTrace a n numSamples <span class="ot">=</span> <span class="kw">do</span></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>    <span class="co">-- Generate random vectors and compute estimates</span></span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>    estimates <span class="ot">&lt;-</span> replicateM numSamples <span class="op">$</span> <span class="kw">do</span></span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>        v <span class="ot">&lt;-</span> generateRademacherVector n</span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>        <span class="co">-- Rayleigh quotient: we can only access a through mat-vec</span></span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>        <span class="fu">return</span> <span class="op">$</span> v <span class="op">&lt;.&gt;</span> (a <span class="op">#&gt;</span> v)</span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>    <span class="co">-- Average the estimates</span></span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>    <span class="fu">return</span> <span class="op">$</span> <span class="fu">sum</span> estimates <span class="op">/</span> <span class="fu">fromIntegral</span> numSamples</span></code></pre></div>
+<p>The actual performance of this algorithm, and the correct choice of distribution of <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>x</mi><annotation encoding="application/x-tex">x</annotation></semantics></math> is heavily dependent on the structure of the matrix.
+If the density of the trace is heavily concentrated, for example one value of 100 and the rest zeros, we would expect indicator vectors to perform very poorly!
+In general, through some contortion of the central limit theorem, we should expect convergence to be on the order of <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msqrt><mi>n</mi></msqrt><annotation encoding="application/x-tex">\sqrt{n}</annotation></semantics></math> where <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>n</mi><annotation encoding="application/x-tex">n</annotation></semantics></math> is the number of samples, which is not very fast, but good enough in practice for anything that might warrant such an approximation the begin with.</p>
+    </section>
+  </article>
+</main>
+
+    <script defer src="../js/script.js"></script>
+  </body>
+  <footer>
+  <div>
+      <p>
+      Generated with Hakyll &copy 2024
+      </p>
+  </div>
+  </footer>
+</html>
