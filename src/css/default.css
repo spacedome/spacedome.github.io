@@ -81,4 +81,10 @@ img, iframe, video { max-width: 100%; }
     }
 }
 
+
+article img {
+  display: block;
+  margin: 1em auto;
+}
+
 main { hyphens: auto; }
