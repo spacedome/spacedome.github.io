@@ -1,0 +1,1162 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+    <title>Spacedome.tv</title>
+    <link href="https://spacedome.tv/posts/atom.xml" rel="self" />
+    <link href="https://spacedome.tv/posts" />
+    <id>https://spacedome.tv/posts/atom.xml</id>
+    <author>
+        <name>Julien</name>
+        <email>julien@spacedome.tv</email>
+    </author>
+    <updated>2025-04-20T00:00:00Z</updated>
+    <entry>
+    <title>Loading Hilberts</title>
+    <link href="https://spacedome.tv/posts/loading-hilberts.html" />
+    <id>https://spacedome.tv/posts/loading-hilberts.html</id>
+    <published>2025-04-20T00:00:00Z</published>
+    <updated>2025-04-20T00:00:00Z</updated>
+    <summary type="html"><![CDATA[<main>
+  <article>
+    <header>
+    <h1>Loading Hilberts</h1>
+    <p><i>2025-04-20 </i></p>
+    <hr/>
+    </header>
+    <section>
+      <p>Recently I thought: why are loading spinners such boring shapes, why not fill the loading space, surely CSS is capable of this?
+Thus was born the Loading Hilbert.
+Here we show a simple iterate of the Hilbert curve in a square.
+It is easy to imagine how we could do this for any curve, and even fill spaces dynamically with javascript if we were so inclined (this would certainly have performance constraints).
+I have not seen anyone else do this yet, somehow, though it is pretty straight forward to do with an SVG and CSS animations.</p>
+<div>
+<style>
+    .spinner-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin: 2rem 0;
+    }
+    
+    .spinner {
+      width: 200px;
+      height: 200px;
+      position: relative;
+      display: grid;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .background {
+      width: 100%;
+      height: 100%;
+      position: absolute;
+      stroke: #f3f3f3;
+      stroke-width: 2;
+      fill: none;
+      background-color: #E1E2F3;
+      color: #E1E2F3;
+    }
+
+    .trace {
+      width: 100%;
+      height: 100%;
+      position: absolute;
+      stroke: red;
+      stroke-width: 2;
+      fill: none;
+      stroke-dasharray: 500 500; /* 50-unit visible segment, 1486-unit gap */
+      stroke-dashoffset: 1000;
+      animation: trace 2s linear infinite;
+    }
+
+    @keyframes trace {
+      to {
+        stroke-dashoffset: 0;
+      }
+    }
+</style>
+
+<div class="spinner-container">
+  <div class="spinner">
+    <svg class="background" viewBox="0 0 100 100">
+      <path d="M6.25 6.25v12.5h12.5v-12.5h12.5h12.5v12.5h-12.5v12.5h12.5v12.5h-12.5h-12.5v-12.5h-12.5v12.5v12.5h12.5v12.5h-12.5v12.5v12.5h12.5v-12.5h12.5v12.5h12.5v-12.5v-12.5h-12.5v-12.5h12.5h12.5h12.5v12.5h-12.5v12.5v12.5h12.5v-12.5h12.5v12.5h12.5v-12.5v-12.5h-12.5v-12.5h12.5v-12.5v-12.5h-12.5v12.5h-12.5h-12.5v-12.5h12.5v-12.5h-12.5v-12.5h12.5h12.5v12.5h12.5v-12.5" fill="#E1E2F3" />
+    </svg>
+    <svg class="trace" viewBox="0 0 100 100">
+      <path d="M6.25 6.25v12.5h12.5v-12.5h12.5h12.5v12.5h-12.5v12.5h12.5v12.5h-12.5h-12.5v-12.5h-12.5v12.5v12.5h12.5v12.5h-12.5v12.5v12.5h12.5v-12.5h12.5v12.5h12.5v-12.5v-12.5h-12.5v-12.5h12.5h12.5h12.5v12.5h-12.5v12.5v12.5h12.5v-12.5h12.5v12.5h12.5v-12.5v-12.5h-12.5v-12.5h12.5v-12.5v-12.5h-12.5v12.5h-12.5h-12.5v-12.5h12.5v-12.5h-12.5v-12.5h12.5h12.5v12.5h12.5v-12.5" />
+    </svg>
+  </div>
+</div>
+</div>
+    </section>
+  </article>
+</main>
+]]></summary>
+</entry>
+<entry>
+    <title>Bugbash Conference: Software Reliability</title>
+    <link href="https://spacedome.tv/posts/bugbash-conference-software-reliability.html" />
+    <id>https://spacedome.tv/posts/bugbash-conference-software-reliability.html</id>
+    <published>2025-04-06T00:00:00Z</published>
+    <updated>2025-04-06T00:00:00Z</updated>
+    <summary type="html"><![CDATA[<main>
+  <article>
+    <header>
+    <h1>Bugbash Conference: Software Reliability</h1>
+    <p><i>2025-04-06 </i></p>
+    <hr/>
+    </header>
+    <section>
+      <p>Recently I attended the inaugural BugBash conference, hosted by Antithesis, a small 200 person meetup in DC about software reliability and all that encompasses.</p>
+<p>The talks do not seem to have been posted to the internet at the moment, and while many of them were good, I don’t think any stood out as something to revisit.
+Instead of a place to announce interesting new results, this was much more a gathering of people with an overlapping interest.
+I went hoping to meet Nix / Haskell / Formal Methods / PLT people, and ended up mostly meeting Nix people (almost all of whom worked at Antithesis, shout out to Josh and Ben).
+While many of the topics are downstream of more PLT and academic research adjacent things, such as property based testing, verification and testing of distributed systems, Nix, etc, the majority of the participants were developers and not researchers per se.
+As someone who is currently working as a developer and building test infrastructure, and no longer in academia, that was nice too.
+Even the formal methods people I met there were totally uninterested in things like proving correctness through the type system, and were firmly in the “model checker” camp.
+Next year I’ll need to go to more PLT / Nix specific conferences for that I suppose.</p>
+<p>My favorite talk was a flash talk showing how one can (ab)use the Antithesis hypervisor test state exploration tools to solve the traveling salesman problem, very funny.
+Mitchell Hashimoto also gave an nice talk on testing Ghostty with the NixOS VM tools, learned some things about using the NixOS testing framework from that, thanks Mitchell.</p>
+<p>Funnily enough, the people I ended up talking to the most were from Antithesis (who were hosting the event).
+Partly because I was seeking out the Nix crowd, and these were they, but also there were a lot of them there, and they were all quite personable and interesting to chat with. Great team, I highly recommend talking to them if you want to work on Nix and their deterministic hypervisor (and are OK moving to DC…).
+It is amusing that the few Nix shops have basically built an entire internal ecosystem that completely diverges from the community.
+To be fair, there a quite a few missing pieces.
+They apparently run it with fully custom tooling and don’t even use flakes.</p>
+<p>This was a very strange and interesting intersection of subfields, and I hope they do it again sometime.
+One minute you would be talking about formal verification and building on top of TLA+, next you would be listening about SRE at Big Company, then talking about building VM internals, testing UI, Rust, etc.
+Enjoyable.</p>
+<p>It’s a good reminder that people who care about (and work on) software correctness are out there, but also a reminder how much of a minority they are, and the ones trying to build correct software through programming language design are an even smaller fraction.
+Which will come first, mainstream ergonomic dependently typed languages, or AGI? Not a wager I’d make lightly today…</p>
+    </section>
+  </article>
+</main>
+]]></summary>
+</entry>
+<entry>
+    <title>Large Lambda Model</title>
+    <link href="https://spacedome.tv/posts/large-lambda-model.html" />
+    <id>https://spacedome.tv/posts/large-lambda-model.html</id>
+    <published>2025-02-15T00:00:00Z</published>
+    <updated>2025-02-15T00:00:00Z</updated>
+    <summary type="html"><![CDATA[<main>
+  <article>
+    <header>
+    <h1>Large Lambda Model</h1>
+    <p><i>2025-02-15 </i></p>
+    <hr/>
+    </header>
+    <section>
+      <p>Over the last week I decided to write the inference code for GPT-2 after a many year hiatus from Neural Networks.
+Depending on what primitives you start from, say if you wrote this with JAX or PyTorch, this is quite straight forward, otherwise it is somewhat less so.
+After lamenting the lack of perfect tensor library in Haskell, I wrote this directly on top of the OpenBLAS bindings in <code>hmatrix</code>.
+This choice precludes the ability to actually train the model, or even do a single backwards pass without significant effort in writing backprop code that would then be useless, but an old thinkpad CPU is just fast enough to do the forward pass if you get your bits in order.
+The lack of tensors makes the MultiHead Attention layer a bit of brain teaser, but it’s all just <code>GEMM/GEMV</code> in the end, and it makes this a project that goes from daunting to slowly crystallizing into a nice solution over a few days, ideal.</p>
+<h2 id="preliminaries">Preliminaries</h2>
+<p>If you’d like to implement this yourself, the best place to start is Karpathy’s <a href="https://github.com/karpathy/nanoGPT">NanoGPT</a> and <a href="https://github.com/karpathy/llm.c">llm.c</a>, along with his youtube videos.
+Also handy are Brendan Bycroft’s <a href="https://bbycroft.net/llm">LLM Visualizer</a> and a webapp hosting the <a href="https://tiktokenizer.vercel.app/?model=gpt2">tokenizer</a>.
+Ok, now we begin.</p>
+<h2 id="weve-got-layers">We’ve Got Layers</h2>
+<p><img src="../images/onion-layers.jpg" alt="We’re like Onions, we have layers" /></p>
+<p>The GPT-2 Transformer architecture is relatively simple at a high level, with only a few types of layers, arranged in a straight shot down the computation graph.
+The main complexity is the attention head.
+This model is fully F32 precision, so we start off by defining some type aliases.
+While Haskell isn’t dependently typed, <code>hmatrix</code> does have a semi-undocumented interface encoding the size of the matrices/vectors in the types, but unfortunately it is not generic and would not work with F32 without replicating most of the internals, so I chose not to do that, and will annotate sizes with comments instead.</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="kw">type</span> <span class="dt">Token</span> <span class="ot">=</span> <span class="dt">Int</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="kw">type</span> <span class="dt">V</span> <span class="ot">=</span> <span class="dt">Vector</span> <span class="dt">Float</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="kw">type</span> <span class="dt">M</span> <span class="ot">=</span> <span class="dt">Matrix</span> <span class="dt">Float</span></span></code></pre></div>
+<p>Instead of <em>yet another</em> transformer tutorial blog, I will go through this from the lens of reverse engineering the model and translating it into Haskell.
+I will leave most of the details to the many existing resources.
+We start then, by examining what types of layers we must contend with, and what weights lie in binary store.</p>
+<h3 id="embedding-layer">Embedding Layer</h3>
+<p>The first layer is what takes us from the token into the model proper, the embedding layer, from here on out we do not see <code>Int</code> again until we emerge from the final logits.
+In GPT-2 we have a vocabulary size of 50257 tokens, and an embedding size of 768.
+For clarity we will denote <code>N=768</code>.
+The embedding is not only with respect to the token, but also it’s position in the sequence of tokens, which we might as well call position in time, which has a maximum context size of 1024 tokens.
+It is important to note that while the tokens themselves are not learned, the embedding weights are.
+The tokens themselves are generated with the Byte Pair Encoding algorithm, though the vocabulary size is a hyper-parameter.</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="kw">newtype</span> <span class="dt">TokenEmbedding</span> <span class="ot">=</span> <span class="dt">TokenEmbedding</span> <span class="dt">M</span> <span class="co">-- (N, 50257)</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="kw">newtype</span> <span class="dt">PositionEmbedding</span> <span class="ot">=</span> <span class="dt">PositionEmbedding</span> <span class="dt">M</span> <span class="co">-- (N, 1024)</span></span></code></pre></div>
+<h3 id="layernorm">LayerNorm</h3>
+<p>The next component of our model is the LayerNorm.
+It has a simple premise, that we should normalize our data (zero mean and unit variance) at various points throughout the model.
+The weights in this layer are an element-wise affine transformation, <code>ax+b</code> performed after normalization.
+This is similar to BatchNorm, but normalized along the layer dimension instead of the batch dimension.
+Since we are only doing forward pass and are tensor-poor, we will assume the batch dimension is one and henceforth ignore it entirely.</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="kw">data</span> <span class="dt">LayerNorm</span> <span class="ot">=</span> <span class="dt">LayerNorm</span> <span class="dt">V</span> <span class="dt">V</span> <span class="co">-- (N), (N)</span></span></code></pre></div>
+<h3 id="multi-layer-perceptron">Multi Layer Perceptron</h3>
+<p>If you have any familiarity with ML, you recognize this, the cheeseburger of Neural Networks.
+There is a linear layer represented by a matrix and its bias vector, here it scales up before the nonlinearity is applied, then we have another linear layer matrix and bias vector scaling back down to the embedding dimension.</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="kw">data</span> <span class="dt">MLP</span> <span class="ot">=</span> <span class="dt">MLP</span> <span class="dt">M</span> <span class="dt">V</span> <span class="dt">M</span> <span class="dt">V</span> <span class="co">-- (4*N, N), (4*N), (N, 4*N), (N)</span></span></code></pre></div>
+<h3 id="attention">Attention</h3>
+<p>Inside the self attention layer we see a linear transformation <code>N -&gt; 3*N</code>, but this is really an optimization, packing the so called Q, K, and V matrices together in memory.
+We then split this further, slicing <code>768</code> into twelve vectors of length <code>64</code>, one for each attention head.
+The additional matrix/vector pair is for a linear layer on the end.</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="kw">data</span> <span class="dt">Attention</span> <span class="ot">=</span> <span class="dt">Attention</span> <span class="dt">M</span> <span class="dt">V</span> <span class="dt">M</span> <span class="dt">V</span> <span class="co">-- (3*N, N), (3*N), (N, N), (N)</span></span></code></pre></div>
+<h3 id="block">Block</h3>
+<p>We group the previous layers into a Block, as we essentially stack them on top of each other, and then repeat the block twelve times, so it is convenient to conceptually group them.</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="kw">data</span> <span class="dt">Block</span> <span class="ot">=</span> <span class="dt">Block</span> <span class="dt">LayerNorm</span> <span class="dt">Attention</span> <span class="dt">LayerNorm</span> <span class="dt">MLP</span></span></code></pre></div>
+<h3 id="gpt">GPT</h3>
+<p>We can then assemble our layers into the complete model, with one more LayerNorm at the end for good measure.
+Now we are ready to ask how these layers are actually implemented.</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="kw">data</span> <span class="dt">GPT</span> <span class="ot">=</span> <span class="dt">GPT</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>  {<span class="ot"> wpe ::</span> <span class="dt">PositionEmbedding</span>,</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="ot">    wte ::</span> <span class="dt">TokenEmbedding</span>,</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="ot">    blocks ::</span> [<span class="dt">Block</span>], <span class="co">-- (12)</span></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a><span class="ot">    lnf ::</span> <span class="dt">LayerNorm</span></span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>  }</span></code></pre></div>
+<h2 id="interlude-necessary-functions">Interlude: Necessary Functions</h2>
+<p>Before getting into the forward pass, let us define some helper functions.
+These are things that any modern tensor library would give you, but we will implement them ourselves.
+There are surprisingly few necessary.</p>
+<h3 id="softmax">Softmax</h3>
+<p>This is a venerable softmax, and nothing more, it smoothly turns our vectors into probability distributions.</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="ot">softmax ::</span> <span class="dt">V</span> <span class="ot">-&gt;</span> <span class="dt">V</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>softmax v <span class="ot">=</span> expv <span class="op">*</span> scalar (<span class="dv">1</span> <span class="op">/</span> sumElements expv)</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>  <span class="kw">where</span> expv <span class="ot">=</span> cmap <span class="fu">exp</span> v</span></code></pre></div>
+<h3 id="gelu">GELU</h3>
+<p>The popular choice of nonlinearity at the time was the Gaussian Error Linear Unit, which is a more continuous adaption of the RELU, to avoid getting stuck in the flat region during training.
+Technically, we are using the <code>tanh</code> approximation of the GELU, which is defined as <code>GELU(x)=x∗Φ(x)</code> where <code>Φ</code> is the CDF of the Gaussian.
+It seems like the “exact” version is now performant in PyTorch, but the approximation is close enough it doesn’t seem to matter which you use for a single forward pass.</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="ot">gelu ::</span> <span class="dt">V</span> <span class="ot">-&gt;</span> <span class="dt">V</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>gelu x <span class="ot">=</span> <span class="fl">0.5</span> <span class="op">*</span> x <span class="op">*</span> (<span class="dv">1</span> <span class="op">+</span> <span class="fu">tanh</span> (<span class="fu">sqrt</span> (<span class="dv">2</span> <span class="op">/</span> <span class="fu">pi</span>) <span class="op">*</span> (x <span class="op">+</span> <span class="fl">0.044715</span> <span class="op">*</span> x <span class="op">*</span> x <span class="op">*</span> x)))</span></code></pre></div>
+<h3 id="tril">Tril</h3>
+<p>This function zeros out the upper triangular portion of the self attention matrix.
+To be exact it sets them to <code>-Inf</code> which becomes zero after a softmax is applied.
+The attention matrix encodes the relation between different token positions, and this zeroing corresponds to a token only depending on previous tokens.
+Much research has been done on the alterations to this matrix, which in theory is completely general and can be put to various purposes.</p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="ot">tril ::</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">M</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>tril n <span class="ot">=</span> build (n, n) (\i j <span class="ot">-&gt;</span> <span class="kw">if</span> j <span class="op">&gt;</span> i <span class="kw">then</span> <span class="op">-</span><span class="dv">1</span> <span class="op">/</span> <span class="dv">0</span> <span class="kw">else</span> <span class="dv">0</span>)</span></code></pre></div>
+<h2 id="forward-pass">Forward Pass</h2>
+<p>Let’s start by defining a typeclass for our layers, containing the function for the forward pass.
+This code doesn’t actually generalize, but it’s comfy to do this regardless.</p>
+<div class="sourceCode" id="cb11"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> <span class="dt">Layer</span> a <span class="kw">where</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="ot">  forward ::</span> a <span class="ot">-&gt;</span> [<span class="dt">V</span>] <span class="ot">-&gt;</span> [<span class="dt">V</span>]</span></code></pre></div>
+<h3 id="embedding">Embedding</h3>
+<p>We then come to the embedding layer, which does not conform to the typeclass we so hopefully just defined…
+The important point to note is that the embedding is across two dimensions, the token vocabulary and the token position in time.
+As we do not have a tensor library, it is convenient to store this as a list of vectors, the size of which cannot grow beyond the context size of 1024, so this should cause no issues.
+Each element of the list is the embedding of an individual token.</p>
+<div class="sourceCode" id="cb12"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="co">-- the model combines a token indexed and position indexed embedding</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="ot">embedding ::</span> <span class="dt">TokenEmbedding</span> <span class="ot">-&gt;</span> <span class="dt">PositionEmbedding</span> <span class="ot">-&gt;</span> [<span class="dt">Token</span>] <span class="ot">-&gt;</span> [<span class="dt">V</span>]</span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>embedding (<span class="dt">TokenEmbedding</span> te) (<span class="dt">PositionEmbedding</span> pe) ts <span class="ot">=</span></span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">zipWith</span> (<span class="op">+</span>) (<span class="fu">fmap</span> (sliceColumn te) ts) (toColumns pe)</span></code></pre></div>
+<h3 id="layernorm-1">LayerNorm</h3>
+<p>As promised, this is just a normalization followed by an affine transformation.
+The notorious difficulty in implementing LayerNorm and BatchNorm mostly comes down to the backward pass, which we are ignoring.
+Note that this is an <code>fmap</code> over the input <code>[V]</code>, meaning the each token embedding is independent.</p>
+<div class="sourceCode" id="cb13"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="kw">instance</span> <span class="dt">Layer</span> <span class="dt">LayerNorm</span> <span class="kw">where</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>  forward layer <span class="ot">=</span> <span class="fu">fmap</span> (forwardLN layer)</span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>    <span class="kw">where</span></span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a><span class="ot">      forwardLN ::</span> <span class="dt">LayerNorm</span> <span class="ot">-&gt;</span> <span class="dt">V</span> <span class="ot">-&gt;</span> <span class="dt">V</span></span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>      forwardLN (<span class="dt">LayerNorm</span> w b) x <span class="ot">=</span> y</span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>        <span class="kw">where</span></span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a>          n <span class="ot">=</span> <span class="fu">fromIntegral</span> (size x)</span>
+<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a>          mean <span class="ot">=</span> scalar (sumElements x <span class="op">/</span> n)</span>
+<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a>          cent <span class="ot">=</span> x <span class="op">-</span> mean</span>
+<span id="cb13-10"><a href="#cb13-10" aria-hidden="true" tabindex="-1"></a>          varx <span class="ot">=</span> sumElements (cent <span class="op">*</span> cent) <span class="op">/</span> n</span>
+<span id="cb13-11"><a href="#cb13-11" aria-hidden="true" tabindex="-1"></a>          fact <span class="ot">=</span> scalar (<span class="fu">sqrt</span> (varx <span class="op">+</span> <span class="fl">1e-5</span>))</span>
+<span id="cb13-12"><a href="#cb13-12" aria-hidden="true" tabindex="-1"></a>          y <span class="ot">=</span> ((x <span class="op">-</span> mean) <span class="op">/</span> fact) <span class="op">*</span> w <span class="op">+</span> b</span></code></pre></div>
+<h3 id="attention-1">Attention</h3>
+<p>We break this up into three parts.
+First, we apply the QKV linear transformation and break up the result into the individual Q, K, V components, and into the 12 individual heads.
+Second, we reassemble across the time dimension, so that we can construct the attention matrix for each head, each relating all tokens in time.
+Third, we flatten everything back out and apply another linear layer, ending back in the same shape we started with.</p>
+<p>This splitting and recombining corresponds to reshaping the tensor such that the heads are their own dimension, and then transposing it with the time (token) dimension.
+We do not have this capability, so we must make do, and this is the trickiest part of the code by far.</p>
+<div class="sourceCode" id="cb14"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="co">-- the first part of the attention head is a linear layer.</span></span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a><span class="co">-- Q,K,V weights and heads are combined and we have to take them apart here.</span></span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a><span class="ot">attnAtToken ::</span> <span class="dt">Attention</span> <span class="ot">-&gt;</span> <span class="dt">V</span> <span class="ot">-&gt;</span> ([<span class="dt">V</span>], [<span class="dt">V</span>], [<span class="dt">V</span>])</span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>attnAtToken (<span class="dt">Attention</span> w b _ _) x <span class="ot">=</span> (qh, kh, vh)</span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>  <span class="kw">where</span></span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>    y <span class="ot">=</span> (w <span class="op">#&gt;</span> x) <span class="op">+</span> b</span>
+<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a>    <span class="co">-- split apart into Q, K, V components</span></span>
+<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a>    (q, k, v) <span class="ot">=</span> <span class="kw">case</span> takesV [<span class="dv">768</span>, <span class="dv">768</span>, <span class="dv">768</span>] y <span class="kw">of</span></span>
+<span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a>      [x1, x2, x3] <span class="ot">-&gt;</span> (x1, x2, x3)</span>
+<span id="cb14-10"><a href="#cb14-10" aria-hidden="true" tabindex="-1"></a>      _ <span class="ot">-&gt;</span> <span class="fu">error</span> <span class="st">&quot;QKV could not be split&quot;</span></span>
+<span id="cb14-11"><a href="#cb14-11" aria-hidden="true" tabindex="-1"></a>    <span class="co">-- split into individual heads</span></span>
+<span id="cb14-12"><a href="#cb14-12" aria-hidden="true" tabindex="-1"></a>    qh <span class="ot">=</span> takesV (<span class="fu">replicate</span> <span class="dv">12</span> <span class="dv">64</span>) q</span>
+<span id="cb14-13"><a href="#cb14-13" aria-hidden="true" tabindex="-1"></a>    kh <span class="ot">=</span> takesV (<span class="fu">replicate</span> <span class="dv">12</span> <span class="dv">64</span>) k</span>
+<span id="cb14-14"><a href="#cb14-14" aria-hidden="true" tabindex="-1"></a>    vh <span class="ot">=</span> takesV (<span class="fu">replicate</span> <span class="dv">12</span> <span class="dv">64</span>) v</span>
+<span id="cb14-15"><a href="#cb14-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-16"><a href="#cb14-16" aria-hidden="true" tabindex="-1"></a><span class="co">-- this is the actual attention part where we construct the attention matrix.</span></span>
+<span id="cb14-17"><a href="#cb14-17" aria-hidden="true" tabindex="-1"></a><span class="ot">attnHead ::</span> (<span class="dt">M</span>, <span class="dt">M</span>, <span class="dt">M</span>) <span class="ot">-&gt;</span> <span class="dt">M</span></span>
+<span id="cb14-18"><a href="#cb14-18" aria-hidden="true" tabindex="-1"></a>attnHead (q, k, v) <span class="ot">=</span> z</span>
+<span id="cb14-19"><a href="#cb14-19" aria-hidden="true" tabindex="-1"></a>  <span class="kw">where</span></span>
+<span id="cb14-20"><a href="#cb14-20" aria-hidden="true" tabindex="-1"></a>    attnMatrix <span class="ot">=</span> tr q <span class="op">&lt;&gt;</span> k <span class="op">*</span> scalar (<span class="dv">1</span> <span class="op">/</span> <span class="dv">8</span>) <span class="co">-- 1 / sqrt (size k)</span></span>
+<span id="cb14-21"><a href="#cb14-21" aria-hidden="true" tabindex="-1"></a>    <span class="co">-- mask the upper right triangular to -inf (becomes 0 in softmax)</span></span>
+<span id="cb14-22"><a href="#cb14-22" aria-hidden="true" tabindex="-1"></a>    attnMasked <span class="ot">=</span> tril (rows attnMatrix) <span class="op">+</span> attnMatrix</span>
+<span id="cb14-23"><a href="#cb14-23" aria-hidden="true" tabindex="-1"></a>    <span class="co">-- no tensor library means we have to do this kinda stuff</span></span>
+<span id="cb14-24"><a href="#cb14-24" aria-hidden="true" tabindex="-1"></a>    attnSoftmax <span class="ot">=</span> fromRows (<span class="fu">fmap</span> softmax (toRows attnMasked))</span>
+<span id="cb14-25"><a href="#cb14-25" aria-hidden="true" tabindex="-1"></a>    z <span class="ot">=</span> attnSoftmax <span class="op">&lt;&gt;</span> tr v</span>
+<span id="cb14-26"><a href="#cb14-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-27"><a href="#cb14-27" aria-hidden="true" tabindex="-1"></a><span class="kw">instance</span> <span class="dt">Layer</span> <span class="dt">Attention</span> <span class="kw">where</span></span>
+<span id="cb14-28"><a href="#cb14-28" aria-hidden="true" tabindex="-1"></a>  forward at<span class="op">@</span>(<span class="dt">Attention</span> _ _ w b) xs <span class="ot">=</span> z</span>
+<span id="cb14-29"><a href="#cb14-29" aria-hidden="true" tabindex="-1"></a>    <span class="kw">where</span></span>
+<span id="cb14-30"><a href="#cb14-30" aria-hidden="true" tabindex="-1"></a>      (q, k, v) <span class="ot">=</span> <span class="fu">unzip3</span> (<span class="fu">fmap</span> (attnAtToken at) xs)</span>
+<span id="cb14-31"><a href="#cb14-31" aria-hidden="true" tabindex="-1"></a>      qh <span class="ot">=</span> <span class="fu">fmap</span> fromColumns (transpose q)</span>
+<span id="cb14-32"><a href="#cb14-32" aria-hidden="true" tabindex="-1"></a>      kh <span class="ot">=</span> <span class="fu">fmap</span> fromColumns (transpose k)</span>
+<span id="cb14-33"><a href="#cb14-33" aria-hidden="true" tabindex="-1"></a>      vh <span class="ot">=</span> <span class="fu">fmap</span> fromColumns (transpose v)</span>
+<span id="cb14-34"><a href="#cb14-34" aria-hidden="true" tabindex="-1"></a>      lm <span class="ot">=</span> <span class="fu">fmap</span> attnHead (<span class="fu">zip3</span> qh kh vh)</span>
+<span id="cb14-35"><a href="#cb14-35" aria-hidden="true" tabindex="-1"></a>      y <span class="ot">=</span> <span class="fu">fmap</span> vjoin (transpose (<span class="fu">fmap</span> toRows lm))</span>
+<span id="cb14-36"><a href="#cb14-36" aria-hidden="true" tabindex="-1"></a>      z <span class="ot">=</span> <span class="fu">fmap</span> ((<span class="op">+</span> b) <span class="op">.</span> (w <span class="op">#&gt;</span>)) y</span></code></pre></div>
+<h3 id="multi-layer-perceptron-1">Multi Layer Perceptron</h3>
+<p>Now we are back to classical Neural Networks, and it feels easy in comparison.</p>
+<div class="sourceCode" id="cb15"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="kw">instance</span> <span class="dt">Layer</span> <span class="dt">MLP</span> <span class="kw">where</span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>  forward (<span class="dt">MLP</span> wfc bfc wproj bproj) x <span class="ot">=</span> x3</span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>    <span class="kw">where</span></span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>      x1 <span class="ot">=</span> <span class="fu">fmap</span> ((<span class="op">+</span> bfc) <span class="op">.</span> (wfc <span class="op">#&gt;</span>)) x</span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>      x2 <span class="ot">=</span> <span class="fu">fmap</span> gelu x1</span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>      x3 <span class="ot">=</span> <span class="fu">fmap</span> ((<span class="op">+</span> bproj) <span class="op">.</span> (wproj <span class="op">#&gt;</span>)) x2</span></code></pre></div>
+<h3 id="block-layer">Block Layer</h3>
+<p>Finally we can assemble the Block.
+Here there is only one thing of note, the pass-through, usually called a residual or skip connection (as in ResNet), a trick that was discovered when looking for ways to successfully train deeper networks.</p>
+<div class="sourceCode" id="cb16"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="kw">instance</span> <span class="dt">Layer</span> <span class="dt">Block</span> <span class="kw">where</span></span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>  forward (<span class="dt">Block</span> l1 at l2 mp) xs <span class="ot">=</span> x4</span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>    <span class="kw">where</span></span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>      x1 <span class="ot">=</span> forward l1 xs</span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a>      x2 <span class="ot">=</span> <span class="fu">zipWith</span> (<span class="op">+</span>) xs (forward at x1)</span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a>      x3 <span class="ot">=</span> forward l2 x2</span>
+<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a>      x4 <span class="ot">=</span> <span class="fu">zipWith</span> (<span class="op">+</span>) x2 (forward mp x3)</span></code></pre></div>
+<h3 id="gpt-1">GPT</h3>
+<p>Putting it all together now, we embed, apply the blocks in sequence, just one more LayerNorm, and then we apply the token embedding to output logits which we will use to sample the next token in the sequence.
+Since we are doing forward pass only, there is no cross entropy or loss at the end of course.</p>
+<div class="sourceCode" id="cb17"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="ot">forwardModel ::</span> <span class="dt">GPT</span> <span class="ot">-&gt;</span> [<span class="dt">Token</span>] <span class="ot">-&gt;</span> [<span class="dt">V</span>]</span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>forwardModel model tokens <span class="ot">=</span> x3</span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>  <span class="kw">where</span></span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>    <span class="dt">TokenEmbedding</span> wtew <span class="ot">=</span> wte model</span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a>    emb <span class="ot">=</span> embedding (wte model) (wpe model) tokens</span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a>    x1 <span class="ot">=</span> <span class="fu">foldr</span> forward emb (blocks model)</span>
+<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a>    x2 <span class="ot">=</span> forward (lnf model) x1</span>
+<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a>    x3 <span class="ot">=</span> <span class="fu">fmap</span> (tr wtew <span class="op">#&gt;</span>) x2</span></code></pre></div>
+<p>The main trick in implementing such a thing is taking apart the reference implementation and inspecting it every single step of the way, the standard mechanical acts of reverse engineering.</p>
+<h2 id="they-call-me-the-sampler">They Call Me The Sampler</h2>
+<p>To actually get something useful from the model, we must take it’s output predictions and sample from them.
+This is another scenario where the lack of surrounding ecosystem in Haskell leaves us to our own devices.
+Luckily you can make a usable sampler out of leftover bits, and I will show you how.</p>
+<h3 id="maximum-sampler">Maximum Sampler</h3>
+<p>There is of course the cop out sampler, to simply take the highest scored token at every step.
+The results are quite bad, in fact it is rather instructive as to the importance of a good sampler, though this does work to test your model is working at all.
+We lift this into the IO monad only to be consistent with the following sampler which uses Random IO.</p>
+<div class="sourceCode" id="cb18"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="ot">sampleMax ::</span> <span class="dt">V</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> <span class="dt">Token</span></span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>sampleMax x <span class="ot">=</span> <span class="fu">return</span> <span class="op">$</span> <span class="fu">snd</span> <span class="op">$</span> maximumBy (comparing <span class="fu">fst</span>) (<span class="fu">zip</span> (toList x) [<span class="dv">0</span> <span class="op">..</span>])</span></code></pre></div>
+<h3 id="top-k-uniform-sampler">Top-K Uniform Sampler</h3>
+<p>We will use the approach given in the reference implementation, to limit ourselves to the top K (they use 200, I chose 50) values and sample them with their softmax probabilities.
+How do we sample from this list of probabilities?
+There is a nice way of doing just this, as the sum of probabilities must sum to one, we can associate each probability to a disjoint interval contained in <code>(0,1)</code>.
+The order is unimportant, we take the order we are given, and we construct the cumulative probabilities, which correspond to the right endpoints of these intervals.
+We can then sample with a uniform random sample from the unit interval, associate it with the greatest lower bound in our cumulative probabilites, it will correspond to a sample from our original distribution.
+Neat!</p>
+<div class="sourceCode" id="cb19"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="ot">topK ::</span> <span class="dt">V</span> <span class="ot">-&gt;</span> <span class="dt">V</span></span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>topK v <span class="ot">=</span> fromList (<span class="fu">map</span> f (toList v))</span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>  <span class="kw">where</span></span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>    k <span class="ot">=</span> sortBy (comparing <span class="dt">Down</span>) (toList v) <span class="op">!!</span> <span class="dv">50</span></span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a>    f x <span class="ot">=</span> <span class="kw">if</span> x <span class="op">&gt;</span> k <span class="kw">then</span> x <span class="op">/</span> <span class="dv">2</span> <span class="kw">else</span> <span class="op">-</span><span class="dv">1</span> <span class="op">/</span> <span class="dv">0</span> <span class="co">-- here 2 is the &quot;temperature&quot;</span></span>
+<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a><span class="ot">sampleLogits ::</span> <span class="dt">V</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> <span class="dt">Int</span></span>
+<span id="cb19-8"><a href="#cb19-8" aria-hidden="true" tabindex="-1"></a>sampleLogits v <span class="ot">=</span> <span class="kw">do</span></span>
+<span id="cb19-9"><a href="#cb19-9" aria-hidden="true" tabindex="-1"></a>  r <span class="ot">&lt;-</span> randomRIO (<span class="fl">0.0</span>, <span class="fl">1.0</span>)</span>
+<span id="cb19-10"><a href="#cb19-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span> <span class="op">$</span> findIndex r (<span class="fu">scanl1</span> (<span class="op">+</span>) (toList <span class="op">$</span> softmax <span class="op">$</span> topK v))</span>
+<span id="cb19-11"><a href="#cb19-11" aria-hidden="true" tabindex="-1"></a>  <span class="kw">where</span></span>
+<span id="cb19-12"><a href="#cb19-12" aria-hidden="true" tabindex="-1"></a>    findIndex r cumProbs <span class="ot">=</span> <span class="fu">length</span> (<span class="fu">takeWhile</span> (<span class="op">&lt;=</span> r) cumProbs)</span></code></pre></div>
+<p>We are now ready to start generating some fresh tokens.</p>
+<h2 id="running-the-model">Running The Model</h2>
+<p>Using all the pieces we’ve assembled so far, we can run the model with some straight forward IO event loop code.</p>
+<div class="sourceCode" id="cb20"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="ot">run ::</span> <span class="dt">GPT</span> <span class="ot">-&gt;</span> <span class="dt">TokenMap</span> <span class="ot">-&gt;</span> <span class="dt">Natural</span> <span class="ot">-&gt;</span> [<span class="dt">Token</span>] <span class="ot">-&gt;</span> <span class="dt">IO</span> [<span class="dt">Token</span>]</span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>run model tm iter tokens <span class="ot">=</span> <span class="kw">do</span></span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>  next <span class="ot">&lt;-</span> sampleLogits <span class="op">$</span> <span class="fu">last</span> <span class="op">$</span> forwardModel model tokens</span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a>  TIO.putStr (token tm [next])</span>
+<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a>  <span class="kw">if</span> iter <span class="op">==</span> <span class="dv">0</span> <span class="op">||</span> next <span class="op">==</span> <span class="dv">50256</span></span>
+<span id="cb20-6"><a href="#cb20-6" aria-hidden="true" tabindex="-1"></a>    <span class="co">-- this is short enough that end of list append is fine </span></span>
+<span id="cb20-7"><a href="#cb20-7" aria-hidden="true" tabindex="-1"></a>    <span class="kw">then</span> <span class="fu">return</span> (tokens <span class="op">++</span> [next])</span>
+<span id="cb20-8"><a href="#cb20-8" aria-hidden="true" tabindex="-1"></a>    <span class="kw">else</span> run model tm (iter <span class="op">-</span> <span class="dv">1</span>) (tokens <span class="op">++</span> [next])</span>
+<span id="cb20-9"><a href="#cb20-9" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb20-10"><a href="#cb20-10" aria-hidden="true" tabindex="-1"></a><span class="ot">main ::</span> <span class="dt">IO</span> ()</span>
+<span id="cb20-11"><a href="#cb20-11" aria-hidden="true" tabindex="-1"></a>main <span class="ot">=</span> <span class="kw">do</span></span>
+<span id="cb20-12"><a href="#cb20-12" aria-hidden="true" tabindex="-1"></a>  hSetBuffering stdout <span class="dt">NoBuffering</span></span>
+<span id="cb20-13"><a href="#cb20-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">putStrLn</span> <span class="st">&quot;λλμ: Now Loading...&quot;</span></span>
+<span id="cb20-14"><a href="#cb20-14" aria-hidden="true" tabindex="-1"></a>  tensors <span class="ot">&lt;-</span> readModel <span class="st">&quot;model.safetensors&quot;</span></span>
+<span id="cb20-15"><a href="#cb20-15" aria-hidden="true" tabindex="-1"></a>  vocab <span class="ot">&lt;-</span> readVocab <span class="st">&quot;vocab.json&quot;</span></span>
+<span id="cb20-16"><a href="#cb20-16" aria-hidden="true" tabindex="-1"></a>  <span class="kw">let</span> model <span class="ot">=</span> <span class="kw">case</span> tensors <span class="kw">of</span> <span class="dt">Right</span> gpt <span class="ot">-&gt;</span> gpt; <span class="dt">Left</span> err <span class="ot">-&gt;</span> <span class="fu">error</span> err</span>
+<span id="cb20-17"><a href="#cb20-17" aria-hidden="true" tabindex="-1"></a>  <span class="kw">let</span> tokenMap <span class="ot">=</span> <span class="kw">case</span> vocab <span class="kw">of</span> <span class="dt">Just</span> tm <span class="ot">-&gt;</span> tm; <span class="dt">Nothing</span> <span class="ot">-&gt;</span> <span class="fu">error</span> <span class="st">&quot;Couldn&#39;t parse vocab&quot;</span></span>
+<span id="cb20-18"><a href="#cb20-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">putStr</span> <span class="st">&quot;Hello, I am&quot;</span></span>
+<span id="cb20-19"><a href="#cb20-19" aria-hidden="true" tabindex="-1"></a>  <span class="co">-- Tokens for &quot;Hello, I am&quot;</span></span>
+<span id="cb20-20"><a href="#cb20-20" aria-hidden="true" tabindex="-1"></a>  generate <span class="ot">&lt;-</span> run model tokenMap <span class="dv">50</span> [<span class="dv">15496</span>, <span class="dv">11</span>, <span class="dv">314</span>, <span class="dv">716</span>]</span>
+<span id="cb20-21"><a href="#cb20-21" aria-hidden="true" tabindex="-1"></a>  <span class="fu">print</span> generate </span></code></pre></div>
+<p>Here is an example output, with typical small model weirdness. Note this is the smallest 124M parameter GPT-2 model.</p>
+<div class="sourceCode" id="cb21"><pre class="sourceCode md"><code class="sourceCode markdown"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>λλμ: Now Loading...</span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>Hello, I am not quite sure what this &quot;Theater at Heart of Harry Potter&quot; book of essays to which all children are prone must say to all adults; they, the characters in whom the books &quot;hates him.&quot;</span></code></pre></div>
+<p>That’s it, we wrote a forward pass for GPT-2!</p>
+<p>But wait, you might say, where did that <code>readModel</code> function come from, or the <code>token</code> function.
+For the tokens, I am simply using the <code>vocab.json</code> file provided with the model weights.
+This is not handled correctly, possibly due to Aeson disagreeing with encoding specifics of the unicode keys in the JSON, so I will not include it here.
+I did not even attempt the token encoder.
+Nobody likes the tokenizer!</p>
+<p>For the model loading, I chose to parse the <code>model.safetensors</code> format that Huggingface provides.
+The details are tedious, so they have been relegated to the appendix.</p>
+<h2 id="performance-considerations">Performance Considerations</h2>
+<p>The main performance issue I had was really my own blunder, in my haste to prototype the inference I neglected the loader.
+<code>hmatrix</code> does not come with a way to load a vector directly from a ByteString, so we must do some work with the lower level memory interfaces.
+If one wishes to attempt this themselves, the critical point is to map the vectors directly, else suffer the consequences of parsing through intermediaries.
+Using the available tools in <code>hmatrix</code> and <code>Data.Binary.Get</code> the obvious solution is parsing a bytestring to a list of floats, then to a vector.
+This is incredibly slow.
+Luckily the FFI in Haskell is quite nice, and we can index into the (strict!) bytestring with a pointer that can then be cast to the FFI <code>Storable</code> used by Vectors, without additional allocation.
+This gets the loading time down to a few seconds.</p>
+<p>In terms of inference performance, <code>hmatrix</code> does an admirable job, and BLAS parallelizes well enough to saturate all 8 of my cores without needing to use something like <code>parMap</code>.
+The main slowdown is the quadratic scaling of self attention, a fundamental time complexity issue that can be somewhat improved by things like FlashAttention and custom kernels.
+I’ll do none of those things here.
+I’m not sure there is much benefit in trying to optimize this further, as the <code>hmatrix</code> primitives are not really the right foundation for this work, and something closer to an array combinator DSL like <code>accellerate</code> or <code>futhark</code> would be a better direction, though the various options all have their drawbacks.
+There is also the question of training, and we would need to think about something like <a href="https://hackage.haskell.org/package/backprop">backprop</a>.</p>
+<h2 id="appendix--data-loading">Appendix : Data Loading</h2>
+<p>For the curious, I’ve included the full loading code.
+The <code>safetensors</code> format is quite simple, a leading <code>uint64</code> encoding the metadata length, followed by said metadata, which is just JSON.
+The remainder of the file is the tensors in binary form.
+This JSON contains a manifest of each layer, and their relative indices in the file, which we can use to load them.</p>
+<div class="sourceCode" id="cb22"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="kw">module</span> <span class="dt">Loader</span> <span class="kw">where</span></span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span> <span class="dt">Data.Aeson</span> (<span class="dt">FromJSON</span>, <span class="dt">ToJSON</span>, <span class="dt">Value</span>, eitherDecode, withObject, (.:))</span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span> <span class="dt">Data.Aeson.Encode.Pretty</span> (encodePretty)</span>
+<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span> <span class="kw">qualified</span> <span class="dt">Data.Aeson.Key</span> <span class="kw">as</span> <span class="dt">K</span></span>
+<span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span> <span class="kw">qualified</span> <span class="dt">Data.Aeson.KeyMap</span> <span class="kw">as</span> <span class="dt">KM</span></span>
+<span id="cb22-7"><a href="#cb22-7" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span> <span class="dt">Data.Aeson.Types</span> (<span class="dt">Parser</span>, parseEither)</span>
+<span id="cb22-8"><a href="#cb22-8" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span> <span class="dt">Data.Bifunctor</span> (bimap)</span>
+<span id="cb22-9"><a href="#cb22-9" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span> <span class="dt">Data.Binary.Get</span> (getWord64le, runGetOrFail)</span>
+<span id="cb22-10"><a href="#cb22-10" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span> <span class="kw">qualified</span> <span class="dt">Data.ByteString</span> <span class="kw">as</span> <span class="dt">BS</span></span>
+<span id="cb22-11"><a href="#cb22-11" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span> <span class="kw">qualified</span> <span class="dt">Data.ByteString.Internal</span> <span class="kw">as</span> <span class="dt">BS</span></span>
+<span id="cb22-12"><a href="#cb22-12" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span> <span class="kw">qualified</span> <span class="dt">Data.ByteString.Lazy</span> <span class="kw">as</span> <span class="dt">BL</span></span>
+<span id="cb22-13"><a href="#cb22-13" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span> <span class="kw">qualified</span> <span class="dt">Data.Vector.Generic</span> <span class="kw">as</span> <span class="dt">VG</span></span>
+<span id="cb22-14"><a href="#cb22-14" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span> <span class="kw">qualified</span> <span class="dt">Data.Vector.Storable</span> <span class="kw">as</span> <span class="dt">VS</span></span>
+<span id="cb22-15"><a href="#cb22-15" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span> <span class="dt">Data.Word</span> (<span class="dt">Word64</span>)</span>
+<span id="cb22-16"><a href="#cb22-16" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span> <span class="dt">Foreign.ForeignPtr</span> (castForeignPtr)</span>
+<span id="cb22-17"><a href="#cb22-17" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span> <span class="dt">Foreign.Storable</span> (<span class="dt">Storable</span>, sizeOf)</span>
+<span id="cb22-18"><a href="#cb22-18" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span> <span class="dt">GHC.Generics</span> (<span class="dt">Generic</span>)</span>
+<span id="cb22-19"><a href="#cb22-19" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span> <span class="dt">Model</span></span>
+<span id="cb22-20"><a href="#cb22-20" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span> <span class="dt">Numeric.LinearAlgebra</span> (reshape, tr)</span>
+<span id="cb22-21"><a href="#cb22-21" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span> <span class="dt">Prelude</span> <span class="kw">hiding</span> ((&lt;&gt;))</span>
+<span id="cb22-22"><a href="#cb22-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-23"><a href="#cb22-23" aria-hidden="true" tabindex="-1"></a><span class="co">-- simple sum type so we can load either vec or mat</span></span>
+<span id="cb22-24"><a href="#cb22-24" aria-hidden="true" tabindex="-1"></a><span class="co">-- I could probably use the generic Container from hmatrix but this is easy</span></span>
+<span id="cb22-25"><a href="#cb22-25" aria-hidden="true" tabindex="-1"></a><span class="kw">data</span> <span class="dt">Tensor</span> <span class="ot">=</span> <span class="dt">T1</span> <span class="dt">V</span> <span class="op">|</span> <span class="dt">T2</span> <span class="dt">M</span></span>
+<span id="cb22-26"><a href="#cb22-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-27"><a href="#cb22-27" aria-hidden="true" tabindex="-1"></a><span class="co">-- generate a keymap based on the safetensor metadata</span></span>
+<span id="cb22-28"><a href="#cb22-28" aria-hidden="true" tabindex="-1"></a><span class="kw">type</span> <span class="dt">TensorMap</span> <span class="ot">=</span> <span class="dt">KM.KeyMap</span> <span class="dt">Tensor</span></span>
+<span id="cb22-29"><a href="#cb22-29" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-30"><a href="#cb22-30" aria-hidden="true" tabindex="-1"></a><span class="co">-- metadata for an individual tensor (safetensor format)</span></span>
+<span id="cb22-31"><a href="#cb22-31" aria-hidden="true" tabindex="-1"></a><span class="kw">data</span> <span class="dt">TensorMetadata</span> <span class="ot">=</span> <span class="dt">TensorMetadata</span></span>
+<span id="cb22-32"><a href="#cb22-32" aria-hidden="true" tabindex="-1"></a>  {<span class="ot"> dtype ::</span> <span class="dt">String</span>,</span>
+<span id="cb22-33"><a href="#cb22-33" aria-hidden="true" tabindex="-1"></a><span class="ot">    shape ::</span> [<span class="dt">Int</span>],</span>
+<span id="cb22-34"><a href="#cb22-34" aria-hidden="true" tabindex="-1"></a><span class="ot">    dataOffsets ::</span> (<span class="dt">Int</span>, <span class="dt">Int</span>)</span>
+<span id="cb22-35"><a href="#cb22-35" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb22-36"><a href="#cb22-36" aria-hidden="true" tabindex="-1"></a>  <span class="kw">deriving</span> (<span class="dt">Show</span>, <span class="dt">Generic</span>, <span class="dt">FromJSON</span>, <span class="dt">ToJSON</span>)</span>
+<span id="cb22-37"><a href="#cb22-37" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-38"><a href="#cb22-38" aria-hidden="true" tabindex="-1"></a><span class="co">-- entire safetensors file including unmapped raw tensor data</span></span>
+<span id="cb22-39"><a href="#cb22-39" aria-hidden="true" tabindex="-1"></a><span class="kw">data</span> <span class="dt">SafeTensors</span> <span class="ot">=</span> <span class="dt">SafeTensors</span></span>
+<span id="cb22-40"><a href="#cb22-40" aria-hidden="true" tabindex="-1"></a>  {<span class="ot"> metadata ::</span> <span class="dt">KM.KeyMap</span> <span class="dt">TensorMetadata</span>,</span>
+<span id="cb22-41"><a href="#cb22-41" aria-hidden="true" tabindex="-1"></a><span class="ot">    binaryData ::</span> <span class="dt">BS.ByteString</span></span>
+<span id="cb22-42"><a href="#cb22-42" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb22-43"><a href="#cb22-43" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-44"><a href="#cb22-44" aria-hidden="true" tabindex="-1"></a><span class="co">-- we don&#39;t want to show the binary data, might as well have a pretty printer</span></span>
+<span id="cb22-45"><a href="#cb22-45" aria-hidden="true" tabindex="-1"></a><span class="kw">instance</span> <span class="dt">Show</span> <span class="dt">SafeTensors</span> <span class="kw">where</span></span>
+<span id="cb22-46"><a href="#cb22-46" aria-hidden="true" tabindex="-1"></a>  <span class="fu">show</span> safetensors <span class="ot">=</span> <span class="fu">show</span> <span class="op">$</span> encodePretty (metadata safetensors)</span>
+<span id="cb22-47"><a href="#cb22-47" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-48"><a href="#cb22-48" aria-hidden="true" tabindex="-1"></a><span class="co">-- Parse tensor metadata from JSON segment of file</span></span>
+<span id="cb22-49"><a href="#cb22-49" aria-hidden="true" tabindex="-1"></a><span class="ot">parseTensorMetadata ::</span> <span class="dt">Value</span> <span class="ot">-&gt;</span> <span class="dt">Parser</span> <span class="dt">TensorMetadata</span></span>
+<span id="cb22-50"><a href="#cb22-50" aria-hidden="true" tabindex="-1"></a>parseTensorMetadata <span class="ot">=</span> withObject <span class="st">&quot;TensorMetadata&quot;</span> <span class="op">$</span> \obj <span class="ot">-&gt;</span> <span class="kw">do</span></span>
+<span id="cb22-51"><a href="#cb22-51" aria-hidden="true" tabindex="-1"></a>  mdtype <span class="ot">&lt;-</span> obj <span class="op">.:</span> <span class="st">&quot;dtype&quot;</span></span>
+<span id="cb22-52"><a href="#cb22-52" aria-hidden="true" tabindex="-1"></a>  mshape <span class="ot">&lt;-</span> obj <span class="op">.:</span> <span class="st">&quot;shape&quot;</span></span>
+<span id="cb22-53"><a href="#cb22-53" aria-hidden="true" tabindex="-1"></a>  (i, j) <span class="ot">&lt;-</span> obj <span class="op">.:</span> <span class="st">&quot;data_offsets&quot;</span></span>
+<span id="cb22-54"><a href="#cb22-54" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span></span>
+<span id="cb22-55"><a href="#cb22-55" aria-hidden="true" tabindex="-1"></a>    ( <span class="dt">TensorMetadata</span></span>
+<span id="cb22-56"><a href="#cb22-56" aria-hidden="true" tabindex="-1"></a>        { shape <span class="ot">=</span> mshape,</span>
+<span id="cb22-57"><a href="#cb22-57" aria-hidden="true" tabindex="-1"></a>          dataOffsets <span class="ot">=</span> (i, j),</span>
+<span id="cb22-58"><a href="#cb22-58" aria-hidden="true" tabindex="-1"></a>          dtype <span class="ot">=</span> mdtype</span>
+<span id="cb22-59"><a href="#cb22-59" aria-hidden="true" tabindex="-1"></a>        }</span>
+<span id="cb22-60"><a href="#cb22-60" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb22-61"><a href="#cb22-61" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-62"><a href="#cb22-62" aria-hidden="true" tabindex="-1"></a><span class="ot">parseTensors ::</span> <span class="dt">BL.ByteString</span> <span class="ot">-&gt;</span> <span class="dt">Either</span> <span class="dt">String</span> <span class="dt">SafeTensors</span></span>
+<span id="cb22-63"><a href="#cb22-63" aria-hidden="true" tabindex="-1"></a>parseTensors bs <span class="ot">=</span> <span class="kw">do</span></span>
+<span id="cb22-64"><a href="#cb22-64" aria-hidden="true" tabindex="-1"></a>  <span class="co">-- the first 8 bytes are an uint specifiying length of JSON segment</span></span>
+<span id="cb22-65"><a href="#cb22-65" aria-hidden="true" tabindex="-1"></a>  numBytes <span class="ot">&lt;-</span> parseWord64 (BL.take <span class="dv">8</span> bs)</span>
+<span id="cb22-66"><a href="#cb22-66" aria-hidden="true" tabindex="-1"></a>  <span class="co">-- the next N bytes can be decoded directly with aeson</span></span>
+<span id="cb22-67"><a href="#cb22-67" aria-hidden="true" tabindex="-1"></a>  obj <span class="ot">&lt;-</span> eitherDecode (BL.take (<span class="fu">fromIntegral</span> numBytes) (BL.drop <span class="dv">8</span> bs))</span>
+<span id="cb22-68"><a href="#cb22-68" aria-hidden="true" tabindex="-1"></a>  <span class="co">-- this is the one key that isn&#39;t a tensor, easiest just to remove it</span></span>
+<span id="cb22-69"><a href="#cb22-69" aria-hidden="true" tabindex="-1"></a>  <span class="kw">let</span> tensors <span class="ot">=</span> KM.delete (K.fromString <span class="st">&quot;__metadata__&quot;</span>) obj</span>
+<span id="cb22-70"><a href="#cb22-70" aria-hidden="true" tabindex="-1"></a>  <span class="co">-- parse tensor metadata objects into our metadata type</span></span>
+<span id="cb22-71"><a href="#cb22-71" aria-hidden="true" tabindex="-1"></a>  x <span class="ot">&lt;-</span> <span class="fu">mapM</span> (parseEither parseTensorMetadata) tensors</span>
+<span id="cb22-72"><a href="#cb22-72" aria-hidden="true" tabindex="-1"></a>  <span class="co">-- return metadata keymap along with remaining raw bytes containing tensor data</span></span>
+<span id="cb22-73"><a href="#cb22-73" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span> (<span class="dt">SafeTensors</span> x (BS.toStrict (BL.drop (<span class="dv">8</span> <span class="op">+</span> <span class="fu">fromIntegral</span> numBytes) bs)))</span>
+<span id="cb22-74"><a href="#cb22-74" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-75"><a href="#cb22-75" aria-hidden="true" tabindex="-1"></a><span class="co">-- parse a Word64 from the head of the file (encodes length of JSON segment)</span></span>
+<span id="cb22-76"><a href="#cb22-76" aria-hidden="true" tabindex="-1"></a><span class="ot">parseWord64 ::</span> <span class="dt">BL.ByteString</span> <span class="ot">-&gt;</span> <span class="dt">Either</span> <span class="dt">String</span> <span class="dt">Word64</span></span>
+<span id="cb22-77"><a href="#cb22-77" aria-hidden="true" tabindex="-1"></a>parseWord64 bs <span class="ot">=</span> <span class="kw">case</span> runGetOrFail getWord64le bs <span class="kw">of</span></span>
+<span id="cb22-78"><a href="#cb22-78" aria-hidden="true" tabindex="-1"></a>  <span class="dt">Right</span> (_, _, w) <span class="ot">-&gt;</span> <span class="dt">Right</span> w</span>
+<span id="cb22-79"><a href="#cb22-79" aria-hidden="true" tabindex="-1"></a>  <span class="dt">Left</span> (_, _, s) <span class="ot">-&gt;</span> <span class="dt">Left</span> (<span class="st">&quot;Error reading leading uint64: &quot;</span> <span class="op">++</span> s)</span>
+<span id="cb22-80"><a href="#cb22-80" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-81"><a href="#cb22-81" aria-hidden="true" tabindex="-1"></a><span class="co">-- https://stackoverflow.com/questions/18682527/how-to-convert-between-bytestring-and-storable-vector</span></span>
+<span id="cb22-82"><a href="#cb22-82" aria-hidden="true" tabindex="-1"></a><span class="ot">byteStringToVector ::</span> (<span class="dt">Storable</span> a) <span class="ot">=&gt;</span> <span class="dt">BS.ByteString</span> <span class="ot">-&gt;</span> <span class="dt">VS.Vector</span> a</span>
+<span id="cb22-83"><a href="#cb22-83" aria-hidden="true" tabindex="-1"></a>byteStringToVector bs <span class="ot">=</span> vec</span>
+<span id="cb22-84"><a href="#cb22-84" aria-hidden="true" tabindex="-1"></a>  <span class="kw">where</span></span>
+<span id="cb22-85"><a href="#cb22-85" aria-hidden="true" tabindex="-1"></a>    vec <span class="ot">=</span> VS.unsafeFromForeignPtr (castForeignPtr fptr) (scale off) (scale len)</span>
+<span id="cb22-86"><a href="#cb22-86" aria-hidden="true" tabindex="-1"></a>    (fptr, off, len) <span class="ot">=</span> BS.toForeignPtr bs</span>
+<span id="cb22-87"><a href="#cb22-87" aria-hidden="true" tabindex="-1"></a>    scale <span class="ot">=</span> (<span class="ot">`div`</span> sizeOfElem vec)</span>
+<span id="cb22-88"><a href="#cb22-88" aria-hidden="true" tabindex="-1"></a>    sizeOfElem vect <span class="ot">=</span> sizeOf (<span class="fu">undefined</span> <span class="ot">`asTypeOf`</span> VS.head vect)</span>
+<span id="cb22-89"><a href="#cb22-89" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-90"><a href="#cb22-90" aria-hidden="true" tabindex="-1"></a><span class="ot">bytesToTensor ::</span> <span class="dt">BS.ByteString</span> <span class="ot">-&gt;</span> <span class="dt">TensorMetadata</span> <span class="ot">-&gt;</span> <span class="dt">Either</span> <span class="dt">String</span> <span class="dt">Tensor</span></span>
+<span id="cb22-91"><a href="#cb22-91" aria-hidden="true" tabindex="-1"></a>bytesToTensor bs meta <span class="ot">=</span> <span class="kw">case</span> shape meta <span class="kw">of</span></span>
+<span id="cb22-92"><a href="#cb22-92" aria-hidden="true" tabindex="-1"></a>  [n] <span class="ot">-&gt;</span> <span class="kw">if</span> VG.length vec <span class="op">==</span> n <span class="kw">then</span> <span class="dt">Right</span> (<span class="dt">T1</span> vec) <span class="kw">else</span> errmsg</span>
+<span id="cb22-93"><a href="#cb22-93" aria-hidden="true" tabindex="-1"></a>  [n, m] <span class="ot">-&gt;</span> <span class="kw">if</span> VG.length vec <span class="op">==</span> n <span class="op">*</span> m <span class="kw">then</span> <span class="dt">Right</span> (<span class="dt">T2</span> (reshape m vec)) <span class="kw">else</span> errmsg</span>
+<span id="cb22-94"><a href="#cb22-94" aria-hidden="true" tabindex="-1"></a>  [<span class="dv">1</span>, <span class="dv">1</span>, n, m] <span class="ot">-&gt;</span> <span class="kw">if</span> VG.length vec <span class="op">==</span> n <span class="op">*</span> m <span class="kw">then</span> <span class="dt">Right</span> (<span class="dt">T2</span> (reshape m vec)) <span class="kw">else</span> errmsg</span>
+<span id="cb22-95"><a href="#cb22-95" aria-hidden="true" tabindex="-1"></a>  _ <span class="ot">-&gt;</span> errmsg</span>
+<span id="cb22-96"><a href="#cb22-96" aria-hidden="true" tabindex="-1"></a>  <span class="kw">where</span></span>
+<span id="cb22-97"><a href="#cb22-97" aria-hidden="true" tabindex="-1"></a>    (startpos, endpos) <span class="ot">=</span> bimap <span class="fu">fromIntegral</span> <span class="fu">fromIntegral</span> (dataOffsets meta)</span>
+<span id="cb22-98"><a href="#cb22-98" aria-hidden="true" tabindex="-1"></a>    errmsg <span class="ot">=</span> <span class="dt">Left</span> (<span class="st">&quot;Wrong size while reading &quot;</span> <span class="op">++</span> <span class="fu">show</span> meta)</span>
+<span id="cb22-99"><a href="#cb22-99" aria-hidden="true" tabindex="-1"></a>    <span class="co">-- it would maybe be better to load them &quot;in order&quot; with splitAt but</span></span>
+<span id="cb22-100"><a href="#cb22-100" aria-hidden="true" tabindex="-1"></a>    <span class="co">-- the loading is fast enough with this now that the BS is cast directly</span></span>
+<span id="cb22-101"><a href="#cb22-101" aria-hidden="true" tabindex="-1"></a>    vec <span class="ot">=</span> byteStringToVector (BS.drop startpos (BS.take endpos bs))</span>
+<span id="cb22-102"><a href="#cb22-102" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-103"><a href="#cb22-103" aria-hidden="true" tabindex="-1"></a><span class="co">-- getting layer weights is straight forward. some matrices need to be transposed.</span></span>
+<span id="cb22-104"><a href="#cb22-104" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-105"><a href="#cb22-105" aria-hidden="true" tabindex="-1"></a><span class="ot">getMat ::</span> <span class="dt">TensorMap</span> <span class="ot">-&gt;</span> <span class="dt">String</span> <span class="ot">-&gt;</span> <span class="dt">Either</span> <span class="dt">String</span> <span class="dt">M</span></span>
+<span id="cb22-106"><a href="#cb22-106" aria-hidden="true" tabindex="-1"></a>getMat tm s <span class="ot">=</span> <span class="kw">case</span> KM.lookup (K.fromString s) tm <span class="kw">of</span></span>
+<span id="cb22-107"><a href="#cb22-107" aria-hidden="true" tabindex="-1"></a>  (<span class="dt">Just</span> (<span class="dt">T2</span> m)) <span class="ot">-&gt;</span> <span class="dt">Right</span> m</span>
+<span id="cb22-108"><a href="#cb22-108" aria-hidden="true" tabindex="-1"></a>  _ <span class="ot">-&gt;</span> <span class="dt">Left</span> (<span class="st">&quot;Error loading &quot;</span> <span class="op">++</span> s)</span>
+<span id="cb22-109"><a href="#cb22-109" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-110"><a href="#cb22-110" aria-hidden="true" tabindex="-1"></a><span class="ot">getVec ::</span> <span class="dt">TensorMap</span> <span class="ot">-&gt;</span> <span class="dt">String</span> <span class="ot">-&gt;</span> <span class="dt">Either</span> <span class="dt">String</span> <span class="dt">V</span></span>
+<span id="cb22-111"><a href="#cb22-111" aria-hidden="true" tabindex="-1"></a>getVec tm s <span class="ot">=</span> <span class="kw">case</span> KM.lookup (K.fromString s) tm <span class="kw">of</span></span>
+<span id="cb22-112"><a href="#cb22-112" aria-hidden="true" tabindex="-1"></a>  (<span class="dt">Just</span> (<span class="dt">T1</span> v)) <span class="ot">-&gt;</span> <span class="dt">Right</span> v</span>
+<span id="cb22-113"><a href="#cb22-113" aria-hidden="true" tabindex="-1"></a>  _ <span class="ot">-&gt;</span> <span class="dt">Left</span> (<span class="st">&quot;Error loading &quot;</span> <span class="op">++</span> s)</span>
+<span id="cb22-114"><a href="#cb22-114" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-115"><a href="#cb22-115" aria-hidden="true" tabindex="-1"></a><span class="ot">getTELayer ::</span> <span class="dt">TensorMap</span> <span class="ot">-&gt;</span> <span class="dt">Either</span> <span class="dt">String</span> <span class="dt">TokenEmbedding</span></span>
+<span id="cb22-116"><a href="#cb22-116" aria-hidden="true" tabindex="-1"></a>getTELayer tm <span class="ot">=</span> <span class="kw">do</span></span>
+<span id="cb22-117"><a href="#cb22-117" aria-hidden="true" tabindex="-1"></a>  m <span class="ot">&lt;-</span> getMat tm <span class="st">&quot;wte.weight&quot;</span></span>
+<span id="cb22-118"><a href="#cb22-118" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span> (<span class="dt">TokenEmbedding</span> (tr m))</span>
+<span id="cb22-119"><a href="#cb22-119" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-120"><a href="#cb22-120" aria-hidden="true" tabindex="-1"></a><span class="ot">getPELayer ::</span> <span class="dt">TensorMap</span> <span class="ot">-&gt;</span> <span class="dt">Either</span> <span class="dt">String</span> <span class="dt">PositionEmbedding</span></span>
+<span id="cb22-121"><a href="#cb22-121" aria-hidden="true" tabindex="-1"></a>getPELayer tm <span class="ot">=</span> <span class="kw">do</span></span>
+<span id="cb22-122"><a href="#cb22-122" aria-hidden="true" tabindex="-1"></a>  m <span class="ot">&lt;-</span> getMat tm <span class="st">&quot;wpe.weight&quot;</span></span>
+<span id="cb22-123"><a href="#cb22-123" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span>  (<span class="dt">PositionEmbedding</span> (tr m))</span>
+<span id="cb22-124"><a href="#cb22-124" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-125"><a href="#cb22-125" aria-hidden="true" tabindex="-1"></a><span class="ot">getLayerNorm ::</span> <span class="dt">TensorMap</span> <span class="ot">-&gt;</span> <span class="dt">String</span> <span class="ot">-&gt;</span> <span class="dt">Either</span> <span class="dt">String</span> <span class="dt">LayerNorm</span></span>
+<span id="cb22-126"><a href="#cb22-126" aria-hidden="true" tabindex="-1"></a>getLayerNorm tm s <span class="ot">=</span> <span class="kw">do</span></span>
+<span id="cb22-127"><a href="#cb22-127" aria-hidden="true" tabindex="-1"></a>  w <span class="ot">&lt;-</span> getVec tm (s <span class="op">++</span> <span class="st">&quot;.weight&quot;</span>)</span>
+<span id="cb22-128"><a href="#cb22-128" aria-hidden="true" tabindex="-1"></a>  b <span class="ot">&lt;-</span> getVec tm (s <span class="op">++</span> <span class="st">&quot;.bias&quot;</span>)</span>
+<span id="cb22-129"><a href="#cb22-129" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span> (<span class="dt">LayerNorm</span> w b)</span>
+<span id="cb22-130"><a href="#cb22-130" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-131"><a href="#cb22-131" aria-hidden="true" tabindex="-1"></a><span class="ot">getAttention ::</span> <span class="dt">TensorMap</span> <span class="ot">-&gt;</span> <span class="dt">String</span> <span class="ot">-&gt;</span> <span class="dt">Either</span> <span class="dt">String</span> <span class="dt">Attention</span></span>
+<span id="cb22-132"><a href="#cb22-132" aria-hidden="true" tabindex="-1"></a>getAttention tm layer <span class="ot">=</span> <span class="kw">do</span></span>
+<span id="cb22-133"><a href="#cb22-133" aria-hidden="true" tabindex="-1"></a>  aw <span class="ot">&lt;-</span> getMat tm (layer <span class="op">++</span> <span class="st">&quot;.attn.c_attn.weight&quot;</span>)</span>
+<span id="cb22-134"><a href="#cb22-134" aria-hidden="true" tabindex="-1"></a>  ab <span class="ot">&lt;-</span> getVec tm (layer <span class="op">++</span> <span class="st">&quot;.attn.c_attn.bias&quot;</span>)</span>
+<span id="cb22-135"><a href="#cb22-135" aria-hidden="true" tabindex="-1"></a>  pw <span class="ot">&lt;-</span> getMat tm (layer <span class="op">++</span> <span class="st">&quot;.attn.c_proj.weight&quot;</span>)</span>
+<span id="cb22-136"><a href="#cb22-136" aria-hidden="true" tabindex="-1"></a>  pb <span class="ot">&lt;-</span> getVec tm (layer <span class="op">++</span> <span class="st">&quot;.attn.c_proj.bias&quot;</span>)</span>
+<span id="cb22-137"><a href="#cb22-137" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span> (<span class="dt">Attention</span> (tr aw) ab (tr pw) pb)</span>
+<span id="cb22-138"><a href="#cb22-138" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-139"><a href="#cb22-139" aria-hidden="true" tabindex="-1"></a><span class="ot">getMLP ::</span> <span class="dt">TensorMap</span> <span class="ot">-&gt;</span> <span class="dt">String</span> <span class="ot">-&gt;</span> <span class="dt">Either</span> <span class="dt">String</span> <span class="dt">MLP</span></span>
+<span id="cb22-140"><a href="#cb22-140" aria-hidden="true" tabindex="-1"></a>getMLP tm layer <span class="ot">=</span> <span class="kw">do</span></span>
+<span id="cb22-141"><a href="#cb22-141" aria-hidden="true" tabindex="-1"></a>  aw <span class="ot">&lt;-</span> getMat tm (layer <span class="op">++</span> <span class="st">&quot;.mlp.c_fc.weight&quot;</span>)</span>
+<span id="cb22-142"><a href="#cb22-142" aria-hidden="true" tabindex="-1"></a>  ab <span class="ot">&lt;-</span> getVec tm (layer <span class="op">++</span> <span class="st">&quot;.mlp.c_fc.bias&quot;</span>)</span>
+<span id="cb22-143"><a href="#cb22-143" aria-hidden="true" tabindex="-1"></a>  pw <span class="ot">&lt;-</span> getMat tm (layer <span class="op">++</span> <span class="st">&quot;.mlp.c_proj.weight&quot;</span>)</span>
+<span id="cb22-144"><a href="#cb22-144" aria-hidden="true" tabindex="-1"></a>  pb <span class="ot">&lt;-</span> getVec tm (layer <span class="op">++</span> <span class="st">&quot;.mlp.c_proj.bias&quot;</span>)</span>
+<span id="cb22-145"><a href="#cb22-145" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span> (<span class="dt">MLP</span> (tr aw) ab (tr pw) pb)</span>
+<span id="cb22-146"><a href="#cb22-146" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-147"><a href="#cb22-147" aria-hidden="true" tabindex="-1"></a><span class="ot">getBlock ::</span> <span class="dt">TensorMap</span> <span class="ot">-&gt;</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Either</span> <span class="dt">String</span> <span class="dt">Block</span></span>
+<span id="cb22-148"><a href="#cb22-148" aria-hidden="true" tabindex="-1"></a>getBlock tm i <span class="ot">=</span> <span class="kw">do</span></span>
+<span id="cb22-149"><a href="#cb22-149" aria-hidden="true" tabindex="-1"></a>  <span class="kw">let</span> prefix <span class="ot">=</span> <span class="st">&quot;h.&quot;</span> <span class="op">++</span> <span class="fu">show</span> i</span>
+<span id="cb22-150"><a href="#cb22-150" aria-hidden="true" tabindex="-1"></a>  le1 <span class="ot">&lt;-</span> getLayerNorm tm (prefix <span class="op">++</span> <span class="st">&quot;.ln_1&quot;</span>)</span>
+<span id="cb22-151"><a href="#cb22-151" aria-hidden="true" tabindex="-1"></a>  le2 <span class="ot">&lt;-</span> getLayerNorm tm (prefix <span class="op">++</span> <span class="st">&quot;.ln_2&quot;</span>)</span>
+<span id="cb22-152"><a href="#cb22-152" aria-hidden="true" tabindex="-1"></a>  at <span class="ot">&lt;-</span> getAttention tm prefix</span>
+<span id="cb22-153"><a href="#cb22-153" aria-hidden="true" tabindex="-1"></a>  mp <span class="ot">&lt;-</span> getMLP tm prefix</span>
+<span id="cb22-154"><a href="#cb22-154" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span> (<span class="dt">Block</span> le1 at le2 mp)</span>
+<span id="cb22-155"><a href="#cb22-155" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-156"><a href="#cb22-156" aria-hidden="true" tabindex="-1"></a><span class="ot">constructModel ::</span> <span class="dt">TensorMap</span> <span class="ot">-&gt;</span> <span class="dt">Either</span> <span class="dt">String</span> <span class="dt">GPT</span></span>
+<span id="cb22-157"><a href="#cb22-157" aria-hidden="true" tabindex="-1"></a>constructModel tm <span class="ot">=</span> <span class="kw">do</span></span>
+<span id="cb22-158"><a href="#cb22-158" aria-hidden="true" tabindex="-1"></a>  pe <span class="ot">&lt;-</span> getPELayer tm</span>
+<span id="cb22-159"><a href="#cb22-159" aria-hidden="true" tabindex="-1"></a>  te <span class="ot">&lt;-</span> getTELayer tm</span>
+<span id="cb22-160"><a href="#cb22-160" aria-hidden="true" tabindex="-1"></a>  block <span class="ot">&lt;-</span> <span class="fu">mapM</span> (getBlock tm) [<span class="dv">11</span>, <span class="dv">10</span> <span class="op">..</span> <span class="dv">0</span>]</span>
+<span id="cb22-161"><a href="#cb22-161" aria-hidden="true" tabindex="-1"></a>  ln <span class="ot">&lt;-</span> getLayerNorm tm <span class="st">&quot;ln_f&quot;</span></span>
+<span id="cb22-162"><a href="#cb22-162" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span> (<span class="dt">GPT</span> pe te block ln)</span>
+<span id="cb22-163"><a href="#cb22-163" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-164"><a href="#cb22-164" aria-hidden="true" tabindex="-1"></a><span class="ot">getTensorMap ::</span> <span class="dt">SafeTensors</span> <span class="ot">-&gt;</span> <span class="dt">Either</span> <span class="dt">String</span> <span class="dt">TensorMap</span></span>
+<span id="cb22-165"><a href="#cb22-165" aria-hidden="true" tabindex="-1"></a>getTensorMap ten <span class="ot">=</span> <span class="fu">mapM</span> (bytesToTensor (binaryData ten)) (metadata ten)</span>
+<span id="cb22-166"><a href="#cb22-166" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-167"><a href="#cb22-167" aria-hidden="true" tabindex="-1"></a><span class="ot">parseModel ::</span> <span class="dt">BL.ByteString</span> <span class="ot">-&gt;</span> <span class="dt">Either</span> <span class="dt">String</span> <span class="dt">GPT</span></span>
+<span id="cb22-168"><a href="#cb22-168" aria-hidden="true" tabindex="-1"></a>parseModel bytes <span class="ot">=</span> <span class="kw">do</span></span>
+<span id="cb22-169"><a href="#cb22-169" aria-hidden="true" tabindex="-1"></a>  safeTensors <span class="ot">&lt;-</span> parseTensors bytes</span>
+<span id="cb22-170"><a href="#cb22-170" aria-hidden="true" tabindex="-1"></a>  tensorMap <span class="ot">&lt;-</span> getTensorMap safeTensors</span>
+<span id="cb22-171"><a href="#cb22-171" aria-hidden="true" tabindex="-1"></a>  constructModel tensorMap</span>
+<span id="cb22-172"><a href="#cb22-172" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-173"><a href="#cb22-173" aria-hidden="true" tabindex="-1"></a><span class="ot">readModel ::</span> <span class="dt">String</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> (<span class="dt">Either</span> <span class="dt">String</span> <span class="dt">GPT</span>)</span>
+<span id="cb22-174"><a href="#cb22-174" aria-hidden="true" tabindex="-1"></a>readModel filePath <span class="ot">=</span> <span class="kw">do</span></span>
+<span id="cb22-175"><a href="#cb22-175" aria-hidden="true" tabindex="-1"></a>  contents <span class="ot">&lt;-</span> BL.readFile filePath</span>
+<span id="cb22-176"><a href="#cb22-176" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span> (parseModel contents)</span></code></pre></div>
+    </section>
+  </article>
+</main>
+]]></summary>
+</entry>
+<entry>
+    <title>Functional Chebyshev Approximation</title>
+    <link href="https://spacedome.tv/posts/functional-chebyshev-approximation.html" />
+    <id>https://spacedome.tv/posts/functional-chebyshev-approximation.html</id>
+    <published>2025-02-01T00:00:00Z</published>
+    <updated>2025-02-01T00:00:00Z</updated>
+    <summary type="html"><![CDATA[<main>
+  <article>
+    <header>
+    <h1>Functional Chebyshev Approximation</h1>
+    <p><i>2025-02-01 </i></p>
+    <hr/>
+    </header>
+    <section>
+      <p>In a previous post I outlined the Fast Fourier Transform, which has many obvious uses regarding waves and periodic functions.
+Personally, I have found more use in non-periodic function approximation, which we do largely with polynomials of various orthogonal bases.
+In an incredible twist of fate, it turns out that the most ubiquitous polynomial basis, Chebyshev, is “Fourier in disguise” i.e. we can get one from the other under a special change of variables.
+This means in some sense that in his study of the heat equation, Fourier solved not only all questions of periodic approximation, but that one hundred years later it would be realized that he had solved all non-periodic ones as well.
+We can then put our DFT to good use solving any problem involving polynomial interpolation on an interval.</p>
+<h1 id="overview-of-chebyshev">Overview of Chebyshev</h1>
+<p>I won’t belabor the details of approximation theory here.
+For references, I usually turn to Boyd’s <em>Spectral Methods</em> book (a strange and wonderful gem), or Trefethen’s <em>Approximation Theory and Approximation Practice</em>, but often the most useful is searching for relevant source code, as the theory is mainly relevant to justification and glosses over implementation.
+The one aspect I will discuss is roughly how we translate from the periodic world of Fourier to the polynomial world of Chebyshev.</p>
+<p>The first step of interpolation is choosing what points we wish to interpolate at.
+For a periodic domain, we can show in various contexts that uniformly spaced points are optimal for various purposes.
+Perhaps surprisingly, this is not true for an interval.
+We will take the (non-periodic) interval <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="true" form="prefix">(</mo><mo>−</mo><mn>1</mn><mo>,</mo><mn>1</mn><mo stretchy="true" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">(-1, 1)</annotation></semantics></math> as the domain throughout.
+There are various methods for choosing a set of points, depending on what constraints you make of the basis functions, and in what sense you wish to optimize.
+Here we begin to overlap with the classical study of quadratures, as approximating a function and approximating its integral go hand-in-hand, these are often referred to as quadrature points.
+One such set of points are the Chebyshev nodes (there are actually two kinds of Chebyshev polynomials, and hence two sets of points, but we can ignore this here), which are the extremal points of the Chebyshev polynomials.
+Looking at the picture of them, we see they correspond exactly to uniformly spaced points on the unit circle, projected onto the real line, giving us our first glimpse into how related this is to Fourier polynomials.
+<img src="../images/chebyshev-nodes.svg" alt="Chebyshev Nodes" />
+From a practical, numerical perspective, we see that this pushes the points out towards the endpoints non-linearly, directly counteracting Runge’s phenomenon and other issues we encounter when interpolating at uniformly spaced points.</p>
+<h1 id="fft">FFT</h1>
+<p>Chebyshev polynomials are a critical tool in approximation theory, even for studying existence and convergence of exact (theoretical) solutions.
+One might think you could just use Taylor series for everything if you don’t care about numerical convergence speed, but this is not the case, and different approximations have vastly different convergence radii and geometry, and can help us understand qualitative aspects of convergence, which can have practical implications.
+For the engineer, there is another reason Chebyshev approximation is so valuable, the ability to compute it with the Fast Fourier Transform.
+The FFT having linearithmic/log-linear complexity is one of the miracles of signal processing, and we can then leverage seasoned numerical libraries and specialized hardware to get much of Chebyshev for free.
+I will not go into how we show this, but the main thrust of it is that Chebyshev can be viewed as Fourier under a somewhat strange looking change of variables <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>T</mi><mi>n</mi></msub><mrow><mo stretchy="true" form="prefix">(</mo><mo>cos</mo><mi>θ</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>=</mo><mo>cos</mo><mrow><mo stretchy="true" form="prefix">(</mo><mi>n</mi><mi>θ</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">T_n(\cos \theta) = \cos(n \theta)</annotation></semantics></math>.
+Practically, we can compute the Chebyshev transform by sampling a function at the Chebyshev nodes, mentally thinking of how this projects back onto the top half of the unit circle, and we then reflect these points onto the bottom half of the unit circle, giving us twice as many points, which cover <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="true" form="prefix">[</mo><mn>0</mn><mo>,</mo><mn>2</mn><mi>π</mi><mo stretchy="true" form="postfix">]</mo></mrow><annotation encoding="application/x-tex">[0, 2\pi]</annotation></semantics></math> in this projection.
+We can then apply the FFT (really we only need the Discrete Cosine Transform, half of the FFT) to get the coefficients of our polynomial basis, just like Fourier.
+This reflection trick is strangely not often mentioned in the theory, but is critical if you want your implementation to work.
+It works because of the symmetry of the cosine transform.</p>
+<h1 id="approximating-a-function">Approximating a Function</h1>
+<p>In approximating a function, the question is to what accuracy?
+With Chebyshev, we can expect rapid convergence for anything remotely continuous, let alone differentiable.
+For discontinuous functions, if the discontinuities are known, it is always preferable to approximate in sections, regardless of method, but Chebyshev can often perform in all but the most pathological scenarios, up to geometric (exponential) convergence for analytic functions.
+Depending on application, we may be constrained as to the method of sampling, but in general we usually assume computationally cheap sampling across the entire domain, such as in an interactive environment like Mathematica.
+With the efficiency of FFT, if there are no hard time constraints (i.e. real-time), we can even adaptively sample until sufficient convergence.</p>
+<p>For the implementer, the main question becomes, in what representation do I store the approximation?
+We can go back and forth between storing the samples, and storing the basis coefficients, and both have their advantages.
+Using barycentric interpolation on the sample points, we can do quite a lot without using the coefficients at all, with no loss in accuracy.
+Using coefficient representation, we can quickly, and with good numerical stability, compute the approximation at a point using the Clenshaw algorithm, a recursive method of polynomial evaluation.
+In the sample representation we can perform arithmetic operations, such as adding two functions, trivially (though it may require re-sampling if they have different numbers of samples).
+In the coefficient representation, we can differentiate the function by applying differentiation as a linear operator, allowing us to solve differential equations.</p>
+<h1 id="differentiating-a-function--solving-an-ode">Differentiating a Function &amp; Solving an ODE</h1>
+<p>It is well known that differentiation is a linear operator, the off-diagonal matrix for differentiating a polynomial in the standard basis is often shown in undergraduate linear algebra courses.
+What is less well known is that when similar ideas are applied to a more numerically useful basis, we can solve huge classes of common ODEs with excellent convergence rates.
+This gave rise to an entire field, typically called “Spectral Methods”, which solve a differential equation <em>globally</em> using some method of collocation, as opposed to Finite Element type methods, which solve <em>locally</em> using local basis functions, though these methods are often used in combination.
+For Chebyshev methods, we can construct a differential operator directly as a matrix, and even square the matrix to get a second derivative, though there are some tricky questions of conditioning and boundary conditions.
+Here is a plot showing a function, its derivatives, and the Chebyshev approximations.
+<img src="../images/chebyshev-deriv.svg" alt="Chebyshev Derivatives" />
+If one is familiar with ODEs, it is not hard to see how we could use this to solve differential equations, given that we figure out how to represent boundary conditions and initial values.
+Here is an example of how accurately we can solve an ODE defining a trigonometric function with only seven sample points (sixth-order Chebyshev approximation).
+With any more points we would no longer be able to visually distinguish them on the plot.
+<img src="../images/chebyshev-ode.svg" alt="Chebyshev Derivatives" /></p>
+<h1 id="closing-remarks">Closing Remarks</h1>
+<p>A common refrain of numerical libraries is that, if you can understand the theory, you can often implement quite advanced algorithms in just a few dozen lines of code, even without the typical scientific computing primitives.
+The great difficulty of the library creator and maintainer is the thousands and thousands of lines of code that actually make it useful, which often requires a great amount of thought and many iterations to get the core design correct.
+As someone writing our own implementations of algorithms, this means we get a quick thrill of rapidly seeing a proof of concept to fruition, but the bitterness of knowing how far we are from something genuinely useful, unless we wish to spend thankless months building and maintaining “the boring parts.”</p>
+<p>For Chebyshev libraries, I recommend using ApproxFun.jl in Julia or Chebfun in Matlab, depending on your preference.</p>
+<p>I have implemented enough in Haskell to solve some simple ODEs, and decided to stop before going down the rabbit hole of features.
+The main choices to make in going further are, which representation do you use (sample points or coefficients), and if the target usage warrants highly dynamic behavior for interactive applications, or a more strictly defined numerical building block for something such as real time use.
+In particular with Haskell one could use the type system to ensure semantic correctness of your library primitives, something I neglected.
+For posterity, my implementation is below.</p>
+<h1 id="haskell">Haskell</h1>
+<div class="sourceCode" id="cb1"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="kw">module</span> <span class="dt">Chebyshev</span> <span class="kw">where</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span> <span class="dt">Numeric.GSL.Fourier</span> (fft, ifft)</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span> <span class="dt">Numeric.LinearAlgebra.Data</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span> <span class="dt">Numeric.LinearAlgebra</span> ((#&gt;), (&lt;\&gt;))</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span> <span class="dt">Numeric.Natural</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span> <span class="kw">qualified</span> <span class="dt">Data.Vector.Generic</span> <span class="kw">as</span> <span class="dt">V</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="co">{- Cheb - representation of our Chebyshev approximation.</span></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="co"> We store this using a sample at the extremal nodes, and not coefficients, following Chebfun.</span></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="co"> This has numerous benefits, and we can go between representations as needed -}</span></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a><span class="kw">newtype</span> <span class="dt">Cheb</span> <span class="ot">=</span> <span class="dt">Cheb</span> {<span class="ot">getNodes ::</span> <span class="dt">Vector</span> <span class="dt">R</span>}</span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a><span class="kw">type</span> <span class="dt">ChebNodes</span> <span class="ot">=</span> <span class="dt">Vector</span> <span class="dt">R</span></span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a><span class="kw">type</span> <span class="dt">ChebCoefs</span> <span class="ot">=</span> <span class="dt">Vector</span> <span class="dt">R</span></span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a><span class="co">-- | Function to sample from in computing a Cheb</span></span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a><span class="kw">newtype</span> <span class="dt">Function</span> <span class="ot">=</span> <span class="dt">Function</span> {<span class="ot">evalF ::</span> <span class="dt">R</span> <span class="ot">-&gt;</span> <span class="dt">R</span>}</span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a><span class="co">-- | Compute the Nth extremal nodes, i.e. the interpolation points for our Cheb</span></span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a><span class="ot">extremalChebNodes ::</span> <span class="dt">Natural</span> <span class="ot">-&gt;</span> <span class="dt">ChebNodes</span></span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>extremalChebNodes n <span class="ot">=</span> build (<span class="fu">fromIntegral</span> n <span class="op">+</span> <span class="dv">1</span>) (\x <span class="ot">-&gt;</span> <span class="fu">cos</span> (<span class="fu">pi</span> <span class="op">*</span> x <span class="op">/</span> <span class="fu">fromIntegral</span> n))</span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a><span class="co">-- </span><span class="al">TODO</span><span class="co">: make size dynamic based on convergence</span></span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a><span class="co">{- | Compute a Cheb representation of a Function. -}</span></span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a><span class="ot">computeCheb ::</span> <span class="dt">Function</span> <span class="ot">-&gt;</span> <span class="dt">Natural</span> <span class="ot">-&gt;</span> <span class="dt">Cheb</span></span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a>computeCheb f n <span class="ot">=</span> <span class="dt">Cheb</span> (cmap (evalF f) (extremalChebNodes n))</span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a><span class="co">{- | Get the Chebyshev coefficients of a Cheb</span></span>
+<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a><span class="co">This uses the FFT and is sometimes called the &quot;Discrete Chebyshev Transform&quot;</span></span>
+<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a><span class="co">&gt;&gt; getChebCoef (computeCheb (Function (**4)) 4)</span></span>
+<span id="cb1-32"><a href="#cb1-32" aria-hidden="true" tabindex="-1"></a><span class="co">[0.575, 0.0, 0.5, 0.0, 0.125]</span></span>
+<span id="cb1-33"><a href="#cb1-33" aria-hidden="true" tabindex="-1"></a><span class="co">-}</span></span>
+<span id="cb1-34"><a href="#cb1-34" aria-hidden="true" tabindex="-1"></a><span class="ot">getChebCoef ::</span> <span class="dt">Cheb</span> <span class="ot">-&gt;</span> <span class="dt">ChebCoefs</span></span>
+<span id="cb1-35"><a href="#cb1-35" aria-hidden="true" tabindex="-1"></a>getChebCoef (<span class="dt">Cheb</span> nodes) <span class="ot">=</span> filtered</span>
+<span id="cb1-36"><a href="#cb1-36" aria-hidden="true" tabindex="-1"></a>  <span class="co">-- None of the literature seems to mention this, but computing the coefficients</span></span>
+<span id="cb1-37"><a href="#cb1-37" aria-hidden="true" tabindex="-1"></a>  <span class="co">-- from the extremal nodes doesn&#39;t seem to work without this reflection trick</span></span>
+<span id="cb1-38"><a href="#cb1-38" aria-hidden="true" tabindex="-1"></a>  <span class="kw">where</span> reflected <span class="ot">=</span> nodes <span class="op">&lt;&gt;</span> (V.reverse <span class="op">.</span> V.tail <span class="op">.</span> V.init) nodes</span>
+<span id="cb1-39"><a href="#cb1-39" aria-hidden="true" tabindex="-1"></a>        frequency <span class="ot">=</span> V.take (V.length nodes) ((cmap realPart <span class="op">.</span> fft <span class="op">.</span> complex) reflected)</span>
+<span id="cb1-40"><a href="#cb1-40" aria-hidden="true" tabindex="-1"></a>        <span class="co">-- this FFT library does not normalize output, so we divide by N</span></span>
+<span id="cb1-41"><a href="#cb1-41" aria-hidden="true" tabindex="-1"></a>        scaled    <span class="ot">=</span> cmap (<span class="op">/</span> <span class="fu">fromIntegral</span> (V.length frequency <span class="op">-</span> <span class="dv">1</span>)) frequency</span>
+<span id="cb1-42"><a href="#cb1-42" aria-hidden="true" tabindex="-1"></a>        <span class="co">-- outermost points must be scaled by an additional factor of two</span></span>
+<span id="cb1-43"><a href="#cb1-43" aria-hidden="true" tabindex="-1"></a>        scaled2   <span class="ot">=</span> scaled <span class="op">V.//</span> [(<span class="dv">0</span>, <span class="fl">0.5</span> <span class="op">*</span> V.head scaled), (V.length scaled <span class="op">-</span> <span class="dv">1</span>, <span class="fl">0.5</span> <span class="op">*</span> V.last scaled)]</span>
+<span id="cb1-44"><a href="#cb1-44" aria-hidden="true" tabindex="-1"></a>        <span class="co">-- might as well get rid of things near numerical zero, should improve stability</span></span>
+<span id="cb1-45"><a href="#cb1-45" aria-hidden="true" tabindex="-1"></a>        filtered  <span class="ot">=</span> cmap (\x <span class="ot">-&gt;</span> <span class="kw">if</span> <span class="fu">abs</span> x <span class="op">&gt;</span> <span class="fl">1e-14</span> <span class="kw">then</span> x <span class="kw">else</span> <span class="fl">0.0</span> ) scaled2</span>
+<span id="cb1-46"><a href="#cb1-46" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-47"><a href="#cb1-47" aria-hidden="true" tabindex="-1"></a><span class="co">{- | Go from coefficients back to extremal node samples</span></span>
+<span id="cb1-48"><a href="#cb1-48" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-49"><a href="#cb1-49" aria-hidden="true" tabindex="-1"></a><span class="co">&gt;&gt; inverseChebCoef (getChebCoef (computeCheb (Function (**4)) 4))</span></span>
+<span id="cb1-50"><a href="#cb1-50" aria-hidden="true" tabindex="-1"></a><span class="co">[1.0, 0.5, 0.0, 0.5, 1.0]</span></span>
+<span id="cb1-51"><a href="#cb1-51" aria-hidden="true" tabindex="-1"></a><span class="co">-}</span></span>
+<span id="cb1-52"><a href="#cb1-52" aria-hidden="true" tabindex="-1"></a><span class="ot">inverseChebCoef ::</span> <span class="dt">ChebCoefs</span> <span class="ot">-&gt;</span> <span class="dt">Cheb</span></span>
+<span id="cb1-53"><a href="#cb1-53" aria-hidden="true" tabindex="-1"></a>inverseChebCoef coef <span class="ot">=</span> <span class="dt">Cheb</span> frequency</span>
+<span id="cb1-54"><a href="#cb1-54" aria-hidden="true" tabindex="-1"></a>  <span class="kw">where</span> rescaled  <span class="ot">=</span> coef <span class="op">V.//</span> [(<span class="dv">0</span>, <span class="fl">2.0</span> <span class="op">*</span> V.head coef), (V.length coef <span class="op">-</span> <span class="dv">1</span>, <span class="fl">2.0</span> <span class="op">*</span> V.last coef)]</span>
+<span id="cb1-55"><a href="#cb1-55" aria-hidden="true" tabindex="-1"></a>        <span class="co">-- undo the scaling steps</span></span>
+<span id="cb1-56"><a href="#cb1-56" aria-hidden="true" tabindex="-1"></a>        rescaled2 <span class="ot">=</span> cmap (<span class="op">*</span> <span class="fu">fromIntegral</span> (V.length rescaled <span class="op">-</span> <span class="dv">1</span>)) rescaled</span>
+<span id="cb1-57"><a href="#cb1-57" aria-hidden="true" tabindex="-1"></a>        <span class="co">-- do the reflection trick again (this works in both directions)</span></span>
+<span id="cb1-58"><a href="#cb1-58" aria-hidden="true" tabindex="-1"></a>        reflected <span class="ot">=</span> rescaled2 <span class="op">&lt;&gt;</span> (V.reverse <span class="op">.</span> V.tail <span class="op">.</span> V.init) rescaled2</span>
+<span id="cb1-59"><a href="#cb1-59" aria-hidden="true" tabindex="-1"></a>        <span class="co">-- ifft and you&#39;re back</span></span>
+<span id="cb1-60"><a href="#cb1-60" aria-hidden="true" tabindex="-1"></a>        frequency <span class="ot">=</span> V.take (V.length coef) ((cmap realPart <span class="op">.</span> ifft <span class="op">.</span> complex) reflected)</span>
+<span id="cb1-61"><a href="#cb1-61" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-62"><a href="#cb1-62" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-63"><a href="#cb1-63" aria-hidden="true" tabindex="-1"></a><span class="co">-- | Compute the first order Chebyshev differentiation matrix</span></span>
+<span id="cb1-64"><a href="#cb1-64" aria-hidden="true" tabindex="-1"></a><span class="ot">chebDf ::</span> <span class="dt">Natural</span> <span class="ot">-&gt;</span> <span class="dt">Matrix</span> <span class="dt">R</span></span>
+<span id="cb1-65"><a href="#cb1-65" aria-hidden="true" tabindex="-1"></a>chebDf dim <span class="ot">=</span> build (m, m) f</span>
+<span id="cb1-66"><a href="#cb1-66" aria-hidden="true" tabindex="-1"></a> <span class="kw">where</span></span>
+<span id="cb1-67"><a href="#cb1-67" aria-hidden="true" tabindex="-1"></a>  m <span class="ot">=</span> <span class="fu">fromIntegral</span> dim <span class="op">+</span> <span class="dv">1</span><span class="ot"> ::</span> <span class="dt">Int</span></span>
+<span id="cb1-68"><a href="#cb1-68" aria-hidden="true" tabindex="-1"></a>  n <span class="ot">=</span> <span class="fu">fromIntegral</span><span class="ot"> dim ::</span> <span class="dt">R</span></span>
+<span id="cb1-69"><a href="#cb1-69" aria-hidden="true" tabindex="-1"></a>  x <span class="ot">=</span> extremalChebNodes dim</span>
+<span id="cb1-70"><a href="#cb1-70" aria-hidden="true" tabindex="-1"></a><span class="ot">  f ::</span> <span class="dt">R</span> <span class="ot">-&gt;</span> <span class="dt">R</span> <span class="ot">-&gt;</span> <span class="dt">R</span></span>
+<span id="cb1-71"><a href="#cb1-71" aria-hidden="true" tabindex="-1"></a>  f i j</span>
+<span id="cb1-72"><a href="#cb1-72" aria-hidden="true" tabindex="-1"></a>    <span class="op">|</span> (i, j) <span class="op">==</span> (<span class="dv">0</span>, <span class="dv">0</span>) <span class="ot">=</span> (<span class="dv">2</span> <span class="op">*</span> n <span class="op">**</span> <span class="dv">2</span> <span class="op">+</span> <span class="dv">1</span>) <span class="op">/</span> <span class="dv">6</span></span>
+<span id="cb1-73"><a href="#cb1-73" aria-hidden="true" tabindex="-1"></a>    <span class="op">|</span> (i, j) <span class="op">==</span> (n, n) <span class="ot">=</span> <span class="op">-</span>(<span class="dv">2</span> <span class="op">*</span> n <span class="op">**</span> <span class="dv">2</span> <span class="op">+</span> <span class="dv">1</span>) <span class="op">/</span> <span class="dv">6</span></span>
+<span id="cb1-74"><a href="#cb1-74" aria-hidden="true" tabindex="-1"></a>    <span class="op">|</span> i <span class="op">==</span> j <span class="ot">=</span> <span class="op">-</span>xi <span class="op">/</span> (<span class="dv">2</span> <span class="op">*</span> (<span class="dv">1</span> <span class="op">-</span> xi <span class="op">**</span> <span class="dv">2</span>))</span>
+<span id="cb1-75"><a href="#cb1-75" aria-hidden="true" tabindex="-1"></a>    <span class="op">|</span> <span class="fu">otherwise</span> <span class="ot">=</span> ((<span class="op">-</span><span class="dv">1</span>) <span class="op">**</span> (i <span class="op">+</span> j)) <span class="op">*</span> c i <span class="op">/</span> (c j <span class="op">*</span> (xi <span class="op">-</span> xj))</span>
+<span id="cb1-76"><a href="#cb1-76" aria-hidden="true" tabindex="-1"></a>     <span class="kw">where</span></span>
+<span id="cb1-77"><a href="#cb1-77" aria-hidden="true" tabindex="-1"></a>      <span class="co">-- hmatrix `build` only takes R -&gt; R -&gt; R so we have to round...</span></span>
+<span id="cb1-78"><a href="#cb1-78" aria-hidden="true" tabindex="-1"></a>      xi <span class="ot">=</span> x <span class="op">!</span> <span class="fu">round</span> i</span>
+<span id="cb1-79"><a href="#cb1-79" aria-hidden="true" tabindex="-1"></a>      xj <span class="ot">=</span> x <span class="op">!</span> <span class="fu">round</span> j</span>
+<span id="cb1-80"><a href="#cb1-80" aria-hidden="true" tabindex="-1"></a>      c z</span>
+<span id="cb1-81"><a href="#cb1-81" aria-hidden="true" tabindex="-1"></a>        <span class="op">|</span> z <span class="op">==</span> <span class="dv">0</span> <span class="ot">=</span> <span class="dv">2</span></span>
+<span id="cb1-82"><a href="#cb1-82" aria-hidden="true" tabindex="-1"></a>        <span class="op">|</span> z <span class="op">==</span> n <span class="ot">=</span> <span class="dv">2</span></span>
+<span id="cb1-83"><a href="#cb1-83" aria-hidden="true" tabindex="-1"></a>        <span class="op">|</span> <span class="fu">otherwise</span> <span class="ot">=</span> <span class="dv">1</span></span>
+<span id="cb1-84"><a href="#cb1-84" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-85"><a href="#cb1-85" aria-hidden="true" tabindex="-1"></a><span class="co">-- </span><span class="al">NOTE</span><span class="co">: This is just a convenience atm, should add better</span></span>
+<span id="cb1-86"><a href="#cb1-86" aria-hidden="true" tabindex="-1"></a><span class="co">-- abstraction for constructing the differential operators</span></span>
+<span id="cb1-87"><a href="#cb1-87" aria-hidden="true" tabindex="-1"></a><span class="co">-- | Compute the second order Chebyshev differentiation matrix</span></span>
+<span id="cb1-88"><a href="#cb1-88" aria-hidden="true" tabindex="-1"></a><span class="ot">chebDf2 ::</span> <span class="dt">Natural</span> <span class="ot">-&gt;</span> <span class="dt">Matrix</span> <span class="dt">R</span></span>
+<span id="cb1-89"><a href="#cb1-89" aria-hidden="true" tabindex="-1"></a>chebDf2 dim <span class="ot">=</span> x <span class="op">&lt;&gt;</span> x</span>
+<span id="cb1-90"><a href="#cb1-90" aria-hidden="true" tabindex="-1"></a>  <span class="kw">where</span> x <span class="ot">=</span> chebDf dim</span>
+<span id="cb1-91"><a href="#cb1-91" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-92"><a href="#cb1-92" aria-hidden="true" tabindex="-1"></a><span class="co">-- | Differentiate a Cheb</span></span>
+<span id="cb1-93"><a href="#cb1-93" aria-hidden="true" tabindex="-1"></a><span class="ot">diffCheb ::</span> <span class="dt">Cheb</span> <span class="ot">-&gt;</span> <span class="dt">Cheb</span></span>
+<span id="cb1-94"><a href="#cb1-94" aria-hidden="true" tabindex="-1"></a>diffCheb (<span class="dt">Cheb</span> c) <span class="ot">=</span> <span class="dt">Cheb</span> (d <span class="op">#&gt;</span> c)</span>
+<span id="cb1-95"><a href="#cb1-95" aria-hidden="true" tabindex="-1"></a>  <span class="kw">where</span> n <span class="ot">=</span> V.length c <span class="op">-</span> <span class="dv">1</span></span>
+<span id="cb1-96"><a href="#cb1-96" aria-hidden="true" tabindex="-1"></a>        d <span class="ot">=</span> chebDf (<span class="fu">fromIntegral</span> n)</span>
+<span id="cb1-97"><a href="#cb1-97" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-98"><a href="#cb1-98" aria-hidden="true" tabindex="-1"></a><span class="co">-- | Boundary condition types</span></span>
+<span id="cb1-99"><a href="#cb1-99" aria-hidden="true" tabindex="-1"></a><span class="co">-- | Neumann and Mixed not currently implemented</span></span>
+<span id="cb1-100"><a href="#cb1-100" aria-hidden="true" tabindex="-1"></a><span class="kw">data</span> <span class="dt">BC</span> <span class="ot">=</span> <span class="dt">DirichletBC</span> <span class="op">|</span> <span class="dt">NeumannBC</span> <span class="op">|</span> <span class="dt">MixedBC</span> <span class="op">|</span> <span class="dt">UnconstrainedBC</span></span>
+<span id="cb1-101"><a href="#cb1-101" aria-hidden="true" tabindex="-1"></a><span class="co">-- | Represent a Differential Linear Operator</span></span>
+<span id="cb1-102"><a href="#cb1-102" aria-hidden="true" tabindex="-1"></a><span class="kw">data</span> <span class="dt">DL</span> <span class="ot">=</span> <span class="dt">DL</span> (<span class="dt">Matrix</span> <span class="dt">R</span>) <span class="dt">BC</span> <span class="dt">BC</span></span>
+<span id="cb1-103"><a href="#cb1-103" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-104"><a href="#cb1-104" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-105"><a href="#cb1-105" aria-hidden="true" tabindex="-1"></a><span class="co">-- | Solve L u = f by computing u = L \ f</span></span>
+<span id="cb1-106"><a href="#cb1-106" aria-hidden="true" tabindex="-1"></a>(<span class="op">&lt;</span>\\<span class="op">&gt;</span>)<span class="ot"> ::</span> <span class="dt">DL</span> <span class="ot">-&gt;</span> <span class="dt">Function</span> <span class="ot">-&gt;</span> <span class="dt">Cheb</span></span>
+<span id="cb1-107"><a href="#cb1-107" aria-hidden="true" tabindex="-1"></a>(<span class="op">&lt;</span>\\<span class="op">&gt;</span>) (<span class="dt">DL</span> df lbc rbc) f <span class="ot">=</span> <span class="dt">Cheb</span> (dfbc <span class="op">&lt;</span>\<span class="op">&gt;</span> getNodes chebf)</span>
+<span id="cb1-108"><a href="#cb1-108" aria-hidden="true" tabindex="-1"></a>  <span class="kw">where</span> n <span class="ot">=</span> <span class="fu">fromIntegral</span> (rows df) <span class="op">-</span> <span class="dv">1</span></span>
+<span id="cb1-109"><a href="#cb1-109" aria-hidden="true" tabindex="-1"></a>        chebf <span class="ot">=</span> computeCheb f n</span>
+<span id="cb1-110"><a href="#cb1-110" aria-hidden="true" tabindex="-1"></a>        ldirichlet a xs <span class="ot">=</span> vector (a<span class="op">:</span> <span class="fu">replicate</span> (<span class="fu">fromIntegral</span> n) <span class="fl">0.0</span>) <span class="op">:</span> <span class="fu">tail</span> xs</span>
+<span id="cb1-111"><a href="#cb1-111" aria-hidden="true" tabindex="-1"></a>        rdirichlet a xs <span class="ot">=</span> <span class="fu">init</span> xs <span class="op">++</span> [vector (<span class="fu">replicate</span> (<span class="fu">fromIntegral</span> n) <span class="fl">0.0</span> <span class="op">++</span> [a])]</span>
+<span id="cb1-112"><a href="#cb1-112" aria-hidden="true" tabindex="-1"></a>        dfrows <span class="ot">=</span> toRows df</span>
+<span id="cb1-113"><a href="#cb1-113" aria-hidden="true" tabindex="-1"></a>        rows&#39; <span class="ot">=</span> <span class="kw">case</span> lbc <span class="kw">of</span></span>
+<span id="cb1-114"><a href="#cb1-114" aria-hidden="true" tabindex="-1"></a>          <span class="dt">DirichletBC</span>     <span class="ot">-&gt;</span> ldirichlet <span class="dv">1</span> dfrows</span>
+<span id="cb1-115"><a href="#cb1-115" aria-hidden="true" tabindex="-1"></a>          <span class="dt">NeumannBC</span>       <span class="ot">-&gt;</span> <span class="fu">undefined</span></span>
+<span id="cb1-116"><a href="#cb1-116" aria-hidden="true" tabindex="-1"></a>          <span class="dt">MixedBC</span>         <span class="ot">-&gt;</span> <span class="fu">undefined</span></span>
+<span id="cb1-117"><a href="#cb1-117" aria-hidden="true" tabindex="-1"></a>          <span class="dt">UnconstrainedBC</span> <span class="ot">-&gt;</span> dfrows</span>
+<span id="cb1-118"><a href="#cb1-118" aria-hidden="true" tabindex="-1"></a>        row&#39;&#39; <span class="ot">=</span> <span class="kw">case</span> rbc <span class="kw">of</span> </span>
+<span id="cb1-119"><a href="#cb1-119" aria-hidden="true" tabindex="-1"></a>          <span class="dt">DirichletBC</span>     <span class="ot">-&gt;</span> rdirichlet <span class="dv">1</span> rows&#39;</span>
+<span id="cb1-120"><a href="#cb1-120" aria-hidden="true" tabindex="-1"></a>          <span class="dt">NeumannBC</span>       <span class="ot">-&gt;</span> <span class="fu">undefined</span></span>
+<span id="cb1-121"><a href="#cb1-121" aria-hidden="true" tabindex="-1"></a>          <span class="dt">MixedBC</span>         <span class="ot">-&gt;</span> <span class="fu">undefined</span></span>
+<span id="cb1-122"><a href="#cb1-122" aria-hidden="true" tabindex="-1"></a>          <span class="dt">UnconstrainedBC</span> <span class="ot">-&gt;</span> rows&#39;</span>
+<span id="cb1-123"><a href="#cb1-123" aria-hidden="true" tabindex="-1"></a>        dfbc <span class="ot">=</span> fromRows row&#39;&#39;</span>
+<span id="cb1-124"><a href="#cb1-124" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb1-125"><a href="#cb1-125" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-126"><a href="#cb1-126" aria-hidden="true" tabindex="-1"></a><span class="kw">data</span> <span class="dt">C</span> <span class="ot">=</span> <span class="dt">C</span> <span class="ot">{-# UNPACK #-}</span> <span class="op">!</span><span class="dt">R</span> <span class="ot">{-# UNPACK #-}</span> <span class="op">!</span><span class="dt">R</span></span>
+<span id="cb1-127"><a href="#cb1-127" aria-hidden="true" tabindex="-1"></a><span class="co">{- | Evaluate a Chebyshev polynomial of the first kind. </span></span>
+<span id="cb1-128"><a href="#cb1-128" aria-hidden="true" tabindex="-1"></a><span class="co">Uses Clenshaw&#39;s algorithm.</span></span>
+<span id="cb1-129"><a href="#cb1-129" aria-hidden="true" tabindex="-1"></a><span class="co">Implementation taken from `math-functions` package (BSD3) -}</span></span>
+<span id="cb1-130"><a href="#cb1-130" aria-hidden="true" tabindex="-1"></a><span class="ot">clenshaw ::</span> <span class="dt">ChebCoefs</span>    <span class="co">-- ^ Coefficients of each polynomial term, in increasing order.</span></span>
+<span id="cb1-131"><a href="#cb1-131" aria-hidden="true" tabindex="-1"></a>          <span class="ot">-&gt;</span> <span class="dt">R</span>       <span class="co">-- ^ point to evalute at</span></span>
+<span id="cb1-132"><a href="#cb1-132" aria-hidden="true" tabindex="-1"></a>          <span class="ot">-&gt;</span> <span class="dt">R</span></span>
+<span id="cb1-133"><a href="#cb1-133" aria-hidden="true" tabindex="-1"></a>clenshaw a x <span class="ot">=</span> fini <span class="op">.</span> V.foldr&#39; stpp (<span class="dt">C</span> <span class="dv">0</span> <span class="dv">0</span>) <span class="op">.</span> V.tail <span class="op">$</span> a</span>
+<span id="cb1-134"><a href="#cb1-134" aria-hidden="true" tabindex="-1"></a>    <span class="kw">where</span> stpp k (<span class="dt">C</span> b0 b1) <span class="ot">=</span> <span class="dt">C</span> (k <span class="op">+</span> x2 <span class="op">*</span> b0 <span class="op">-</span> b1) b0</span>
+<span id="cb1-135"><a href="#cb1-135" aria-hidden="true" tabindex="-1"></a>          fini   (<span class="dt">C</span> b0 b1) <span class="ot">=</span> V.head a <span class="op">+</span> x <span class="op">*</span> b0 <span class="op">-</span> b1</span>
+<span id="cb1-136"><a href="#cb1-136" aria-hidden="true" tabindex="-1"></a>          x2               <span class="ot">=</span> x <span class="op">*</span> <span class="dv">2</span></span>
+<span id="cb1-137"><a href="#cb1-137" aria-hidden="true" tabindex="-1"></a><span class="ot">{-# INLINE clenshaw #-}</span></span></code></pre></div>
+    </section>
+  </article>
+</main>
+]]></summary>
+</entry>
+<entry>
+    <title>Trace Estimation</title>
+    <link href="https://spacedome.tv/posts/trace-estimation.html" />
+    <id>https://spacedome.tv/posts/trace-estimation.html</id>
+    <published>2025-01-11T00:00:00Z</published>
+    <updated>2025-01-11T00:00:00Z</updated>
+    <summary type="html"><![CDATA[<main>
+  <article>
+    <header>
+    <h1>Trace Estimation</h1>
+    <p><i>2025-01-11 </i></p>
+    <hr/>
+    </header>
+    <section>
+      <p>The other day on twitter, I got involved in a discussion about trace estimation, and decided to write down some thoughts on the matter.</p>
+<p>Typically this is posed as follows.
+You are given a matrix <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>A</mi><mo>∈</mo><msup><mi>F</mi><mrow><mi>N</mi><mo>×</mo><mi>N</mi></mrow></msup></mrow><annotation encoding="application/x-tex">A \in F^{N\times N}</annotation></semantics></math> such that we can only access it through matrix-vector multiplication <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>x</mi><mo>↦</mo><mi>A</mi><mi>x</mi></mrow><annotation encoding="application/x-tex">x \mapsto Ax</annotation></semantics></math>. Estimate the trace of the matrix.
+<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mtext mathvariant="normal">tr</mtext><mi>A</mi><mo>=</mo><munderover><mo>∑</mo><mrow><mi>i</mi><mo>=</mo><mn>1</mn></mrow><mi>N</mi></munderover><msub><mi>A</mi><mrow><mi>i</mi><mo>,</mo><mi>i</mi></mrow></msub></mrow><annotation encoding="application/x-tex"> \text{tr} A = \sum_{i=1}^N A_{i,i} </annotation></semantics></math>
+We may not be able to take this sum directly either due to size or representation of <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>A</mi><annotation encoding="application/x-tex">A</annotation></semantics></math>, this constraint of only accessing the matrix through it’s vector product is familiar in numerical linear algebra.</p>
+<p>An easy false start, for someone mainly experienced with eigenvalue problems, is to remember that the trace of a matrix is exactly the sum of the eigenvalues.
+One would then ask, how can the eigenvalues be computed using only matrix-vector operations, and remember the Arnoldi iteration, an extension of the power method that constructs the Krylov subspace.
+<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>K</mi><mi>m</mi></msub><mo>=</mo><mrow><mo stretchy="true" form="prefix">[</mo><mi>x</mi><mo>,</mo><mi>A</mi><mi>x</mi><mo>,</mo><msup><mi>A</mi><mn>2</mn></msup><mi>x</mi><mo>,</mo><mi>…</mi><mo>,</mo><msup><mi>A</mi><mi>m</mi></msup><mi>x</mi><mo stretchy="true" form="postfix">]</mo></mrow></mrow><annotation encoding="application/x-tex"> K_m = [x, A x, A^2 x, \dots, A^m x] </annotation></semantics></math>
+After orthogonalizing the Krylov subspace with a Gram-Shmidt process into <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>Q</mi><mi>m</mi></msub><annotation encoding="application/x-tex">Q_m</annotation></semantics></math>, we can create an upper Hessenburg matrix <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>H</mi><mi>m</mi></msub><mo>=</mo><msubsup><mi>Q</mi><mi>m</mi><mo>*</mo></msubsup><mi>A</mi><msub><mi>Q</mi><mi>m</mi></msub></mrow><annotation encoding="application/x-tex">H_m = Q^*_m A Q_m</annotation></semantics></math>.
+We can then apply QR to this smaller matrix ( <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>m</mi><mo>&lt;</mo><mo>&lt;</mo><mi>n</mi></mrow><annotation encoding="application/x-tex">m &lt;&lt; n</annotation></semantics></math>) and use Rayleigh-Ritz to recover the associated eigenvalues of <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>A</mi><annotation encoding="application/x-tex">A</annotation></semantics></math>.</p>
+<p>Does this help us estimate the trace? Not really!
+We most likely have recovered the eigenvalues of greatest magnitude (remember, power method), and to recover the rest of them, we either need to expand the Krylov subspace such that <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>m</mi><mo>=</mo><mi>n</mi></mrow><annotation encoding="application/x-tex">m = n</annotation></semantics></math>, which is totally intractable in this scenario, or we need to do restarted Arnoldi while shifting out converged eigenvalues, also likely intractable.
+The usefulness of Arnoldi and other iterative eigenvalue algorithms is largely due to <em>not</em> needing all of the eigenvalues of these matrices.
+This is not an entirely fruitless direction though, as the Rayleigh-Ritz procedure gives us a hint.</p>
+<p>Let us recall the Rayleigh quotient, and how it can be written in terms of the eigenbasis <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>λ</mi><mi>i</mi></msub><mo>,</mo><msub><mi>v</mi><mi>i</mi></msub><mo stretchy="true" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">(\lambda_i, v_i)</annotation></semantics></math>.
+<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mfrac><mrow><msup><mi>x</mi><mo>*</mo></msup><mi>A</mi><mi>x</mi></mrow><mrow><msup><mi>x</mi><mo>*</mo></msup><mi>x</mi></mrow></mfrac><mo>=</mo><mfrac><mrow><munderover><mo>∑</mo><mrow><mi>i</mi><mo>=</mo><mn>1</mn></mrow><mi>N</mi></munderover><msub><mi>λ</mi><mi>i</mi></msub><msup><mrow><mo stretchy="true" form="prefix">(</mo><msubsup><mi>v</mi><mi>i</mi><mo>*</mo></msubsup><mi>x</mi><mo stretchy="true" form="postfix">)</mo></mrow><mn>2</mn></msup></mrow><mrow><munderover><mo>∑</mo><mrow><mi>i</mi><mo>=</mo><mn>1</mn></mrow><mi>N</mi></munderover><msup><mrow><mo stretchy="true" form="prefix">(</mo><msubsup><mi>v</mi><mi>i</mi><mo>*</mo></msubsup><mi>x</mi><mo stretchy="true" form="postfix">)</mo></mrow><mn>2</mn></msup></mrow></mfrac></mrow><annotation encoding="application/x-tex"> \frac{x^* A x}{x^* x} = \frac{\sum_{i=1}^N \lambda_i (v_i^* x)^2}{\sum_{i=1}^N (v_i^* x)^2} </annotation></semantics></math>
+If we then choose <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>x</mi><annotation encoding="application/x-tex">x</annotation></semantics></math> such that <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>E</mi><mrow><mo stretchy="true" form="prefix">[</mo><msup><mrow><mo stretchy="true" form="prefix">(</mo><msubsup><mi>v</mi><mi>i</mi><mo>*</mo></msubsup><mi>x</mi><mo stretchy="true" form="postfix">)</mo></mrow><mn>2</mn></msup><mo stretchy="true" form="postfix">]</mo></mrow><mo>=</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">E[(v_i^* x)^2] = 1</annotation></semantics></math> we get (henceforth ignoring the denominator which is basically one-ish).
+<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>E</mi><mrow><mo stretchy="true" form="prefix">[</mo><msup><mi>x</mi><mo>*</mo></msup><mi>A</mi><mi>x</mi><mo stretchy="true" form="postfix">]</mo></mrow><mo>=</mo><mo>∑</mo><msub><mi>λ</mi><mi>i</mi></msub><mo>=</mo><mtext mathvariant="normal">tr</mtext><mi>A</mi></mrow><annotation encoding="application/x-tex"> E[x^* A x] = \sum \lambda_i = \text{tr} A </annotation></semantics></math>
+We then use this to construct an estimator, using linearity.
+<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mover><mtext mathvariant="normal">tr</mtext><mo accent="true">̂</mo></mover><mi>A</mi><mo>=</mo><mfrac><mn>1</mn><mi>M</mi></mfrac><munderover><mo>∑</mo><mrow><mi>i</mi><mo>=</mo><mn>1</mn></mrow><mi>M</mi></munderover><msubsup><mi>x</mi><mi>i</mi><mo>*</mo></msubsup><mi>A</mi><msub><mi>x</mi><mi>i</mi></msub></mrow><annotation encoding="application/x-tex"> \hat{\text{tr}} A = \frac{1}{M} \sum_{i=1}^M x_i^* A x_i </annotation></semantics></math></p>
+<p>Let us take a detour and think how else we might come to this kind of conclusion.
+What if we use indicator vectors <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>e</mi><mi>i</mi></msub><annotation encoding="application/x-tex">e_i</annotation></semantics></math> to recover the diagonal elements of <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>A</mi><annotation encoding="application/x-tex">A</annotation></semantics></math>?
+<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mtext mathvariant="normal">tr</mtext><mi>A</mi><mo>=</mo><munderover><mo>∑</mo><mrow><mi>i</mi><mo>=</mo><mn>1</mn></mrow><mi>N</mi></munderover><msubsup><mi>e</mi><mi>i</mi><mi>T</mi></msubsup><mi>A</mi><msub><mi>e</mi><mi>i</mi></msub></mrow><annotation encoding="application/x-tex"> \text{tr} A = \sum_{i=1}^N e_i^T A e_i  </annotation></semantics></math>
+Given the constraints, it is unlikely doing <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>N</mi><annotation encoding="application/x-tex">N</annotation></semantics></math> matrix-vector multiplications is feasible, but we can choose a random sampling of the <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>e</mi><mi>i</mi></msub><annotation encoding="application/x-tex">e_i</annotation></semantics></math> for an approximate answer.</p>
+<p>In light of sampling from the diagonal directly, our Arnoldi approach can be viewed as (biased) sampling from the diagonal in the eigenbasis, and the Rayleigh quotient approach is like sampling from the diagonal in a random basis.
+All of the important analysis of this problem comes from the choice of distribution of <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>x</mi><annotation encoding="application/x-tex">x</annotation></semantics></math>.</p>
+<p>In the literature, the standard method is due to Hutchinson, where he chooses <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>x</mi><annotation encoding="application/x-tex">x</annotation></semantics></math> with elements sampled from the Rademacher distribution, that is, each element is <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>±</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">\pm 1</annotation></semantics></math> with equal odds.
+The general requirement for the estimator to be unbiased is <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>E</mi><mrow><mo stretchy="true" form="prefix">[</mo><mi>x</mi><msup><mi>x</mi><mo>*</mo></msup><mo stretchy="true" form="postfix">]</mo></mrow><mo>=</mo><mi>I</mi></mrow><annotation encoding="application/x-tex">E[x x^*] = I</annotation></semantics></math>, the expectation of the outer product being the identity. This is more general than our previous constraint.</p>
+<p>Here is a simple implementation in Haskell using hmatrix.</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co">-- | Generate a random Rademacher vector (+1/-1 with equal probability)</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="ot">generateRademacherVector ::</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> (<span class="dt">Vector</span> <span class="dt">R</span>)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>generateRademacherVector n <span class="ot">=</span> <span class="kw">do</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>    signs <span class="ot">&lt;-</span> replicateM n randomIO</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">return</span> <span class="op">$</span> vector <span class="op">$</span> <span class="fu">map</span> (\b <span class="ot">-&gt;</span> <span class="kw">if</span> b <span class="kw">then</span> <span class="dv">1</span> <span class="kw">else</span> <span class="op">-</span><span class="dv">1</span>) signs</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="co">-- | Estimate the trace using the Girard-Hutchinson estimator</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="ot">estimateTrace ::</span> <span class="dt">Matrix</span> <span class="dt">R</span>   <span class="co">-- ^ Matrix</span></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>              <span class="ot">-&gt;</span> <span class="dt">Int</span>        <span class="co">-- ^ Matrix Dimension</span></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>              <span class="ot">-&gt;</span> <span class="dt">Int</span>        <span class="co">-- ^ Number of samples</span></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>              <span class="ot">-&gt;</span> <span class="dt">IO</span> <span class="dt">R</span>       <span class="co">-- ^ Estimated trace</span></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>estimateTrace a n numSamples <span class="ot">=</span> <span class="kw">do</span></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>    <span class="co">-- Generate random vectors and compute estimates</span></span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>    estimates <span class="ot">&lt;-</span> replicateM numSamples <span class="op">$</span> <span class="kw">do</span></span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>        v <span class="ot">&lt;-</span> generateRademacherVector n</span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>        <span class="co">-- Rayleigh quotient: we can only access a through mat-vec</span></span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>        <span class="fu">return</span> <span class="op">$</span> v <span class="op">&lt;.&gt;</span> (a <span class="op">#&gt;</span> v)</span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>    <span class="co">-- Average the estimates</span></span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>    <span class="fu">return</span> <span class="op">$</span> <span class="fu">sum</span> estimates <span class="op">/</span> <span class="fu">fromIntegral</span> numSamples</span></code></pre></div>
+<p>The actual performance of this algorithm, and the correct choice of distribution of <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>x</mi><annotation encoding="application/x-tex">x</annotation></semantics></math> is heavily dependent on the structure of the matrix.
+If the density of the trace is heavily concentrated, for example one value of 100 and the rest zeros, we would expect indicator vectors to perform very poorly!
+In general, through some contortion of the central limit theorem, we should expect convergence to be on the order of <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msqrt><mi>n</mi></msqrt><annotation encoding="application/x-tex">\sqrt{n}</annotation></semantics></math> where <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>n</mi><annotation encoding="application/x-tex">n</annotation></semantics></math> is the number of samples, which is not very fast, but good enough in practice for anything that might warrant such an approximation the begin with.</p>
+    </section>
+  </article>
+</main>
+]]></summary>
+</entry>
+<entry>
+    <title>FFT in Haskell and Futhark</title>
+    <link href="https://spacedome.tv/posts/fft-in-haskell-and-futhark.html" />
+    <id>https://spacedome.tv/posts/fft-in-haskell-and-futhark.html</id>
+    <published>2024-12-24T00:00:00Z</published>
+    <updated>2024-12-24 11:11</updated>
+    <summary type="html"><![CDATA[<main>
+  <article>
+    <header>
+    <h1>FFT in Haskell and Futhark</h1>
+    <p><i>2024-12-24 (updated: 2024-12-24 11:11)</i></p>
+    <hr/>
+    </header>
+    <section>
+      <p>The Fourier transform is one of the fundamental tools in analysis.
+From the perspective of approximation theory, it gives us one of the orthogonal function bases, the natural basis for periodic functions.
+To use this numerically, as with any basis, we must sample from the function to be approximated, and periodic functions have a wonderful property that the optimal points to sample are uniformly spaced on the interval.
+This is very different from polynomial bases like Chebyshev or Legendre polynomials, where choosing the points is somewhat involved.
+For Fourier, this leads us to the Discrete Fourier Transform (DFT), a cornerstone of signal processing.</p>
+<p>Let <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>x</mi><mi>n</mi></msub><annotation encoding="application/x-tex">x_n</annotation></semantics></math> be our signal sampled at <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>N</mi><annotation encoding="application/x-tex">N</annotation></semantics></math> points, i.e. <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>x</mi><annotation encoding="application/x-tex">x</annotation></semantics></math> is a sequence of <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>N</mi><annotation encoding="application/x-tex">N</annotation></semantics></math> real or complex numbers.
+Let <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>ω</mi><mo>=</mo><msub><mi>ω</mi><mi>N</mi></msub><mo>=</mo><msup><mi>e</mi><mrow><mo>−</mo><mn>2</mn><mi>π</mi><mi>i</mi><mi>/</mi><mi>N</mi></mrow></msup></mrow><annotation encoding="application/x-tex">\omega = \omega_N = e^{-2\pi i / N}</annotation></semantics></math> be the <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msup><mi>N</mi><mtext mathvariant="normal">th</mtext></msup><annotation encoding="application/x-tex">N^\text{th}</annotation></semantics></math> root of unity, the powers of which are sometimes called “twiddle” factors in this context.
+We can then define the DFT element-wise as follows.</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>y</mi><mi>t</mi></msub><mo>=</mo><munderover><mo>∑</mo><mrow><mi>n</mi><mo>=</mo><mn>0</mn></mrow><mrow><mi>N</mi><mo>−</mo><mn>1</mn></mrow></munderover><msub><mi>x</mi><mi>n</mi></msub><mo>⋅</mo><msup><mi>ω</mi><mrow><mi>t</mi><mi>n</mi></mrow></msup></mrow><annotation encoding="application/x-tex"> y_t =\sum_{n=0}^{N-1} x_{n} \cdot \omega^{t n} </annotation></semantics></math></p>
+<p>We see that each element is the dot product of <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>x</mi><annotation encoding="application/x-tex">x</annotation></semantics></math> with a vector of the twiddle factors, so we can represent this as a matrix multiplication <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>y</mi><mo>=</mo><msub><mi>W</mi><mi>N</mi></msub><mi>x</mi></mrow><annotation encoding="application/x-tex">y = W_N x</annotation></semantics></math> where</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>W</mi><mi>N</mi></msub><mo>=</mo><mrow><mo stretchy="true" form="prefix">[</mo><mtable><mtr><mtd columnalign="center"><msubsup><mi>ω</mi><mi>N</mi><mn>0</mn></msubsup></mtd><mtd columnalign="center"><msubsup><mi>ω</mi><mi>N</mi><mn>0</mn></msubsup></mtd><mtd columnalign="center"><msubsup><mi>ω</mi><mi>N</mi><mn>0</mn></msubsup></mtd><mtd columnalign="center"><mi>⋯</mi></mtd><mtd columnalign="center"><msubsup><mi>ω</mi><mi>N</mi><mn>0</mn></msubsup></mtd></mtr><mtr><mtd columnalign="center"><msubsup><mi>ω</mi><mi>N</mi><mn>0</mn></msubsup></mtd><mtd columnalign="center"><msubsup><mi>ω</mi><mi>N</mi><mn>1</mn></msubsup></mtd><mtd columnalign="center"><msubsup><mi>ω</mi><mi>N</mi><mn>2</mn></msubsup></mtd><mtd columnalign="center"><mi>⋯</mi></mtd><mtd columnalign="center"><msubsup><mi>ω</mi><mi>N</mi><mrow><mi>N</mi><mo>−</mo><mn>1</mn></mrow></msubsup></mtd></mtr><mtr><mtd columnalign="center"><msubsup><mi>ω</mi><mi>N</mi><mn>0</mn></msubsup></mtd><mtd columnalign="center"><msubsup><mi>ω</mi><mi>N</mi><mn>2</mn></msubsup></mtd><mtd columnalign="center"><msubsup><mi>ω</mi><mi>N</mi><mn>4</mn></msubsup></mtd><mtd columnalign="center"><mi>⋯</mi></mtd><mtd columnalign="center"><msubsup><mi>ω</mi><mi>N</mi><mrow><mn>2</mn><mrow><mo stretchy="true" form="prefix">(</mo><mi>N</mi><mo>−</mo><mn>1</mn><mo stretchy="true" form="postfix">)</mo></mrow></mrow></msubsup></mtd></mtr><mtr><mtd columnalign="center"><mi>⋮</mi></mtd><mtd columnalign="center"><mi>⋮</mi></mtd><mtd columnalign="center"><mi>⋮</mi></mtd><mtd columnalign="center"><mo>⋱</mo></mtd><mtd columnalign="center"><mi>⋮</mi></mtd></mtr><mtr><mtd columnalign="center"><msubsup><mi>ω</mi><mi>N</mi><mn>0</mn></msubsup></mtd><mtd columnalign="center"><msubsup><mi>ω</mi><mi>N</mi><mrow><mi>N</mi><mo>−</mo><mn>1</mn></mrow></msubsup></mtd><mtd columnalign="center"><msubsup><mi>ω</mi><mi>N</mi><mrow><mn>2</mn><mrow><mo stretchy="true" form="prefix">(</mo><mi>N</mi><mo>−</mo><mn>1</mn><mo stretchy="true" form="postfix">)</mo></mrow></mrow></msubsup></mtd><mtd columnalign="center"><mi>⋯</mi></mtd><mtd columnalign="center"><msubsup><mi>ω</mi><mi>N</mi><mrow><mrow><mo stretchy="true" form="prefix">(</mo><mi>N</mi><mo>−</mo><mn>1</mn><mo stretchy="true" form="postfix">)</mo></mrow><mrow><mo stretchy="true" form="prefix">(</mo><mi>N</mi><mo>−</mo><mn>1</mn><mo stretchy="true" form="postfix">)</mo></mrow></mrow></msubsup></mtd></mtr></mtable><mo stretchy="true" form="postfix">]</mo></mrow></mrow><annotation encoding="application/x-tex"> 
+W_N = \begin{bmatrix} 
+\omega^0_N &amp; \omega^0_N &amp; \omega^0_N &amp; \cdots &amp; \omega^0_N \\
+\omega^0_N &amp; \omega_N^1 &amp; \omega_N^2 &amp; \cdots &amp; \omega_N^{N-1} \\
+\omega^0_N &amp; \omega_N^2 &amp; \omega_N^4 &amp; \cdots &amp; \omega_N^{2(N-1)} \\
+\vdots &amp; \vdots &amp; \vdots &amp; \ddots &amp; \vdots \\
+\omega^0_N &amp; \omega_N^{N-1} &amp; \omega_N^{2(N-1)} &amp; \cdots &amp; \omega_N^{(N-1)(N-1)}
+\end{bmatrix}
+</annotation></semantics></math></p>
+<p>We will also denote this as <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>y</mi><mo>=</mo><mi>F</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>x</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">y = F(x)</annotation></semantics></math>.
+The complexity of matrix-vector multiplication is trivially <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>O</mi><mrow><mo stretchy="true" form="prefix">(</mo><msup><mi>n</mi><mn>2</mn></msup><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">O(n^2)</annotation></semantics></math>, as we must access every element of the matrix.
+In the 1960s, during the great boom of numerical research, James Cooley and John Tukey published their paper exploiting the structure of the matrix for a log-linear solution, ushering in the age of real time digital signal processing.
+This family of algorithms is called the Fast Fourier Transform (FFT).</p>
+<p>The key insight of the Cooley-Tukey FFT is that one can split the signal in half and recursively compute the FFT.
+This is one of the early examples of divide and conquer algorithms, along with merge sort, which shares a similar <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>n</mi><mo>log</mo><mi>n</mi></mrow><annotation encoding="application/x-tex">n \log n</annotation></semantics></math> time complexity.
+For simplicity we assume <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>N</mi><annotation encoding="application/x-tex">N</annotation></semantics></math> is a power of two, so that we can divide in half until we get to a single element, though this is not necessary with real FFT implementations.
+Recursive algorithms are often most naturally expressed in functional languages, so we derive a recursive form to implement in Haskell.</p>
+<p>First we identify the base case, which is simply the identity <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>y</mi><mo>=</mo><msup><mi>ω</mi><mn>0</mn></msup><mi>x</mi><mo>=</mo><mi>x</mi></mrow><annotation encoding="application/x-tex">y = \omega^0 x = x</annotation></semantics></math>.
+For <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>N</mi><mo>=</mo><mn>2</mn><mo>,</mo><mi>N</mi><mo>=</mo><mn>4</mn></mrow><annotation encoding="application/x-tex">N = 2, N=4</annotation></semantics></math> it is instructive to do examples out by hand in full using the matrix multiplication <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>W</mi><mi>N</mi></msub><mi>x</mi></mrow><annotation encoding="application/x-tex">W_N x</annotation></semantics></math>.
+For <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>N</mi><mo>=</mo><mn>2</mn></mrow><annotation encoding="application/x-tex">N = 2</annotation></semantics></math> we get the following.</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mtable><mtr><mtd columnalign="right"><msub><mi>y</mi><mn>0</mn></msub></mtd><mtd columnalign="left"><mo>=</mo><msub><mi>x</mi><mn>0</mn></msub><mo>+</mo><msub><mi>x</mi><mn>1</mn></msub></mtd></mtr><mtr><mtd columnalign="right"><msub><mi>y</mi><mn>1</mn></msub></mtd><mtd columnalign="left"><mo>=</mo><msub><mi>x</mi><mn>0</mn></msub><mo>−</mo><msub><mi>x</mi><mn>1</mn></msub></mtd></mtr></mtable><annotation encoding="application/x-tex"> \begin{align}  y_0 &amp;= x_0 + x_1 \\ y_1 &amp;= x_0 - x_1 \end{align} </annotation></semantics></math></p>
+<p>When drawn out as a data flow diagram, as you would see in more hardware-adjacent expositions, this forms a cross-over, leading to the name <a href="https://en.wikipedia.org/wiki/Butterfly_diagram">butterfly</a> for the combining stage of the FFT.</p>
+<p>The trick to the recursion is that splitting <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>x</mi><annotation encoding="application/x-tex">x</annotation></semantics></math> into even <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mi>x</mi><mi>e</mi></msup><mo>=</mo><mo stretchy="false" form="prefix">{</mo><msub><mi>x</mi><mn>0</mn></msub><mo>,</mo><msub><mi>x</mi><mn>2</mn></msub><mo>,</mo><mi>.</mi><mi>.</mi><mi>.</mi><mo stretchy="false" form="postfix">}</mo></mrow><annotation encoding="application/x-tex">x^e = \{x_0, x_2, ...\}</annotation></semantics></math> and odd <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mi>x</mi><mi>o</mi></msup><mo>=</mo><mo stretchy="false" form="prefix">{</mo><msub><mi>x</mi><mn>1</mn></msub><mo>,</mo><msub><mi>x</mi><mn>3</mn></msub><mo>,</mo><mi>.</mi><mi>.</mi><mi>.</mi><mo stretchy="false" form="postfix">}</mo></mrow><annotation encoding="application/x-tex">x^o = \{x_1, x_3, ...\}</annotation></semantics></math> components.
+This can be seen by rewriting the <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>N</mi><mo>=</mo><mn>4</mn></mrow><annotation encoding="application/x-tex">N=4</annotation></semantics></math> case out by hand, I will leave out the derivation here, but the result should look like the following.</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>u</mi><mo>=</mo><mi>F</mi><mrow><mo stretchy="true" form="prefix">(</mo><msup><mi>x</mi><mi>e</mi></msup><mo stretchy="true" form="postfix">)</mo></mrow><mo>=</mo><msub><mi>W</mi><mn>2</mn></msub><mrow><mo stretchy="true" form="prefix">[</mo><mtable><mtr><mtd columnalign="center"><msub><mi>x</mi><mn>0</mn></msub></mtd></mtr><mtr><mtd columnalign="center"><msub><mi>x</mi><mn>2</mn></msub></mtd></mtr></mtable><mo stretchy="true" form="postfix">]</mo></mrow><mo>,</mo><mspace width="1.0em"></mspace><mi>v</mi><mo>=</mo><mi>F</mi><mrow><mo stretchy="true" form="prefix">(</mo><msup><mi>x</mi><mi>o</mi></msup><mo stretchy="true" form="postfix">)</mo></mrow><mo>=</mo><msub><mi>W</mi><mn>2</mn></msub><mrow><mo stretchy="true" form="prefix">[</mo><mtable><mtr><mtd columnalign="center"><msub><mi>x</mi><mn>1</mn></msub></mtd></mtr><mtr><mtd columnalign="center"><msub><mi>x</mi><mn>3</mn></msub></mtd></mtr></mtable><mo stretchy="true" form="postfix">]</mo></mrow></mrow><annotation encoding="application/x-tex"> 
+u = F(x^e) = W_2 \begin{bmatrix} x_0 \\ x_2  \end{bmatrix}, \quad
+v = F(x^o) = W_2 \begin{bmatrix} x_1 \\ x_3  \end{bmatrix}
+</annotation></semantics></math>
+We then combine the two sub-problems.
+<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>y</mi><mo>=</mo><mi>F</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>x</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>=</mo><mrow><mo stretchy="true" form="prefix">[</mo><mtable><mtr><mtd columnalign="center"><msub><mi>u</mi><mn>0</mn></msub><mo>+</mo><msup><mi>ω</mi><mn>0</mn></msup><msub><mi>v</mi><mn>0</mn></msub></mtd></mtr><mtr><mtd columnalign="center"><msub><mi>u</mi><mn>1</mn></msub><mo>+</mo><msup><mi>ω</mi><mn>1</mn></msup><msub><mi>v</mi><mn>1</mn></msub></mtd></mtr><mtr><mtd columnalign="center"><msub><mi>u</mi><mn>0</mn></msub><mo>+</mo><msup><mi>ω</mi><mn>2</mn></msup><msub><mi>v</mi><mn>0</mn></msub></mtd></mtr><mtr><mtd columnalign="center"><msub><mi>u</mi><mn>1</mn></msub><mo>+</mo><msup><mi>ω</mi><mn>3</mn></msup><msub><mi>v</mi><mn>1</mn></msub></mtd></mtr></mtable><mo stretchy="true" form="postfix">]</mo></mrow><mo>=</mo><mrow><mo stretchy="true" form="prefix">[</mo><mtable><mtr><mtd columnalign="center"><msub><mi>u</mi><mn>0</mn></msub><mo>+</mo><msup><mi>ω</mi><mn>0</mn></msup><msub><mi>v</mi><mn>0</mn></msub></mtd></mtr><mtr><mtd columnalign="center"><msub><mi>u</mi><mn>1</mn></msub><mo>+</mo><msup><mi>ω</mi><mn>1</mn></msup><msub><mi>v</mi><mn>1</mn></msub></mtd></mtr><mtr><mtd columnalign="center"><msub><mi>u</mi><mn>0</mn></msub><mo>−</mo><msup><mi>ω</mi><mn>0</mn></msup><msub><mi>v</mi><mn>0</mn></msub></mtd></mtr><mtr><mtd columnalign="center"><msub><mi>u</mi><mn>1</mn></msub><mo>−</mo><msup><mi>ω</mi><mn>1</mn></msup><msub><mi>v</mi><mn>1</mn></msub></mtd></mtr></mtable><mo stretchy="true" form="postfix">]</mo></mrow></mrow><annotation encoding="application/x-tex"> 
+y = F(x) = \begin{bmatrix}
+u_0 + \omega^0 v_0 \\
+u_1 + \omega^1 v_1 \\
+u_0 + \omega^2 v_0 \\
+u_1 + \omega^3 v_1
+\end{bmatrix} = \begin{bmatrix}
+u_0 + \omega^0 v_0 \\
+u_1 + \omega^1 v_1 \\
+u_0 - \omega^0 v_0 \\
+u_1 - \omega^1 v_1
+\end{bmatrix}
+</annotation></semantics></math>
+This is not entirely intuitive and I encourage you to look in an introductory numerical analysis textbook if you would like to be guided through the derivation.
+Note that the last equality is just using <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msubsup><mi>ω</mi><mi>N</mi><mrow><mi>N</mi><mi>/</mi><mn>2</mn></mrow></msubsup><mo>=</mo><mo>−</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">\omega_N^{N/2} = -1</annotation></semantics></math> to simplify, this is very helpful computationally, as the bottom half and top half of the vector are now much more similar.
+From this we have the motivation for the recursive definition we will implement.
+Let <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>u</mi><mo>=</mo><mi>F</mi><mrow><mo stretchy="true" form="prefix">(</mo><msup><mi>x</mi><mi>e</mi></msup><mo stretchy="true" form="postfix">)</mo></mrow><mo>,</mo><mi>v</mi><mo>=</mo><mi>F</mi><mrow><mo stretchy="true" form="prefix">(</mo><msup><mi>x</mi><mi>o</mi></msup><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">u = F(x^e), v = F(x^o)</annotation></semantics></math> and <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>T</mi><mo>=</mo><mrow><mo stretchy="true" form="prefix">[</mo><msup><mi>ω</mi><mn>0</mn></msup><mo>,</mo><mi>.</mi><mi>.</mi><mi>.</mi><mo>,</mo><msup><mi>ω</mi><mrow><mi>N</mi><mi>/</mi><mn>2</mn><mo>−</mo><mn>1</mn></mrow></msup><mo stretchy="true" form="postfix">]</mo></mrow></mrow><annotation encoding="application/x-tex">T = [\omega^0, ..., \omega^{N/2-1}]</annotation></semantics></math> be a vector of twiddle factors, with <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mo>⊙</mo><annotation encoding="application/x-tex">\odot</annotation></semantics></math> being element-wise “broadcasting” multiplication.
+Then we can derive the following, abusing matrix notation somewhat.
+<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>y</mi><mo>=</mo><mrow><mo stretchy="true" form="prefix">[</mo><mtable><mtr><mtd columnalign="center"><mi>u</mi><mo>+</mo><mi>T</mi><mo>⊙</mo><mi>v</mi></mtd></mtr><mtr><mtd columnalign="center"><mi>u</mi><mo>−</mo><mi>T</mi><mo>⊙</mo><mi>v</mi></mtd></mtr></mtable><mo stretchy="true" form="postfix">]</mo></mrow></mrow><annotation encoding="application/x-tex">
+y = \begin{bmatrix}
+u + T \odot v \\
+u - T \odot v
+\end{bmatrix}
+</annotation></semantics></math></p>
+<p>A minimal Haskell implementation of this recursive form is quite elegant.</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ot">split ::</span> [a] <span class="ot">-&gt;</span> ([a], [a])</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>split [] <span class="ot">=</span> ([], [])</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>split [_] <span class="ot">=</span> <span class="fu">error</span> <span class="st">&quot;input size must be power of two&quot;</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>split (x<span class="op">:</span>y<span class="op">:</span>xs) <span class="ot">=</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>  <span class="kw">let</span> (es, os) <span class="ot">=</span> split xs</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>  <span class="kw">in</span> (x<span class="op">:</span>es, y<span class="op">:</span>os)</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="ot">mergeRadix2 ::</span> [<span class="dt">Complex</span> <span class="dt">Double</span>] <span class="ot">-&gt;</span> [<span class="dt">Complex</span> <span class="dt">Double</span>] <span class="ot">-&gt;</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> [<span class="dt">Complex</span> <span class="dt">Double</span>]</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>mergeRadix2 u v n <span class="ot">=</span> (<span class="op">++</span>) (<span class="fu">zipWith</span> (<span class="op">+</span>) u q) (<span class="fu">zipWith</span> (<span class="op">-</span>) u q)</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>  <span class="kw">where</span> q <span class="ot">=</span> <span class="fu">zipWith</span> (<span class="op">*</span>) v w</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>        n2 <span class="ot">=</span> <span class="fu">length</span> u <span class="op">-</span> <span class="dv">1</span></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>        w <span class="ot">=</span> [<span class="fu">exp</span> (<span class="dv">0</span> <span class="op">:+</span> (<span class="op">-</span><span class="dv">2</span> <span class="op">*</span> <span class="fu">pi</span> <span class="op">*</span> <span class="fu">fromIntegral</span> k <span class="op">/</span> <span class="fu">fromIntegral</span> n )) <span class="op">|</span> k <span class="ot">&lt;-</span> [<span class="dv">0</span><span class="op">..</span>n2]]</span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a><span class="ot">fft ::</span> [<span class="dt">Complex</span> <span class="dt">Double</span>] <span class="ot">-&gt;</span> [<span class="dt">Complex</span> <span class="dt">Double</span>]</span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>fft [] <span class="ot">=</span> []</span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>fft [z] <span class="ot">=</span> [z]</span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>fft zs <span class="ot">=</span> mergeRadix2 (fft evens) (fft odds) (<span class="fu">length</span> zs)</span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>  <span class="kw">where</span> (evens, odds) <span class="ot">=</span> split zs</span></code></pre></div>
+<p>One might immediately ask about performance, and yes, this implementation is meant only to be instructive, but explicitly recursive implementations can be competitive.
+The first place to look is FFTW, the state of the art software FFT library, which takes a “bag of algorithms + planner” approach.
+It is implemented with OCaml for code generation with many passes of optimization to create a portable C library, and many of the variants are recursive.</p>
+<p>The obvious suspects in a numerical algorithm optimization such as this are:</p>
+<ul>
+<li>Avoiding memory reallocation and optimizing cache locality.</li>
+<li>Using lookup tables or otherwise avoiding trigonometric calculation.</li>
+</ul>
+<h2 id="implementing-the-fft-in-futhark">Implementing the FFT in Futhark</h2>
+<p>I wanted to try Futhark, the pure functional array based language implemented in Haskell that compiles to C or Cuda/OpenCL, and thought this algorithm would be a good fit.
+There is a Stockham variant in the Futhark packages for reference, but I implemented Cooley-Tukey Radix-2.
+Unfortunately Futhark does not support explicit recursion, and it is not clear (to me at least) if it ever will.
+My understanding is that it may be possible in the future, though there are fundamental difficulties, as the stack cannot be used willy-nilly on a GPU, so any recursion would be limited in nature, and currently you just have to unroll it into a loop manually.
+This means we cannot implement a recursive FFT, but must do the more complicated iterative approach.</p>
+<p>I attempted to use Claude for this, to see how it would do with a relative obscure programming language, surprisingly it mostly worked, though it consistently would get indexing wrong and mostly would not use the array combinators correctly.
+The main points of the iterative approach are that successive applications of the even/odd splits can be viewed as a rearrangement by “bit reversal permutation” and that we must do much tedious indexing to keep track of the arithmetic combinations, these are the “butterflies” previously mentioned.
+Not going into depth, here is my implementation.</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>def twiddle (k<span class="op">:</span> i64) (n<span class="op">:</span> i64)<span class="op">:</span> complex <span class="ot">=</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="kw">let</span> angle <span class="ot">=</span> <span class="op">-</span><span class="fl">2.0</span> <span class="op">*</span> f64<span class="op">.</span><span class="fu">pi</span> <span class="op">*</span> f64<span class="op">.</span>i64 k <span class="op">/</span> f64<span class="op">.</span>i64 n</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="kw">in</span> (f64<span class="op">.</span><span class="fu">cos</span> angle, f64<span class="op">.</span><span class="fu">sin</span> angle)</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>def bit_reversal [n] &#39;t (input<span class="op">:</span> [n]t)<span class="op">:</span> [n]t <span class="ot">=</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>  <span class="kw">let</span> bits <span class="ot">=</span> i64<span class="op">.</span>f64 (f64<span class="op">.</span>log2 (f64<span class="op">.</span>i64 n))</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>  <span class="kw">let</span> indices <span class="ot">=</span> <span class="fu">map</span> (\i <span class="ot">-&gt;</span></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>    <span class="kw">let</span> rev <span class="ot">=</span> loop rev <span class="ot">=</span> <span class="dv">0</span> for j <span class="op">&lt;</span> bits <span class="kw">do</span></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>      (rev <span class="op">&lt;&lt;</span> <span class="dv">1</span>) <span class="op">|</span> ((i <span class="op">&gt;&gt;</span> j) <span class="op">&amp;</span> <span class="dv">1</span>)</span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>    <span class="kw">in</span> rev</span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>  ) (iota n)</span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>  <span class="kw">in</span> spread n (input[<span class="dv">0</span>]) indices input</span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a><span class="co">-- Type to hold butterfly operation parameters</span></span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a><span class="kw">type</span> butterfly_params <span class="ot">=</span> {</span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>  upper_idx<span class="op">:</span> i64,    <span class="co">-- Index of upper butterfly input</span></span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>  lower_idx<span class="op">:</span> i64,    <span class="co">-- Index of lower butterfly input</span></span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a>  twiddle<span class="op">:</span> complex   <span class="co">-- Twiddle factor for this butterfly</span></span>
+<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a><span class="co">-- Calculate butterfly parameters for a given stage</span></span>
+<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a>def get_butterfly_params (stage<span class="op">:</span> i64) (n<span class="op">:</span> i64) (i<span class="op">:</span> i64)<span class="op">:</span> butterfly_params <span class="ot">=</span></span>
+<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a>  <span class="kw">let</span> butterfly_size <span class="ot">=</span> <span class="dv">1</span> <span class="op">&lt;&lt;</span> (stage <span class="op">+</span> <span class="dv">1</span>)        <span class="co">-- Size of entire butterfly</span></span>
+<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a>  <span class="kw">let</span> half_size <span class="ot">=</span> butterfly_size <span class="op">&gt;&gt;</span> <span class="dv">1</span>          <span class="co">-- Size of half butterfly</span></span>
+<span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a>  <span class="kw">let</span> <span class="fu">group</span> <span class="ot">=</span> i <span class="op">/</span> butterfly_size               <span class="co">-- Which group of butterflies</span></span>
+<span id="cb2-26"><a href="#cb2-26" aria-hidden="true" tabindex="-1"></a>  <span class="kw">let</span> k <span class="ot">=</span> i <span class="op">%</span> half_size                        <span class="co">-- Position within half</span></span>
+<span id="cb2-27"><a href="#cb2-27" aria-hidden="true" tabindex="-1"></a>  <span class="kw">let</span> group_start <span class="ot">=</span> <span class="fu">group</span> <span class="op">*</span> butterfly_size     <span class="co">-- Start index of this group</span></span>
+<span id="cb2-28"><a href="#cb2-28" aria-hidden="true" tabindex="-1"></a>  <span class="kw">let</span> twiddle_idx <span class="ot">=</span> k <span class="op">*</span> (n <span class="op">/</span> butterfly_size)   <span class="co">-- Index for twiddle factor</span></span>
+<span id="cb2-29"><a href="#cb2-29" aria-hidden="true" tabindex="-1"></a>  <span class="kw">in</span> {</span>
+<span id="cb2-30"><a href="#cb2-30" aria-hidden="true" tabindex="-1"></a>    upper_idx <span class="ot">=</span> group_start <span class="op">+</span> k,</span>
+<span id="cb2-31"><a href="#cb2-31" aria-hidden="true" tabindex="-1"></a>    lower_idx <span class="ot">=</span> group_start <span class="op">+</span> k <span class="op">+</span> half_size,</span>
+<span id="cb2-32"><a href="#cb2-32" aria-hidden="true" tabindex="-1"></a>    twiddle <span class="ot">=</span> twiddle twiddle_idx n</span>
+<span id="cb2-33"><a href="#cb2-33" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb2-34"><a href="#cb2-34" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-35"><a href="#cb2-35" aria-hidden="true" tabindex="-1"></a><span class="co">-- Perform single butterfly operation</span></span>
+<span id="cb2-36"><a href="#cb2-36" aria-hidden="true" tabindex="-1"></a>def butterfly_op (<span class="kw">data</span><span class="op">:</span> []complex) (p<span class="op">:</span> butterfly_params) (is_upper<span class="op">:</span> bool)<span class="op">:</span> complex <span class="ot">=</span></span>
+<span id="cb2-37"><a href="#cb2-37" aria-hidden="true" tabindex="-1"></a>  <span class="kw">if</span> is_upper</span>
+<span id="cb2-38"><a href="#cb2-38" aria-hidden="true" tabindex="-1"></a>  <span class="kw">then</span> complex_add <span class="kw">data</span>[p<span class="op">.</span>upper_idx]</span>
+<span id="cb2-39"><a href="#cb2-39" aria-hidden="true" tabindex="-1"></a>                  (complex_mul <span class="kw">data</span>[p<span class="op">.</span>lower_idx] p<span class="op">.</span>twiddle)</span>
+<span id="cb2-40"><a href="#cb2-40" aria-hidden="true" tabindex="-1"></a>  <span class="kw">else</span> complex_sub <span class="kw">data</span>[p<span class="op">.</span>upper_idx]</span>
+<span id="cb2-41"><a href="#cb2-41" aria-hidden="true" tabindex="-1"></a>                  (complex_mul <span class="kw">data</span>[p<span class="op">.</span>lower_idx] p<span class="op">.</span>twiddle)</span>
+<span id="cb2-42"><a href="#cb2-42" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-43"><a href="#cb2-43" aria-hidden="true" tabindex="-1"></a><span class="co">-- Main FFT function</span></span>
+<span id="cb2-44"><a href="#cb2-44" aria-hidden="true" tabindex="-1"></a>def fft [n] (input<span class="op">:</span> [n]complex)<span class="op">:</span> [n]complex <span class="ot">=</span></span>
+<span id="cb2-45"><a href="#cb2-45" aria-hidden="true" tabindex="-1"></a>  <span class="kw">let</span> bits <span class="ot">=</span> i64<span class="op">.</span>f64 (f64<span class="op">.</span>log2 (f64<span class="op">.</span>i64 n))</span>
+<span id="cb2-46"><a href="#cb2-46" aria-hidden="true" tabindex="-1"></a>  <span class="co">-- This method can only handle arrays of length 2^n</span></span>
+<span id="cb2-47"><a href="#cb2-47" aria-hidden="true" tabindex="-1"></a>  <span class="kw">in</span> assert (n <span class="op">==</span> <span class="dv">1</span> <span class="op">&lt;&lt;</span> bits) (</span>
+<span id="cb2-48"><a href="#cb2-48" aria-hidden="true" tabindex="-1"></a>    <span class="co">-- First apply bit reversal permutation</span></span>
+<span id="cb2-49"><a href="#cb2-49" aria-hidden="true" tabindex="-1"></a>    <span class="kw">let</span> reordered <span class="ot">=</span> bit_reversal input</span>
+<span id="cb2-50"><a href="#cb2-50" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-51"><a href="#cb2-51" aria-hidden="true" tabindex="-1"></a>    <span class="co">-- Perform log2(n) stages of butterfly operations</span></span>
+<span id="cb2-52"><a href="#cb2-52" aria-hidden="true" tabindex="-1"></a>    <span class="kw">in</span> loop <span class="kw">data</span> <span class="ot">=</span> reordered for stage <span class="op">&lt;</span> bits <span class="kw">do</span></span>
+<span id="cb2-53"><a href="#cb2-53" aria-hidden="true" tabindex="-1"></a>      <span class="co">-- For each stage, compute butterfly parameters and perform operations</span></span>
+<span id="cb2-54"><a href="#cb2-54" aria-hidden="true" tabindex="-1"></a>      <span class="kw">let</span> butterfly_size <span class="ot">=</span> <span class="dv">1</span> <span class="op">&lt;&lt;</span> (stage <span class="op">+</span> <span class="dv">1</span>)</span>
+<span id="cb2-55"><a href="#cb2-55" aria-hidden="true" tabindex="-1"></a>      <span class="kw">let</span> half_size <span class="ot">=</span> butterfly_size <span class="op">&gt;&gt;</span> <span class="dv">1</span></span>
+<span id="cb2-56"><a href="#cb2-56" aria-hidden="true" tabindex="-1"></a>      <span class="kw">let</span> params <span class="ot">=</span> <span class="fu">map</span> (get_butterfly_params stage n) (iota n)</span>
+<span id="cb2-57"><a href="#cb2-57" aria-hidden="true" tabindex="-1"></a>      <span class="kw">in</span> map2 (\p i <span class="ot">-&gt;</span></span>
+<span id="cb2-58"><a href="#cb2-58" aria-hidden="true" tabindex="-1"></a>        <span class="kw">let</span> is_upper <span class="ot">=</span> (i <span class="op">%</span> butterfly_size) <span class="op">&lt;</span> half_size</span>
+<span id="cb2-59"><a href="#cb2-59" aria-hidden="true" tabindex="-1"></a>        <span class="kw">in</span> butterfly_op <span class="kw">data</span> p is_upper</span>
+<span id="cb2-60"><a href="#cb2-60" aria-hidden="true" tabindex="-1"></a>      ) params (iota n)</span>
+<span id="cb2-61"><a href="#cb2-61" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre></div>
+<p>This is not particularly optimized. Futhark allows for fused memory operations and has a semantics for tracking when it is safe to overwrite memory while remaining pure, I did not use this here. I did make sure to use <code>spread</code> and <code>map2</code> array combinators when traversing, which theoretically should allow for some automatic parallelism, though I did not test this, as I don’t have CUDA running on my laptop.</p>
+<p>Futhark is slowly emerging from being an academic project into a serious tool, and the ecosystem is still in its infancy.
+I wanted to try implementing some of my research in eigensolvers, but the linear algebra module is at the level of undergraduate research project, and does not appear to support complex matrices at the moment.
+Personally, I probably will not use it further at the moment, but it is very much the direction I would like numerical algorithms to go, with functional DSLs (or full languages) that compile to highly portable, highly optimized code.</p>
+    </section>
+  </article>
+</main>
+]]></summary>
+</entry>
+<entry>
+    <title>Moving from Hugo to Hakyll</title>
+    <link href="https://spacedome.tv/posts/moving-from-hugo-to-hakyll.html" />
+    <id>https://spacedome.tv/posts/moving-from-hugo-to-hakyll.html</id>
+    <published>2024-11-09T00:00:00Z</published>
+    <updated>2024-11-09 10:59</updated>
+    <summary type="html"><![CDATA[<main>
+  <article>
+    <header>
+    <h1>Moving from Hugo to Hakyll</h1>
+    <p><i>2024-11-09 (updated: 2024-11-09 10:59)</i></p>
+    <hr/>
+    </header>
+    <section>
+      <p>Five years ago I decided to rewrite this website with a static site generator, and chose Hugo on a whim.
+After letting it sit around unused for far too long, I moved it to <a href="https://jaspervdj.be/hakyll/">Hakyll</a>.
+Now that I’m getting back into Haskell, it was a perfect small project, and Pandoc is unbeatable as a document conversion backend.</p>
+<p>The built in code highlighter works well enough if you override some of the styling.
+It is aparently also possible to use pygmentize if you want to go through the trouble.</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ot">toSlug ::</span> <span class="dt">T.Text</span> <span class="ot">-&gt;</span> <span class="dt">T.Text</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>toSlug <span class="ot">=</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>  T.intercalate (T.singleton <span class="ch">&#39;-&#39;</span>) <span class="op">.</span> T.words <span class="op">.</span> T.toLower <span class="op">.</span> clean</span></code></pre></div>
+<p>I chose a perfect time to move, as MathML finally has full support across all browsers as of Chromium 109, so the whole MathJax/KaTeX and JS rendering question is finally over.
+We are free!
+Here is an example and the associated markdown:</p>
+<p>Inline math with MathML: <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>y</mi><mo>=</mo><mi>m</mi><mi>x</mi><mo>+</mo><mi>b</mi></mrow><annotation encoding="application/x-tex">y = mx +b</annotation></semantics></math>.
+Block/display style:
+<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>ln</mo><mi>x</mi><mo>=</mo><msubsup><mo>∫</mo><mrow><mo>−</mo><mi>∞</mi></mrow><mi>x</mi></msubsup><mfrac><mn>1</mn><mi>y</mi></mfrac><mspace width="0.167em"></mspace><mstyle mathvariant="normal"><mi>d</mi></mstyle><mi>y</mi><mi>.</mi></mrow><annotation encoding="application/x-tex"> \ln x = \int_{-\infty}^x \frac 1 y \, \mathrm{d}y . </annotation></semantics></math></p>
+<pre class="text"><code>Inline math with MathML: \\( y = mx +b \\). Block/display style:
+\\[ \ln x = \int_{-\infty}^x \frac 1 y \, \mathrm{d}y . \\]</code></pre>
+<p>This is as easy as enabling the <code>Ext_tex_math_double_backslash</code> Pandoc extension and setting <code>writerHTMLMathMethod = MathML</code> in the Pandoc writer options.
+It is significantly uglier than what TeX would give you, but this is the price you pay if you want to avoid javascript or prerendering SVGs.</p>
+<p>If you do want your math to look nice, instead of using the MathJax Pandoc writer, you can use MathML and put the MathJax CDN script in your header for drop in MathJax rendering that falls back gracefully to MathML instead of the typical raw LaTeX text.
+Why this isn’t the default behavior of the MathJax writer in Pandoc, who knows.
+You can also pre-render with KaTeX to get pretty HTML results, but this involves running javascript during the build process.</p>
+<p>To see what this page looks like redered as pure MathML, just disable javascript.
+Thankfully, while still a real Hog coming in around 250kB compressed, MathJax 3 is much faster than it used to be.
+Definitely make sure to have this included only on the necessary pages.</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mrow><mo stretchy="true" form="prefix">(</mo><munderover><mo>∑</mo><mrow><mi>k</mi><mo>=</mo><mn>1</mn></mrow><mi>n</mi></munderover><msub><mi>a</mi><mi>k</mi></msub><msub><mi>b</mi><mi>k</mi></msub><mo stretchy="true" form="postfix">)</mo></mrow><mn>2</mn></msup><mo>≤</mo><mrow><mo stretchy="true" form="prefix">(</mo><munderover><mo>∑</mo><mrow><mi>k</mi><mo>=</mo><mn>1</mn></mrow><mi>n</mi></munderover><msubsup><mi>a</mi><mi>k</mi><mn>2</mn></msubsup><mo stretchy="true" form="postfix">)</mo></mrow><mrow><mo stretchy="true" form="prefix">(</mo><munderover><mo>∑</mo><mrow><mi>k</mi><mo>=</mo><mn>1</mn></mrow><mi>n</mi></munderover><msubsup><mi>b</mi><mi>k</mi><mn>2</mn></msubsup><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">\left( \sum_{k=1}^n a_k b_k \right)^2 \leq \left( \sum_{k=1}^n a_k^2 \right) \left( \sum_{k=1}^n b_k^2 \right) </annotation></semantics></math></p>
+    </section>
+  </article>
+</main>
+]]></summary>
+</entry>
+<entry>
+    <title>Cross-Validation Methodology in Materials Science</title>
+    <link href="https://spacedome.tv/posts/cross-validation-methodology-in-materials-science.html" />
+    <id>https://spacedome.tv/posts/cross-validation-methodology-in-materials-science.html</id>
+    <published>2018-09-01T00:00:00Z</published>
+    <updated>2018-09-01T00:00:00Z</updated>
+    <summary type="html"><![CDATA[<main>
+  <article>
+    <header>
+    <h1>Cross-Validation Methodology in Materials Science</h1>
+    <p><i>2018-09-01 </i></p>
+    <hr/>
+    </header>
+    <section>
+      <p>Cross-validation is a critical part of statistical methodology, for ad hoc models cross-validation may be the only indication of model performance, and without a reasonable cross-validation methodology serious over-fitting can go undetected.
+This issue is particularly relevant to domains where small data-sets with a comparatively large number of features is common, for example Materials Science or Genomics.
+If the cross-validation method does not take into consideration the feature selection (that is, considering feature selection as part of model selection), a significant selection bias can occur, see <a href="https://doi.org/10.1073/pnas.102102699">this paper</a> for an example with gene-expression data.
+In general, a reasonably robust validation methodology should be chosen before model selection, and final hold-out sets should be used when possible.</p>
+<h1 id="poster-pdf"><a href="/pdf/poster_SULI.pdf">Poster PDF</a></h1>
+    </section>
+  </article>
+</main>
+]]></summary>
+</entry>
+<entry>
+    <title>Learning Hyper-Parameters with Bayesian Optimization</title>
+    <link href="https://spacedome.tv/posts/learning-hyper-parameters-with-bayesian-optimization.html" />
+    <id>https://spacedome.tv/posts/learning-hyper-parameters-with-bayesian-optimization.html</id>
+    <published>2018-05-01T00:00:00Z</published>
+    <updated>2018-05-01T00:00:00Z</updated>
+    <summary type="html"><![CDATA[<main>
+  <article>
+    <header>
+    <h1>Learning Hyper-Parameters with Bayesian Optimization</h1>
+    <p><i>2018-05-01 </i></p>
+    <hr/>
+    </header>
+    <section>
+      <p>It is well known in the Machine Learning literature that a Grid Search for optimizing parameters is sub-optimal, and generally outperformed by a Random Search.
+This project explored using Bayesian Optimization as a sequential search strategy, testing the method on the hyper-parameters of a relatively simple Neural Network performing image classification.</p>
+<p>The main conclusion of this research is that incredible computational resources are needed to characterize NN hyper-parameter optimization methods, see the Google Vizier “paper” for context.
+Despite this, Bayesian Optimization is a promising technique for sequential, potentially stochastic, optimization problems where the cost of sampling is a limiting factor.
+For example, see my paper with Alex Dunn, <em>Rocketsled</em>, on applications of Bayesian Optimization to Computational Materials Science.</p>
+<p>In a broader context, stop searching for parameters by hand, and consider random search over grid search if the relative importance of each parameter is unknown (for example some may not be important at all).
+See the <a href="http://www.jmlr.org/papers/v13/bergstra12a.html">paper</a> by Bergstra and Bengio for reference.
+There is no reason to search parameters manually, there are many easy to use optimization codes to choose from, for example <a href="https://scikit-optimize.github.io/">skopt</a>.</p>
+<h1 id="poster-pdf"><a href="/pdf/poster_CS682.pdf">Poster PDF</a></h1>
+    </section>
+  </article>
+</main>
+]]></summary>
+</entry>
+
+</feed>

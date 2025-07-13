@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>FFT in Haskell and Futhark</title>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="FFT in Haskell and Futhark">
+    
+    <meta name="author" content="Julien">
+    
+    
+    <meta name="keywords" content="haskell, blog, fft, algorithms, numerical">
+    
+
+    <meta property="og:site_name" content="Spacedome">
+    <meta property="og:title" content="FFT in Haskell and Futhark">
+    <meta property="og:url" content="https://spacedome.tv/posts/fft-in-haskell-and-futhark.html">
+    <meta property="og:description" content="FFT in Haskell and Futhark">
+    
+    
+    <meta property="og:type" content="article">
+    
+
+    <link rel="shortcut icon" href="../favicon.ico">
+    <link rel="canonical" href="https://spacedome.tv/posts/fft-in-haskell-and-futhark.html">
+
+    <link rel="alternate" href="../atom.xml" title="Spacedome.tv" type="application/atom+xml">
+    <link rel="alternate" href="../rss.xml" title="Spacedome.tv" type="application/rss+xml">
+
+    <link rel="stylesheet" href="../css/code.css" />
+    <link rel="stylesheet" href="../css/default.css" />
+
+    
+    <script type="text/javascript" id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/mml-chtml.min.js">
+    </script>
+    
+  </head>
+  <header>
+      <a href="../">
+          <img src="../images/spacedome.svg" alt="spacedome.tv" class="logo">
+      </a>
+  </header>
+  <nav>
+      <ul class="bar">
+          <li><a href="../posts.html">Posts</a></li>
+          <li><a href="../projects.html">Projects</a></li>
+          <li><a href="../research.html">Research</a></li>
+          <li><a href="../artwork.html">Artwork</a></li>
+          <li><a href="https://github.com/spacedome">Github</a></li>
+          <li><a href="../">About</a></li>
+      </ul>
+  </nav>
+  <body>
+    <main>
+  <article>
+    <header>
+    <h1>FFT in Haskell and Futhark</h1>
+    <p><i>2024-12-24 (updated: 2024-12-24 11:11)</i></p>
+    <hr />
+    </header>
+    <section>
+      <p>The Fourier transform is one of the fundamental tools in analysis.
+From the perspective of approximation theory, it gives us one of the orthogonal function bases, the natural basis for periodic functions.
+To use this numerically, as with any basis, we must sample from the function to be approximated, and periodic functions have a wonderful property that the optimal points to sample are uniformly spaced on the interval.
+This is very different from polynomial bases like Chebyshev or Legendre polynomials, where choosing the points is somewhat involved.
+For Fourier, this leads us to the Discrete Fourier Transform (DFT), a cornerstone of signal processing.</p>
+<p>Let <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>x</mi><mi>n</mi></msub><annotation encoding="application/x-tex">x_n</annotation></semantics></math> be our signal sampled at <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>N</mi><annotation encoding="application/x-tex">N</annotation></semantics></math> points, i.e. <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>x</mi><annotation encoding="application/x-tex">x</annotation></semantics></math> is a sequence of <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>N</mi><annotation encoding="application/x-tex">N</annotation></semantics></math> real or complex numbers.
+Let <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>ω</mi><mo>=</mo><msub><mi>ω</mi><mi>N</mi></msub><mo>=</mo><msup><mi>e</mi><mrow><mo>−</mo><mn>2</mn><mi>π</mi><mi>i</mi><mi>/</mi><mi>N</mi></mrow></msup></mrow><annotation encoding="application/x-tex">\omega = \omega_N = e^{-2\pi i / N}</annotation></semantics></math> be the <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msup><mi>N</mi><mtext mathvariant="normal">th</mtext></msup><annotation encoding="application/x-tex">N^\text{th}</annotation></semantics></math> root of unity, the powers of which are sometimes called “twiddle” factors in this context.
+We can then define the DFT element-wise as follows.</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>y</mi><mi>t</mi></msub><mo>=</mo><munderover><mo>∑</mo><mrow><mi>n</mi><mo>=</mo><mn>0</mn></mrow><mrow><mi>N</mi><mo>−</mo><mn>1</mn></mrow></munderover><msub><mi>x</mi><mi>n</mi></msub><mo>⋅</mo><msup><mi>ω</mi><mrow><mi>t</mi><mi>n</mi></mrow></msup></mrow><annotation encoding="application/x-tex"> y_t =\sum_{n=0}^{N-1} x_{n} \cdot \omega^{t n} </annotation></semantics></math></p>
+<p>We see that each element is the dot product of <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>x</mi><annotation encoding="application/x-tex">x</annotation></semantics></math> with a vector of the twiddle factors, so we can represent this as a matrix multiplication <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>y</mi><mo>=</mo><msub><mi>W</mi><mi>N</mi></msub><mi>x</mi></mrow><annotation encoding="application/x-tex">y = W_N x</annotation></semantics></math> where</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>W</mi><mi>N</mi></msub><mo>=</mo><mrow><mo stretchy="true" form="prefix">[</mo><mtable><mtr><mtd columnalign="center"><msubsup><mi>ω</mi><mi>N</mi><mn>0</mn></msubsup></mtd><mtd columnalign="center"><msubsup><mi>ω</mi><mi>N</mi><mn>0</mn></msubsup></mtd><mtd columnalign="center"><msubsup><mi>ω</mi><mi>N</mi><mn>0</mn></msubsup></mtd><mtd columnalign="center"><mi>⋯</mi></mtd><mtd columnalign="center"><msubsup><mi>ω</mi><mi>N</mi><mn>0</mn></msubsup></mtd></mtr><mtr><mtd columnalign="center"><msubsup><mi>ω</mi><mi>N</mi><mn>0</mn></msubsup></mtd><mtd columnalign="center"><msubsup><mi>ω</mi><mi>N</mi><mn>1</mn></msubsup></mtd><mtd columnalign="center"><msubsup><mi>ω</mi><mi>N</mi><mn>2</mn></msubsup></mtd><mtd columnalign="center"><mi>⋯</mi></mtd><mtd columnalign="center"><msubsup><mi>ω</mi><mi>N</mi><mrow><mi>N</mi><mo>−</mo><mn>1</mn></mrow></msubsup></mtd></mtr><mtr><mtd columnalign="center"><msubsup><mi>ω</mi><mi>N</mi><mn>0</mn></msubsup></mtd><mtd columnalign="center"><msubsup><mi>ω</mi><mi>N</mi><mn>2</mn></msubsup></mtd><mtd columnalign="center"><msubsup><mi>ω</mi><mi>N</mi><mn>4</mn></msubsup></mtd><mtd columnalign="center"><mi>⋯</mi></mtd><mtd columnalign="center"><msubsup><mi>ω</mi><mi>N</mi><mrow><mn>2</mn><mrow><mo stretchy="true" form="prefix">(</mo><mi>N</mi><mo>−</mo><mn>1</mn><mo stretchy="true" form="postfix">)</mo></mrow></mrow></msubsup></mtd></mtr><mtr><mtd columnalign="center"><mi>⋮</mi></mtd><mtd columnalign="center"><mi>⋮</mi></mtd><mtd columnalign="center"><mi>⋮</mi></mtd><mtd columnalign="center"><mo>⋱</mo></mtd><mtd columnalign="center"><mi>⋮</mi></mtd></mtr><mtr><mtd columnalign="center"><msubsup><mi>ω</mi><mi>N</mi><mn>0</mn></msubsup></mtd><mtd columnalign="center"><msubsup><mi>ω</mi><mi>N</mi><mrow><mi>N</mi><mo>−</mo><mn>1</mn></mrow></msubsup></mtd><mtd columnalign="center"><msubsup><mi>ω</mi><mi>N</mi><mrow><mn>2</mn><mrow><mo stretchy="true" form="prefix">(</mo><mi>N</mi><mo>−</mo><mn>1</mn><mo stretchy="true" form="postfix">)</mo></mrow></mrow></msubsup></mtd><mtd columnalign="center"><mi>⋯</mi></mtd><mtd columnalign="center"><msubsup><mi>ω</mi><mi>N</mi><mrow><mrow><mo stretchy="true" form="prefix">(</mo><mi>N</mi><mo>−</mo><mn>1</mn><mo stretchy="true" form="postfix">)</mo></mrow><mrow><mo stretchy="true" form="prefix">(</mo><mi>N</mi><mo>−</mo><mn>1</mn><mo stretchy="true" form="postfix">)</mo></mrow></mrow></msubsup></mtd></mtr></mtable><mo stretchy="true" form="postfix">]</mo></mrow></mrow><annotation encoding="application/x-tex"> 
+W_N = \begin{bmatrix} 
+\omega^0_N &amp; \omega^0_N &amp; \omega^0_N &amp; \cdots &amp; \omega^0_N \\
+\omega^0_N &amp; \omega_N^1 &amp; \omega_N^2 &amp; \cdots &amp; \omega_N^{N-1} \\
+\omega^0_N &amp; \omega_N^2 &amp; \omega_N^4 &amp; \cdots &amp; \omega_N^{2(N-1)} \\
+\vdots &amp; \vdots &amp; \vdots &amp; \ddots &amp; \vdots \\
+\omega^0_N &amp; \omega_N^{N-1} &amp; \omega_N^{2(N-1)} &amp; \cdots &amp; \omega_N^{(N-1)(N-1)}
+\end{bmatrix}
+</annotation></semantics></math></p>
+<p>We will also denote this as <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>y</mi><mo>=</mo><mi>F</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>x</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">y = F(x)</annotation></semantics></math>.
+The complexity of matrix-vector multiplication is trivially <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>O</mi><mrow><mo stretchy="true" form="prefix">(</mo><msup><mi>n</mi><mn>2</mn></msup><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">O(n^2)</annotation></semantics></math>, as we must access every element of the matrix.
+In the 1960s, during the great boom of numerical research, James Cooley and John Tukey published their paper exploiting the structure of the matrix for a log-linear solution, ushering in the age of real time digital signal processing.
+This family of algorithms is called the Fast Fourier Transform (FFT).</p>
+<p>The key insight of the Cooley-Tukey FFT is that one can split the signal in half and recursively compute the FFT.
+This is one of the early examples of divide and conquer algorithms, along with merge sort, which shares a similar <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>n</mi><mo>log</mo><mi>n</mi></mrow><annotation encoding="application/x-tex">n \log n</annotation></semantics></math> time complexity.
+For simplicity we assume <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>N</mi><annotation encoding="application/x-tex">N</annotation></semantics></math> is a power of two, so that we can divide in half until we get to a single element, though this is not necessary with real FFT implementations.
+Recursive algorithms are often most naturally expressed in functional languages, so we derive a recursive form to implement in Haskell.</p>
+<p>First we identify the base case, which is simply the identity <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>y</mi><mo>=</mo><msup><mi>ω</mi><mn>0</mn></msup><mi>x</mi><mo>=</mo><mi>x</mi></mrow><annotation encoding="application/x-tex">y = \omega^0 x = x</annotation></semantics></math>.
+For <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>N</mi><mo>=</mo><mn>2</mn><mo>,</mo><mi>N</mi><mo>=</mo><mn>4</mn></mrow><annotation encoding="application/x-tex">N = 2, N=4</annotation></semantics></math> it is instructive to do examples out by hand in full using the matrix multiplication <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>W</mi><mi>N</mi></msub><mi>x</mi></mrow><annotation encoding="application/x-tex">W_N x</annotation></semantics></math>.
+For <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>N</mi><mo>=</mo><mn>2</mn></mrow><annotation encoding="application/x-tex">N = 2</annotation></semantics></math> we get the following.</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mtable><mtr><mtd columnalign="right"><msub><mi>y</mi><mn>0</mn></msub></mtd><mtd columnalign="left"><mo>=</mo><msub><mi>x</mi><mn>0</mn></msub><mo>+</mo><msub><mi>x</mi><mn>1</mn></msub></mtd></mtr><mtr><mtd columnalign="right"><msub><mi>y</mi><mn>1</mn></msub></mtd><mtd columnalign="left"><mo>=</mo><msub><mi>x</mi><mn>0</mn></msub><mo>−</mo><msub><mi>x</mi><mn>1</mn></msub></mtd></mtr></mtable><annotation encoding="application/x-tex"> \begin{align}  y_0 &amp;= x_0 + x_1 \\ y_1 &amp;= x_0 - x_1 \end{align} </annotation></semantics></math></p>
+<p>When drawn out as a data flow diagram, as you would see in more hardware-adjacent expositions, this forms a cross-over, leading to the name <a href="https://en.wikipedia.org/wiki/Butterfly_diagram">butterfly</a> for the combining stage of the FFT.</p>
+<p>The trick to the recursion is that splitting <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>x</mi><annotation encoding="application/x-tex">x</annotation></semantics></math> into even <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mi>x</mi><mi>e</mi></msup><mo>=</mo><mo stretchy="false" form="prefix">{</mo><msub><mi>x</mi><mn>0</mn></msub><mo>,</mo><msub><mi>x</mi><mn>2</mn></msub><mo>,</mo><mi>.</mi><mi>.</mi><mi>.</mi><mo stretchy="false" form="postfix">}</mo></mrow><annotation encoding="application/x-tex">x^e = \{x_0, x_2, ...\}</annotation></semantics></math> and odd <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mi>x</mi><mi>o</mi></msup><mo>=</mo><mo stretchy="false" form="prefix">{</mo><msub><mi>x</mi><mn>1</mn></msub><mo>,</mo><msub><mi>x</mi><mn>3</mn></msub><mo>,</mo><mi>.</mi><mi>.</mi><mi>.</mi><mo stretchy="false" form="postfix">}</mo></mrow><annotation encoding="application/x-tex">x^o = \{x_1, x_3, ...\}</annotation></semantics></math> components.
+This can be seen by rewriting the <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>N</mi><mo>=</mo><mn>4</mn></mrow><annotation encoding="application/x-tex">N=4</annotation></semantics></math> case out by hand, I will leave out the derivation here, but the result should look like the following.</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>u</mi><mo>=</mo><mi>F</mi><mrow><mo stretchy="true" form="prefix">(</mo><msup><mi>x</mi><mi>e</mi></msup><mo stretchy="true" form="postfix">)</mo></mrow><mo>=</mo><msub><mi>W</mi><mn>2</mn></msub><mrow><mo stretchy="true" form="prefix">[</mo><mtable><mtr><mtd columnalign="center"><msub><mi>x</mi><mn>0</mn></msub></mtd></mtr><mtr><mtd columnalign="center"><msub><mi>x</mi><mn>2</mn></msub></mtd></mtr></mtable><mo stretchy="true" form="postfix">]</mo></mrow><mo>,</mo><mspace width="1.0em"></mspace><mi>v</mi><mo>=</mo><mi>F</mi><mrow><mo stretchy="true" form="prefix">(</mo><msup><mi>x</mi><mi>o</mi></msup><mo stretchy="true" form="postfix">)</mo></mrow><mo>=</mo><msub><mi>W</mi><mn>2</mn></msub><mrow><mo stretchy="true" form="prefix">[</mo><mtable><mtr><mtd columnalign="center"><msub><mi>x</mi><mn>1</mn></msub></mtd></mtr><mtr><mtd columnalign="center"><msub><mi>x</mi><mn>3</mn></msub></mtd></mtr></mtable><mo stretchy="true" form="postfix">]</mo></mrow></mrow><annotation encoding="application/x-tex"> 
+u = F(x^e) = W_2 \begin{bmatrix} x_0 \\ x_2  \end{bmatrix}, \quad
+v = F(x^o) = W_2 \begin{bmatrix} x_1 \\ x_3  \end{bmatrix}
+</annotation></semantics></math>
+We then combine the two sub-problems.
+<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>y</mi><mo>=</mo><mi>F</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>x</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>=</mo><mrow><mo stretchy="true" form="prefix">[</mo><mtable><mtr><mtd columnalign="center"><msub><mi>u</mi><mn>0</mn></msub><mo>+</mo><msup><mi>ω</mi><mn>0</mn></msup><msub><mi>v</mi><mn>0</mn></msub></mtd></mtr><mtr><mtd columnalign="center"><msub><mi>u</mi><mn>1</mn></msub><mo>+</mo><msup><mi>ω</mi><mn>1</mn></msup><msub><mi>v</mi><mn>1</mn></msub></mtd></mtr><mtr><mtd columnalign="center"><msub><mi>u</mi><mn>0</mn></msub><mo>+</mo><msup><mi>ω</mi><mn>2</mn></msup><msub><mi>v</mi><mn>0</mn></msub></mtd></mtr><mtr><mtd columnalign="center"><msub><mi>u</mi><mn>1</mn></msub><mo>+</mo><msup><mi>ω</mi><mn>3</mn></msup><msub><mi>v</mi><mn>1</mn></msub></mtd></mtr></mtable><mo stretchy="true" form="postfix">]</mo></mrow><mo>=</mo><mrow><mo stretchy="true" form="prefix">[</mo><mtable><mtr><mtd columnalign="center"><msub><mi>u</mi><mn>0</mn></msub><mo>+</mo><msup><mi>ω</mi><mn>0</mn></msup><msub><mi>v</mi><mn>0</mn></msub></mtd></mtr><mtr><mtd columnalign="center"><msub><mi>u</mi><mn>1</mn></msub><mo>+</mo><msup><mi>ω</mi><mn>1</mn></msup><msub><mi>v</mi><mn>1</mn></msub></mtd></mtr><mtr><mtd columnalign="center"><msub><mi>u</mi><mn>0</mn></msub><mo>−</mo><msup><mi>ω</mi><mn>0</mn></msup><msub><mi>v</mi><mn>0</mn></msub></mtd></mtr><mtr><mtd columnalign="center"><msub><mi>u</mi><mn>1</mn></msub><mo>−</mo><msup><mi>ω</mi><mn>1</mn></msup><msub><mi>v</mi><mn>1</mn></msub></mtd></mtr></mtable><mo stretchy="true" form="postfix">]</mo></mrow></mrow><annotation encoding="application/x-tex"> 
+y = F(x) = \begin{bmatrix}
+u_0 + \omega^0 v_0 \\
+u_1 + \omega^1 v_1 \\
+u_0 + \omega^2 v_0 \\
+u_1 + \omega^3 v_1
+\end{bmatrix} = \begin{bmatrix}
+u_0 + \omega^0 v_0 \\
+u_1 + \omega^1 v_1 \\
+u_0 - \omega^0 v_0 \\
+u_1 - \omega^1 v_1
+\end{bmatrix}
+</annotation></semantics></math>
+This is not entirely intuitive and I encourage you to look in an introductory numerical analysis textbook if you would like to be guided through the derivation.
+Note that the last equality is just using <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msubsup><mi>ω</mi><mi>N</mi><mrow><mi>N</mi><mi>/</mi><mn>2</mn></mrow></msubsup><mo>=</mo><mo>−</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">\omega_N^{N/2} = -1</annotation></semantics></math> to simplify, this is very helpful computationally, as the bottom half and top half of the vector are now much more similar.
+From this we have the motivation for the recursive definition we will implement.
+Let <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>u</mi><mo>=</mo><mi>F</mi><mrow><mo stretchy="true" form="prefix">(</mo><msup><mi>x</mi><mi>e</mi></msup><mo stretchy="true" form="postfix">)</mo></mrow><mo>,</mo><mi>v</mi><mo>=</mo><mi>F</mi><mrow><mo stretchy="true" form="prefix">(</mo><msup><mi>x</mi><mi>o</mi></msup><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">u = F(x^e), v = F(x^o)</annotation></semantics></math> and <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>T</mi><mo>=</mo><mrow><mo stretchy="true" form="prefix">[</mo><msup><mi>ω</mi><mn>0</mn></msup><mo>,</mo><mi>.</mi><mi>.</mi><mi>.</mi><mo>,</mo><msup><mi>ω</mi><mrow><mi>N</mi><mi>/</mi><mn>2</mn><mo>−</mo><mn>1</mn></mrow></msup><mo stretchy="true" form="postfix">]</mo></mrow></mrow><annotation encoding="application/x-tex">T = [\omega^0, ..., \omega^{N/2-1}]</annotation></semantics></math> be a vector of twiddle factors, with <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mo>⊙</mo><annotation encoding="application/x-tex">\odot</annotation></semantics></math> being element-wise “broadcasting” multiplication.
+Then we can derive the following, abusing matrix notation somewhat.
+<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>y</mi><mo>=</mo><mrow><mo stretchy="true" form="prefix">[</mo><mtable><mtr><mtd columnalign="center"><mi>u</mi><mo>+</mo><mi>T</mi><mo>⊙</mo><mi>v</mi></mtd></mtr><mtr><mtd columnalign="center"><mi>u</mi><mo>−</mo><mi>T</mi><mo>⊙</mo><mi>v</mi></mtd></mtr></mtable><mo stretchy="true" form="postfix">]</mo></mrow></mrow><annotation encoding="application/x-tex">
+y = \begin{bmatrix}
+u + T \odot v \\
+u - T \odot v
+\end{bmatrix}
+</annotation></semantics></math></p>
+<p>A minimal Haskell implementation of this recursive form is quite elegant.</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ot">split ::</span> [a] <span class="ot">-&gt;</span> ([a], [a])</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>split [] <span class="ot">=</span> ([], [])</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>split [_] <span class="ot">=</span> <span class="fu">error</span> <span class="st">&quot;input size must be power of two&quot;</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>split (x<span class="op">:</span>y<span class="op">:</span>xs) <span class="ot">=</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>  <span class="kw">let</span> (es, os) <span class="ot">=</span> split xs</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>  <span class="kw">in</span> (x<span class="op">:</span>es, y<span class="op">:</span>os)</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="ot">mergeRadix2 ::</span> [<span class="dt">Complex</span> <span class="dt">Double</span>] <span class="ot">-&gt;</span> [<span class="dt">Complex</span> <span class="dt">Double</span>] <span class="ot">-&gt;</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> [<span class="dt">Complex</span> <span class="dt">Double</span>]</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>mergeRadix2 u v n <span class="ot">=</span> (<span class="op">++</span>) (<span class="fu">zipWith</span> (<span class="op">+</span>) u q) (<span class="fu">zipWith</span> (<span class="op">-</span>) u q)</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>  <span class="kw">where</span> q <span class="ot">=</span> <span class="fu">zipWith</span> (<span class="op">*</span>) v w</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>        n2 <span class="ot">=</span> <span class="fu">length</span> u <span class="op">-</span> <span class="dv">1</span></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>        w <span class="ot">=</span> [<span class="fu">exp</span> (<span class="dv">0</span> <span class="op">:+</span> (<span class="op">-</span><span class="dv">2</span> <span class="op">*</span> <span class="fu">pi</span> <span class="op">*</span> <span class="fu">fromIntegral</span> k <span class="op">/</span> <span class="fu">fromIntegral</span> n )) <span class="op">|</span> k <span class="ot">&lt;-</span> [<span class="dv">0</span><span class="op">..</span>n2]]</span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a><span class="ot">fft ::</span> [<span class="dt">Complex</span> <span class="dt">Double</span>] <span class="ot">-&gt;</span> [<span class="dt">Complex</span> <span class="dt">Double</span>]</span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>fft [] <span class="ot">=</span> []</span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>fft [z] <span class="ot">=</span> [z]</span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>fft zs <span class="ot">=</span> mergeRadix2 (fft evens) (fft odds) (<span class="fu">length</span> zs)</span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>  <span class="kw">where</span> (evens, odds) <span class="ot">=</span> split zs</span></code></pre></div>
+<p>One might immediately ask about performance, and yes, this implementation is meant only to be instructive, but explicitly recursive implementations can be competitive.
+The first place to look is FFTW, the state of the art software FFT library, which takes a “bag of algorithms + planner” approach.
+It is implemented with OCaml for code generation with many passes of optimization to create a portable C library, and many of the variants are recursive.</p>
+<p>The obvious suspects in a numerical algorithm optimization such as this are:</p>
+<ul>
+<li>Avoiding memory reallocation and optimizing cache locality.</li>
+<li>Using lookup tables or otherwise avoiding trigonometric calculation.</li>
+</ul>
+<h2 id="implementing-the-fft-in-futhark">Implementing the FFT in Futhark</h2>
+<p>I wanted to try Futhark, the pure functional array based language implemented in Haskell that compiles to C or Cuda/OpenCL, and thought this algorithm would be a good fit.
+There is a Stockham variant in the Futhark packages for reference, but I implemented Cooley-Tukey Radix-2.
+Unfortunately Futhark does not support explicit recursion, and it is not clear (to me at least) if it ever will.
+My understanding is that it may be possible in the future, though there are fundamental difficulties, as the stack cannot be used willy-nilly on a GPU, so any recursion would be limited in nature, and currently you just have to unroll it into a loop manually.
+This means we cannot implement a recursive FFT, but must do the more complicated iterative approach.</p>
+<p>I attempted to use Claude for this, to see how it would do with a relative obscure programming language, surprisingly it mostly worked, though it consistently would get indexing wrong and mostly would not use the array combinators correctly.
+The main points of the iterative approach are that successive applications of the even/odd splits can be viewed as a rearrangement by “bit reversal permutation” and that we must do much tedious indexing to keep track of the arithmetic combinations, these are the “butterflies” previously mentioned.
+Not going into depth, here is my implementation.</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>def twiddle (k<span class="op">:</span> i64) (n<span class="op">:</span> i64)<span class="op">:</span> complex <span class="ot">=</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="kw">let</span> angle <span class="ot">=</span> <span class="op">-</span><span class="fl">2.0</span> <span class="op">*</span> f64<span class="op">.</span><span class="fu">pi</span> <span class="op">*</span> f64<span class="op">.</span>i64 k <span class="op">/</span> f64<span class="op">.</span>i64 n</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="kw">in</span> (f64<span class="op">.</span><span class="fu">cos</span> angle, f64<span class="op">.</span><span class="fu">sin</span> angle)</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>def bit_reversal [n] 't (input<span class="op">:</span> [n]t)<span class="op">:</span> [n]t <span class="ot">=</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>  <span class="kw">let</span> bits <span class="ot">=</span> i64<span class="op">.</span>f64 (f64<span class="op">.</span>log2 (f64<span class="op">.</span>i64 n))</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>  <span class="kw">let</span> indices <span class="ot">=</span> <span class="fu">map</span> (\i <span class="ot">-&gt;</span></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>    <span class="kw">let</span> rev <span class="ot">=</span> loop rev <span class="ot">=</span> <span class="dv">0</span> for j <span class="op">&lt;</span> bits <span class="kw">do</span></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>      (rev <span class="op">&lt;&lt;</span> <span class="dv">1</span>) <span class="op">|</span> ((i <span class="op">&gt;&gt;</span> j) <span class="op">&amp;</span> <span class="dv">1</span>)</span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>    <span class="kw">in</span> rev</span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>  ) (iota n)</span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>  <span class="kw">in</span> spread n (input[<span class="dv">0</span>]) indices input</span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a><span class="co">-- Type to hold butterfly operation parameters</span></span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a><span class="kw">type</span> butterfly_params <span class="ot">=</span> {</span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>  upper_idx<span class="op">:</span> i64,    <span class="co">-- Index of upper butterfly input</span></span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>  lower_idx<span class="op">:</span> i64,    <span class="co">-- Index of lower butterfly input</span></span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a>  twiddle<span class="op">:</span> complex   <span class="co">-- Twiddle factor for this butterfly</span></span>
+<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a><span class="co">-- Calculate butterfly parameters for a given stage</span></span>
+<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a>def get_butterfly_params (stage<span class="op">:</span> i64) (n<span class="op">:</span> i64) (i<span class="op">:</span> i64)<span class="op">:</span> butterfly_params <span class="ot">=</span></span>
+<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a>  <span class="kw">let</span> butterfly_size <span class="ot">=</span> <span class="dv">1</span> <span class="op">&lt;&lt;</span> (stage <span class="op">+</span> <span class="dv">1</span>)        <span class="co">-- Size of entire butterfly</span></span>
+<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a>  <span class="kw">let</span> half_size <span class="ot">=</span> butterfly_size <span class="op">&gt;&gt;</span> <span class="dv">1</span>          <span class="co">-- Size of half butterfly</span></span>
+<span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a>  <span class="kw">let</span> <span class="fu">group</span> <span class="ot">=</span> i <span class="op">/</span> butterfly_size               <span class="co">-- Which group of butterflies</span></span>
+<span id="cb2-26"><a href="#cb2-26" aria-hidden="true" tabindex="-1"></a>  <span class="kw">let</span> k <span class="ot">=</span> i <span class="op">%</span> half_size                        <span class="co">-- Position within half</span></span>
+<span id="cb2-27"><a href="#cb2-27" aria-hidden="true" tabindex="-1"></a>  <span class="kw">let</span> group_start <span class="ot">=</span> <span class="fu">group</span> <span class="op">*</span> butterfly_size     <span class="co">-- Start index of this group</span></span>
+<span id="cb2-28"><a href="#cb2-28" aria-hidden="true" tabindex="-1"></a>  <span class="kw">let</span> twiddle_idx <span class="ot">=</span> k <span class="op">*</span> (n <span class="op">/</span> butterfly_size)   <span class="co">-- Index for twiddle factor</span></span>
+<span id="cb2-29"><a href="#cb2-29" aria-hidden="true" tabindex="-1"></a>  <span class="kw">in</span> {</span>
+<span id="cb2-30"><a href="#cb2-30" aria-hidden="true" tabindex="-1"></a>    upper_idx <span class="ot">=</span> group_start <span class="op">+</span> k,</span>
+<span id="cb2-31"><a href="#cb2-31" aria-hidden="true" tabindex="-1"></a>    lower_idx <span class="ot">=</span> group_start <span class="op">+</span> k <span class="op">+</span> half_size,</span>
+<span id="cb2-32"><a href="#cb2-32" aria-hidden="true" tabindex="-1"></a>    twiddle <span class="ot">=</span> twiddle twiddle_idx n</span>
+<span id="cb2-33"><a href="#cb2-33" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb2-34"><a href="#cb2-34" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-35"><a href="#cb2-35" aria-hidden="true" tabindex="-1"></a><span class="co">-- Perform single butterfly operation</span></span>
+<span id="cb2-36"><a href="#cb2-36" aria-hidden="true" tabindex="-1"></a>def butterfly_op (<span class="kw">data</span><span class="op">:</span> []complex) (p<span class="op">:</span> butterfly_params) (is_upper<span class="op">:</span> bool)<span class="op">:</span> complex <span class="ot">=</span></span>
+<span id="cb2-37"><a href="#cb2-37" aria-hidden="true" tabindex="-1"></a>  <span class="kw">if</span> is_upper</span>
+<span id="cb2-38"><a href="#cb2-38" aria-hidden="true" tabindex="-1"></a>  <span class="kw">then</span> complex_add <span class="kw">data</span>[p<span class="op">.</span>upper_idx]</span>
+<span id="cb2-39"><a href="#cb2-39" aria-hidden="true" tabindex="-1"></a>                  (complex_mul <span class="kw">data</span>[p<span class="op">.</span>lower_idx] p<span class="op">.</span>twiddle)</span>
+<span id="cb2-40"><a href="#cb2-40" aria-hidden="true" tabindex="-1"></a>  <span class="kw">else</span> complex_sub <span class="kw">data</span>[p<span class="op">.</span>upper_idx]</span>
+<span id="cb2-41"><a href="#cb2-41" aria-hidden="true" tabindex="-1"></a>                  (complex_mul <span class="kw">data</span>[p<span class="op">.</span>lower_idx] p<span class="op">.</span>twiddle)</span>
+<span id="cb2-42"><a href="#cb2-42" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-43"><a href="#cb2-43" aria-hidden="true" tabindex="-1"></a><span class="co">-- Main FFT function</span></span>
+<span id="cb2-44"><a href="#cb2-44" aria-hidden="true" tabindex="-1"></a>def fft [n] (input<span class="op">:</span> [n]complex)<span class="op">:</span> [n]complex <span class="ot">=</span></span>
+<span id="cb2-45"><a href="#cb2-45" aria-hidden="true" tabindex="-1"></a>  <span class="kw">let</span> bits <span class="ot">=</span> i64<span class="op">.</span>f64 (f64<span class="op">.</span>log2 (f64<span class="op">.</span>i64 n))</span>
+<span id="cb2-46"><a href="#cb2-46" aria-hidden="true" tabindex="-1"></a>  <span class="co">-- This method can only handle arrays of length 2^n</span></span>
+<span id="cb2-47"><a href="#cb2-47" aria-hidden="true" tabindex="-1"></a>  <span class="kw">in</span> assert (n <span class="op">==</span> <span class="dv">1</span> <span class="op">&lt;&lt;</span> bits) (</span>
+<span id="cb2-48"><a href="#cb2-48" aria-hidden="true" tabindex="-1"></a>    <span class="co">-- First apply bit reversal permutation</span></span>
+<span id="cb2-49"><a href="#cb2-49" aria-hidden="true" tabindex="-1"></a>    <span class="kw">let</span> reordered <span class="ot">=</span> bit_reversal input</span>
+<span id="cb2-50"><a href="#cb2-50" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-51"><a href="#cb2-51" aria-hidden="true" tabindex="-1"></a>    <span class="co">-- Perform log2(n) stages of butterfly operations</span></span>
+<span id="cb2-52"><a href="#cb2-52" aria-hidden="true" tabindex="-1"></a>    <span class="kw">in</span> loop <span class="kw">data</span> <span class="ot">=</span> reordered for stage <span class="op">&lt;</span> bits <span class="kw">do</span></span>
+<span id="cb2-53"><a href="#cb2-53" aria-hidden="true" tabindex="-1"></a>      <span class="co">-- For each stage, compute butterfly parameters and perform operations</span></span>
+<span id="cb2-54"><a href="#cb2-54" aria-hidden="true" tabindex="-1"></a>      <span class="kw">let</span> butterfly_size <span class="ot">=</span> <span class="dv">1</span> <span class="op">&lt;&lt;</span> (stage <span class="op">+</span> <span class="dv">1</span>)</span>
+<span id="cb2-55"><a href="#cb2-55" aria-hidden="true" tabindex="-1"></a>      <span class="kw">let</span> half_size <span class="ot">=</span> butterfly_size <span class="op">&gt;&gt;</span> <span class="dv">1</span></span>
+<span id="cb2-56"><a href="#cb2-56" aria-hidden="true" tabindex="-1"></a>      <span class="kw">let</span> params <span class="ot">=</span> <span class="fu">map</span> (get_butterfly_params stage n) (iota n)</span>
+<span id="cb2-57"><a href="#cb2-57" aria-hidden="true" tabindex="-1"></a>      <span class="kw">in</span> map2 (\p i <span class="ot">-&gt;</span></span>
+<span id="cb2-58"><a href="#cb2-58" aria-hidden="true" tabindex="-1"></a>        <span class="kw">let</span> is_upper <span class="ot">=</span> (i <span class="op">%</span> butterfly_size) <span class="op">&lt;</span> half_size</span>
+<span id="cb2-59"><a href="#cb2-59" aria-hidden="true" tabindex="-1"></a>        <span class="kw">in</span> butterfly_op <span class="kw">data</span> p is_upper</span>
+<span id="cb2-60"><a href="#cb2-60" aria-hidden="true" tabindex="-1"></a>      ) params (iota n)</span>
+<span id="cb2-61"><a href="#cb2-61" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre></div>
+<p>This is not particularly optimized. Futhark allows for fused memory operations and has a semantics for tracking when it is safe to overwrite memory while remaining pure, I did not use this here. I did make sure to use <code>spread</code> and <code>map2</code> array combinators when traversing, which theoretically should allow for some automatic parallelism, though I did not test this, as I don’t have CUDA running on my laptop.</p>
+<p>Futhark is slowly emerging from being an academic project into a serious tool, and the ecosystem is still in its infancy.
+I wanted to try implementing some of my research in eigensolvers, but the linear algebra module is at the level of undergraduate research project, and does not appear to support complex matrices at the moment.
+Personally, I probably will not use it further at the moment, but it is very much the direction I would like numerical algorithms to go, with functional DSLs (or full languages) that compile to highly portable, highly optimized code.</p>
+    </section>
+  </article>
+</main>
+
+    <script defer src="../js/script.js"></script>
+  </body>
+  <footer>
+  <div>
+      <p>
+      Generated with Hakyll &copy 2024
+      </p>
+  </div>
+  </footer>
+</html>

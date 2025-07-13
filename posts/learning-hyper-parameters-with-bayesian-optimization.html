@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Learning Hyper-Parameters with Bayesian Optimization</title>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Hyper Parameter Optimization">
+    
+    <meta name="author" content="Julien">
+    
+    
+    <meta name="keywords" content="ML">
+    
+
+    <meta property="og:site_name" content="Spacedome">
+    <meta property="og:title" content="Learning Hyper-Parameters with Bayesian Optimization">
+    <meta property="og:url" content="https://spacedome.tv/posts/learning-hyper-parameters-with-bayesian-optimization.html">
+    <meta property="og:description" content="Hyper Parameter Optimization">
+    
+    
+    <meta property="og:type" content="article">
+    
+
+    <link rel="shortcut icon" href="../favicon.ico">
+    <link rel="canonical" href="https://spacedome.tv/posts/learning-hyper-parameters-with-bayesian-optimization.html">
+
+    <link rel="alternate" href="../atom.xml" title="Spacedome.tv" type="application/atom+xml">
+    <link rel="alternate" href="../rss.xml" title="Spacedome.tv" type="application/rss+xml">
+
+    <link rel="stylesheet" href="../css/code.css" />
+    <link rel="stylesheet" href="../css/default.css" />
+
+    
+  </head>
+  <header>
+      <a href="../">
+          <img src="../images/spacedome.svg" alt="spacedome.tv" class="logo">
+      </a>
+  </header>
+  <nav>
+      <ul class="bar">
+          <li><a href="../posts.html">Posts</a></li>
+          <li><a href="../projects.html">Projects</a></li>
+          <li><a href="../research.html">Research</a></li>
+          <li><a href="../artwork.html">Artwork</a></li>
+          <li><a href="https://github.com/spacedome">Github</a></li>
+          <li><a href="../">About</a></li>
+      </ul>
+  </nav>
+  <body>
+    <main>
+  <article>
+    <header>
+    <h1>Learning Hyper-Parameters with Bayesian Optimization</h1>
+    <p><i>2018-05-01 </i></p>
+    <hr />
+    </header>
+    <section>
+      <p>It is well known in the Machine Learning literature that a Grid Search for optimizing parameters is sub-optimal, and generally outperformed by a Random Search.
+This project explored using Bayesian Optimization as a sequential search strategy, testing the method on the hyper-parameters of a relatively simple Neural Network performing image classification.</p>
+<p>The main conclusion of this research is that incredible computational resources are needed to characterize NN hyper-parameter optimization methods, see the Google Vizier “paper” for context.
+Despite this, Bayesian Optimization is a promising technique for sequential, potentially stochastic, optimization problems where the cost of sampling is a limiting factor.
+For example, see my paper with Alex Dunn, <em>Rocketsled</em>, on applications of Bayesian Optimization to Computational Materials Science.</p>
+<p>In a broader context, stop searching for parameters by hand, and consider random search over grid search if the relative importance of each parameter is unknown (for example some may not be important at all).
+See the <a href="http://www.jmlr.org/papers/v13/bergstra12a.html">paper</a> by Bergstra and Bengio for reference.
+There is no reason to search parameters manually, there are many easy to use optimization codes to choose from, for example <a href="https://scikit-optimize.github.io/">skopt</a>.</p>
+<h1 id="poster-pdf"><a href="../pdf/poster_CS682.pdf">Poster PDF</a></h1>
+    </section>
+  </article>
+</main>
+
+    <script defer src="../js/script.js"></script>
+  </body>
+  <footer>
+  <div>
+      <p>
+      Generated with Hakyll &copy 2024
+      </p>
+  </div>
+  </footer>
+</html>
