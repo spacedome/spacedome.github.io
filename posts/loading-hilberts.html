@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Loading Hilberts</title>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Loading Hilberts">
+    
+    <meta name="author" content="Julien">
+    
+    
+    <meta name="keywords" content="css, math, blog">
+    
+
+    <meta property="og:site_name" content="Spacedome">
+    <meta property="og:title" content="Loading Hilberts">
+    <meta property="og:url" content="https://spacedome.tv/posts/loading-hilberts.html">
+    <meta property="og:description" content="Loading Hilberts">
+    
+    
+    <meta property="og:type" content="article">
+    
+
+    <link rel="shortcut icon" href="../favicon.ico">
+    <link rel="canonical" href="https://spacedome.tv/posts/loading-hilberts.html">
+
+    <link rel="alternate" href="../atom.xml" title="Spacedome.tv" type="application/atom+xml">
+    <link rel="alternate" href="../rss.xml" title="Spacedome.tv" type="application/rss+xml">
+
+    <link rel="stylesheet" href="../css/code.css" />
+    <link rel="stylesheet" href="../css/default.css" />
+
+    
+    <script type="text/javascript" id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/mml-chtml.min.js">
+    </script>
+    
+  </head>
+  <header>
+      <a href="../">
+          <img src="../images/spacedome.svg" alt="spacedome.tv" class="logo">
+      </a>
+  </header>
+  <nav>
+      <ul class="bar">
+          <li><a href="../posts.html">Posts</a></li>
+          <li><a href="../projects.html">Projects</a></li>
+          <li><a href="../research.html">Research</a></li>
+          <li><a href="../artwork.html">Artwork</a></li>
+          <li><a href="https://github.com/spacedome">Github</a></li>
+          <li><a href="../">About</a></li>
+      </ul>
+  </nav>
+  <body>
+    <main>
+  <article>
+    <header>
+    <h1>Loading Hilberts</h1>
+    <p><i>2025-04-20 </i></p>
+    <hr />
+    </header>
+    <section>
+      <p>Recently I thought: why are loading spinners such boring shapes, why not fill the loading space, surely CSS is capable of this?
+Thus was born the Loading Hilbert.
+Here we show a simple iterate of the Hilbert curve in a square.
+It is easy to imagine how we could do this for any curve, and even fill spaces dynamically with javascript if we were so inclined (this would certainly have performance constraints).
+I have not seen anyone else do this yet, somehow, though it is pretty straight forward to do with an SVG and CSS animations.</p>
+<div>
+<style>
+    .spinner-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin: 2rem 0;
+    }
+    
+    .spinner {
+      width: 200px;
+      height: 200px;
+      position: relative;
+      display: grid;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .background {
+      width: 100%;
+      height: 100%;
+      position: absolute;
+      stroke: #f3f3f3;
+      stroke-width: 2;
+      fill: none;
+      background-color: #E1E2F3;
+      color: #E1E2F3;
+    }
+
+    .trace {
+      width: 100%;
+      height: 100%;
+      position: absolute;
+      stroke: red;
+      stroke-width: 2;
+      fill: none;
+      stroke-dasharray: 500 500; /* 50-unit visible segment, 1486-unit gap */
+      stroke-dashoffset: 1000;
+      animation: trace 2s linear infinite;
+    }
+
+    @keyframes trace {
+      to {
+        stroke-dashoffset: 0;
+      }
+    }
+</style>
+
+<div class="spinner-container">
+  <div class="spinner">
+    <svg class="background" viewBox="0 0 100 100">
+      <path d="M6.25 6.25v12.5h12.5v-12.5h12.5h12.5v12.5h-12.5v12.5h12.5v12.5h-12.5h-12.5v-12.5h-12.5v12.5v12.5h12.5v12.5h-12.5v12.5v12.5h12.5v-12.5h12.5v12.5h12.5v-12.5v-12.5h-12.5v-12.5h12.5h12.5h12.5v12.5h-12.5v12.5v12.5h12.5v-12.5h12.5v12.5h12.5v-12.5v-12.5h-12.5v-12.5h12.5v-12.5v-12.5h-12.5v12.5h-12.5h-12.5v-12.5h12.5v-12.5h-12.5v-12.5h12.5h12.5v12.5h12.5v-12.5" fill="#E1E2F3"></path>
+    </svg>
+    <svg class="trace" viewBox="0 0 100 100">
+      <path d="M6.25 6.25v12.5h12.5v-12.5h12.5h12.5v12.5h-12.5v12.5h12.5v12.5h-12.5h-12.5v-12.5h-12.5v12.5v12.5h12.5v12.5h-12.5v12.5v12.5h12.5v-12.5h12.5v12.5h12.5v-12.5v-12.5h-12.5v-12.5h12.5h12.5h12.5v12.5h-12.5v12.5v12.5h12.5v-12.5h12.5v12.5h12.5v-12.5v-12.5h-12.5v-12.5h12.5v-12.5v-12.5h-12.5v12.5h-12.5h-12.5v-12.5h12.5v-12.5h-12.5v-12.5h12.5h12.5v12.5h12.5v-12.5"></path>
+    </svg>
+  </div>
+</div>
+</div>
+    </section>
+  </article>
+</main>
+
+    <script defer src="../js/script.js"></script>
+  </body>
+  <footer>
+  <div>
+      <p>
+      Generated with Hakyll &copy 2024
+      </p>
+  </div>
+  </footer>
+</html>

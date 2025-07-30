@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Bugbash Conference: Software Reliability</title>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Bugbash">
+    
+    <meta name="author" content="Julien">
+    
+    
+    <meta name="keywords" content="nix, conference, blog">
+    
+
+    <meta property="og:site_name" content="Spacedome">
+    <meta property="og:title" content="Bugbash Conference: Software Reliability">
+    <meta property="og:url" content="https://spacedome.tv/posts/bugbash-conference-software-reliability.html">
+    <meta property="og:description" content="Bugbash">
+    
+    
+    <meta property="og:type" content="article">
+    
+
+    <link rel="shortcut icon" href="../favicon.ico">
+    <link rel="canonical" href="https://spacedome.tv/posts/bugbash-conference-software-reliability.html">
+
+    <link rel="alternate" href="../atom.xml" title="Spacedome.tv" type="application/atom+xml">
+    <link rel="alternate" href="../rss.xml" title="Spacedome.tv" type="application/rss+xml">
+
+    <link rel="stylesheet" href="../css/code.css" />
+    <link rel="stylesheet" href="../css/default.css" />
+
+    
+    <script type="text/javascript" id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/mml-chtml.min.js">
+    </script>
+    
+  </head>
+  <header>
+      <a href="../">
+          <img src="../images/spacedome.svg" alt="spacedome.tv" class="logo">
+      </a>
+  </header>
+  <nav>
+      <ul class="bar">
+          <li><a href="../posts.html">Posts</a></li>
+          <li><a href="../projects.html">Projects</a></li>
+          <li><a href="../research.html">Research</a></li>
+          <li><a href="../artwork.html">Artwork</a></li>
+          <li><a href="https://github.com/spacedome">Github</a></li>
+          <li><a href="../">About</a></li>
+      </ul>
+  </nav>
+  <body>
+    <main>
+  <article>
+    <header>
+    <h1>Bugbash Conference: Software Reliability</h1>
+    <p><i>2025-04-06 </i></p>
+    <hr />
+    </header>
+    <section>
+      <p>Recently I attended the inaugural BugBash conference, hosted by Antithesis, a small 200 person meetup in DC about software reliability and all that encompasses.</p>
+<p>The talks do not seem to have been posted to the internet at the moment, and while many of them were good, I don’t think any stood out as something to revisit.
+Instead of a place to announce interesting new results, this was much more a gathering of people with an overlapping interest.
+I went hoping to meet Nix / Haskell / Formal Methods / PLT people, and ended up mostly meeting Nix people (almost all of whom worked at Antithesis, shout out to Josh and Ben).
+While many of the topics are downstream of more PLT and academic research adjacent things, such as property based testing, verification and testing of distributed systems, Nix, etc, the majority of the participants were developers and not researchers per se.
+As someone who is currently working as a developer and building test infrastructure, and no longer in academia, that was nice too.
+Even the formal methods people I met there were totally uninterested in things like proving correctness through the type system, and were firmly in the “model checker” camp.
+Next year I’ll need to go to more PLT / Nix specific conferences for that I suppose.</p>
+<p>My favorite talk was a flash talk showing how one can (ab)use the Antithesis hypervisor test state exploration tools to solve the traveling salesman problem, very funny.
+Mitchell Hashimoto also gave an nice talk on testing Ghostty with the NixOS VM tools, learned some things about using the NixOS testing framework from that, thanks Mitchell.</p>
+<p>Funnily enough, the people I ended up talking to the most were from Antithesis (who were hosting the event).
+Partly because I was seeking out the Nix crowd, and these were they, but also there were a lot of them there, and they were all quite personable and interesting to chat with. Great team, I highly recommend talking to them if you want to work on Nix and their deterministic hypervisor (and are OK moving to DC…).
+It is amusing that the few Nix shops have basically built an entire internal ecosystem that completely diverges from the community.
+To be fair, there a quite a few missing pieces.
+They apparently run it with fully custom tooling and don’t even use flakes.</p>
+<p>This was a very strange and interesting intersection of subfields, and I hope they do it again sometime.
+One minute you would be talking about formal verification and building on top of TLA+, next you would be listening about SRE at Big Company, then talking about building VM internals, testing UI, Rust, etc.
+Enjoyable.</p>
+<p>It’s a good reminder that people who care about (and work on) software correctness are out there, but also a reminder how much of a minority they are, and the ones trying to build correct software through programming language design are an even smaller fraction.
+Which will come first, mainstream ergonomic dependently typed languages, or AGI? Not a wager I’d make lightly today…</p>
+    </section>
+  </article>
+</main>
+
+    <script defer src="../js/script.js"></script>
+  </body>
+  <footer>
+  <div>
+      <p>
+      Generated with Hakyll &copy 2024
+      </p>
+  </div>
+  </footer>
+</html>

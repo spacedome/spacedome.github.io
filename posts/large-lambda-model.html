@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Large Lambda Model</title>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Large Lambda Model">
+    
+    <meta name="author" content="Theopolis">
+    
+    
+    <meta name="keywords" content="haskell, blog, llm">
+    
+
+    <meta property="og:site_name" content="Spacedome">
+    <meta property="og:title" content="Large Lambda Model">
+    <meta property="og:url" content="https://spacedome.tv/posts/large-lambda-model.html">
+    <meta property="og:description" content="Large Lambda Model">
+    
+    
+    <meta property="og:type" content="article">
+    
+
+    <link rel="shortcut icon" href="../favicon.ico">
+    <link rel="canonical" href="https://spacedome.tv/posts/large-lambda-model.html">
+
+    <link rel="alternate" href="../atom.xml" title="Spacedome.tv" type="application/atom+xml">
+    <link rel="alternate" href="../rss.xml" title="Spacedome.tv" type="application/rss+xml">
+
+    <link rel="stylesheet" href="../css/code.css" />
+    <link rel="stylesheet" href="../css/default.css" />
+
+    
+    <script type="text/javascript" id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/mml-chtml.min.js">
+    </script>
+    
+  </head>
+  <header>
+      <a href="../">
+          <img src="../images/spacedome.svg" alt="spacedome.tv" class="logo">
+      </a>
+  </header>
+  <nav>
+      <ul class="bar">
+          <li><a href="../posts.html">Posts</a></li>
+          <li><a href="../projects.html">Projects</a></li>
+          <li><a href="../research.html">Research</a></li>
+          <li><a href="../artwork.html">Artwork</a></li>
+          <li><a href="https://github.com/spacedome">Github</a></li>
+          <li><a href="../">About</a></li>
+      </ul>
+  </nav>
+  <body>
+    <main>
+  <article>
+    <header>
+    <h1>Large Lambda Model</h1>
+    <p><i>2025-02-15 </i></p>
+    <hr />
+    </header>
+    <section>
+      <p>Over the last week I decided to write the inference code for GPT-2 after a many year hiatus from Neural Networks.
+Depending on what primitives you start from, say if you wrote this with JAX or PyTorch, this is quite straight forward, otherwise it is somewhat less so.
+After lamenting the lack of perfect tensor library in Haskell, I wrote this directly on top of the OpenBLAS bindings in <code>hmatrix</code>.
+This choice precludes the ability to actually train the model, or even do a single backwards pass without significant effort in writing backprop code that would then be useless, but an old thinkpad CPU is just fast enough to do the forward pass if you get your bits in order.
+The lack of tensors makes the MultiHead Attention layer a bit of brain teaser, but it’s all just <code>GEMM/GEMV</code> in the end, and it makes this a project that goes from daunting to slowly crystallizing into a nice solution over a few days, ideal.</p>
+<h2 id="preliminaries">Preliminaries</h2>
+<p>If you’d like to implement this yourself, the best place to start is Karpathy’s <a href="https://github.com/karpathy/nanoGPT">NanoGPT</a> and <a href="https://github.com/karpathy/llm.c">llm.c</a>, along with his youtube videos.
+Also handy are Brendan Bycroft’s <a href="https://bbycroft.net/llm">LLM Visualizer</a> and a webapp hosting the <a href="https://tiktokenizer.vercel.app/?model=gpt2">tokenizer</a>.
+Ok, now we begin.</p>
+<h2 id="weve-got-layers">We’ve Got Layers</h2>
+<p><img src="../images/onion-layers.jpg" alt="We’re like Onions, we have layers" /></p>
+<p>The GPT-2 Transformer architecture is relatively simple at a high level, with only a few types of layers, arranged in a straight shot down the computation graph.
+The main complexity is the attention head.
+This model is fully F32 precision, so we start off by defining some type aliases.
+While Haskell isn’t dependently typed, <code>hmatrix</code> does have a semi-undocumented interface encoding the size of the matrices/vectors in the types, but unfortunately it is not generic and would not work with F32 without replicating most of the internals, so I chose not to do that, and will annotate sizes with comments instead.</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="kw">type</span> <span class="dt">Token</span> <span class="ot">=</span> <span class="dt">Int</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="kw">type</span> <span class="dt">V</span> <span class="ot">=</span> <span class="dt">Vector</span> <span class="dt">Float</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="kw">type</span> <span class="dt">M</span> <span class="ot">=</span> <span class="dt">Matrix</span> <span class="dt">Float</span></span></code></pre></div>
+<p>Instead of <em>yet another</em> transformer tutorial blog, I will go through this from the lens of reverse engineering the model and translating it into Haskell.
+I will leave most of the details to the many existing resources.
+We start then, by examining what types of layers we must contend with, and what weights lie in binary store.</p>
+<h3 id="embedding-layer">Embedding Layer</h3>
+<p>The first layer is what takes us from the token into the model proper, the embedding layer, from here on out we do not see <code>Int</code> again until we emerge from the final logits.
+In GPT-2 we have a vocabulary size of 50257 tokens, and an embedding size of 768.
+For clarity we will denote <code>N=768</code>.
+The embedding is not only with respect to the token, but also it’s position in the sequence of tokens, which we might as well call position in time, which has a maximum context size of 1024 tokens.
+It is important to note that while the tokens themselves are not learned, the embedding weights are.
+The tokens themselves are generated with the Byte Pair Encoding algorithm, though the vocabulary size is a hyper-parameter.</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="kw">newtype</span> <span class="dt">TokenEmbedding</span> <span class="ot">=</span> <span class="dt">TokenEmbedding</span> <span class="dt">M</span> <span class="co">-- (N, 50257)</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="kw">newtype</span> <span class="dt">PositionEmbedding</span> <span class="ot">=</span> <span class="dt">PositionEmbedding</span> <span class="dt">M</span> <span class="co">-- (N, 1024)</span></span></code></pre></div>
+<h3 id="layernorm">LayerNorm</h3>
+<p>The next component of our model is the LayerNorm.
+It has a simple premise, that we should normalize our data (zero mean and unit variance) at various points throughout the model.
+The weights in this layer are an element-wise affine transformation, <code>ax+b</code> performed after normalization.
+This is similar to BatchNorm, but normalized along the layer dimension instead of the batch dimension.
+Since we are only doing forward pass and are tensor-poor, we will assume the batch dimension is one and henceforth ignore it entirely.</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="kw">data</span> <span class="dt">LayerNorm</span> <span class="ot">=</span> <span class="dt">LayerNorm</span> <span class="dt">V</span> <span class="dt">V</span> <span class="co">-- (N), (N)</span></span></code></pre></div>
+<h3 id="multi-layer-perceptron">Multi Layer Perceptron</h3>
+<p>If you have any familiarity with ML, you recognize this, the cheeseburger of Neural Networks.
+There is a linear layer represented by a matrix and its bias vector, here it scales up before the nonlinearity is applied, then we have another linear layer matrix and bias vector scaling back down to the embedding dimension.</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="kw">data</span> <span class="dt">MLP</span> <span class="ot">=</span> <span class="dt">MLP</span> <span class="dt">M</span> <span class="dt">V</span> <span class="dt">M</span> <span class="dt">V</span> <span class="co">-- (4*N, N), (4*N), (N, 4*N), (N)</span></span></code></pre></div>
+<h3 id="attention">Attention</h3>
+<p>Inside the self attention layer we see a linear transformation <code>N -&gt; 3*N</code>, but this is really an optimization, packing the so called Q, K, and V matrices together in memory.
+We then split this further, slicing <code>768</code> into twelve vectors of length <code>64</code>, one for each attention head.
+The additional matrix/vector pair is for a linear layer on the end.</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="kw">data</span> <span class="dt">Attention</span> <span class="ot">=</span> <span class="dt">Attention</span> <span class="dt">M</span> <span class="dt">V</span> <span class="dt">M</span> <span class="dt">V</span> <span class="co">-- (3*N, N), (3*N), (N, N), (N)</span></span></code></pre></div>
+<h3 id="block">Block</h3>
+<p>We group the previous layers into a Block, as we essentially stack them on top of each other, and then repeat the block twelve times, so it is convenient to conceptually group them.</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="kw">data</span> <span class="dt">Block</span> <span class="ot">=</span> <span class="dt">Block</span> <span class="dt">LayerNorm</span> <span class="dt">Attention</span> <span class="dt">LayerNorm</span> <span class="dt">MLP</span></span></code></pre></div>
+<h3 id="gpt">GPT</h3>
+<p>We can then assemble our layers into the complete model, with one more LayerNorm at the end for good measure.
+Now we are ready to ask how these layers are actually implemented.</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="kw">data</span> <span class="dt">GPT</span> <span class="ot">=</span> <span class="dt">GPT</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>  {<span class="ot"> wpe ::</span> <span class="dt">PositionEmbedding</span>,</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="ot">    wte ::</span> <span class="dt">TokenEmbedding</span>,</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="ot">    blocks ::</span> [<span class="dt">Block</span>], <span class="co">-- (12)</span></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a><span class="ot">    lnf ::</span> <span class="dt">LayerNorm</span></span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>  }</span></code></pre></div>
+<h2 id="interlude-necessary-functions">Interlude: Necessary Functions</h2>
+<p>Before getting into the forward pass, let us define some helper functions.
+These are things that any modern tensor library would give you, but we will implement them ourselves.
+There are surprisingly few necessary.</p>
+<h3 id="softmax">Softmax</h3>
+<p>This is a venerable softmax, and nothing more, it smoothly turns our vectors into probability distributions.</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="ot">softmax ::</span> <span class="dt">V</span> <span class="ot">-&gt;</span> <span class="dt">V</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>softmax v <span class="ot">=</span> expv <span class="op">*</span> scalar (<span class="dv">1</span> <span class="op">/</span> sumElements expv)</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>  <span class="kw">where</span> expv <span class="ot">=</span> cmap <span class="fu">exp</span> v</span></code></pre></div>
+<h3 id="gelu">GELU</h3>
+<p>The popular choice of nonlinearity at the time was the Gaussian Error Linear Unit, which is a more continuous adaption of the RELU, to avoid getting stuck in the flat region during training.
+Technically, we are using the <code>tanh</code> approximation of the GELU, which is defined as <code>GELU(x)=x∗Φ(x)</code> where <code>Φ</code> is the CDF of the Gaussian.
+It seems like the “exact” version is now performant in PyTorch, but the approximation is close enough it doesn’t seem to matter which you use for a single forward pass.</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="ot">gelu ::</span> <span class="dt">V</span> <span class="ot">-&gt;</span> <span class="dt">V</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>gelu x <span class="ot">=</span> <span class="fl">0.5</span> <span class="op">*</span> x <span class="op">*</span> (<span class="dv">1</span> <span class="op">+</span> <span class="fu">tanh</span> (<span class="fu">sqrt</span> (<span class="dv">2</span> <span class="op">/</span> <span class="fu">pi</span>) <span class="op">*</span> (x <span class="op">+</span> <span class="fl">0.044715</span> <span class="op">*</span> x <span class="op">*</span> x <span class="op">*</span> x)))</span></code></pre></div>
+<h3 id="tril">Tril</h3>
+<p>This function zeros out the upper triangular portion of the self attention matrix.
+To be exact it sets them to <code>-Inf</code> which becomes zero after a softmax is applied.
+The attention matrix encodes the relation between different token positions, and this zeroing corresponds to a token only depending on previous tokens.
+Much research has been done on the alterations to this matrix, which in theory is completely general and can be put to various purposes.</p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="ot">tril ::</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">M</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>tril n <span class="ot">=</span> build (n, n) (\i j <span class="ot">-&gt;</span> <span class="kw">if</span> j <span class="op">&gt;</span> i <span class="kw">then</span> <span class="op">-</span><span class="dv">1</span> <span class="op">/</span> <span class="dv">0</span> <span class="kw">else</span> <span class="dv">0</span>)</span></code></pre></div>
+<h2 id="forward-pass">Forward Pass</h2>
+<p>Let’s start by defining a typeclass for our layers, containing the function for the forward pass.
+This code doesn’t actually generalize, but it’s comfy to do this regardless.</p>
+<div class="sourceCode" id="cb11"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> <span class="dt">Layer</span> a <span class="kw">where</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="ot">  forward ::</span> a <span class="ot">-&gt;</span> [<span class="dt">V</span>] <span class="ot">-&gt;</span> [<span class="dt">V</span>]</span></code></pre></div>
+<h3 id="embedding">Embedding</h3>
+<p>We then come to the embedding layer, which does not conform to the typeclass we so hopefully just defined…
+The important point to note is that the embedding is across two dimensions, the token vocabulary and the token position in time.
+As we do not have a tensor library, it is convenient to store this as a list of vectors, the size of which cannot grow beyond the context size of 1024, so this should cause no issues.
+Each element of the list is the embedding of an individual token.</p>
+<div class="sourceCode" id="cb12"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="co">-- the model combines a token indexed and position indexed embedding</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="ot">embedding ::</span> <span class="dt">TokenEmbedding</span> <span class="ot">-&gt;</span> <span class="dt">PositionEmbedding</span> <span class="ot">-&gt;</span> [<span class="dt">Token</span>] <span class="ot">-&gt;</span> [<span class="dt">V</span>]</span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>embedding (<span class="dt">TokenEmbedding</span> te) (<span class="dt">PositionEmbedding</span> pe) ts <span class="ot">=</span></span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">zipWith</span> (<span class="op">+</span>) (<span class="fu">fmap</span> (sliceColumn te) ts) (toColumns pe)</span></code></pre></div>
+<h3 id="layernorm-1">LayerNorm</h3>
+<p>As promised, this is just a normalization followed by an affine transformation.
+The notorious difficulty in implementing LayerNorm and BatchNorm mostly comes down to the backward pass, which we are ignoring.
+Note that this is an <code>fmap</code> over the input <code>[V]</code>, meaning the each token embedding is independent.</p>
+<div class="sourceCode" id="cb13"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="kw">instance</span> <span class="dt">Layer</span> <span class="dt">LayerNorm</span> <span class="kw">where</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>  forward layer <span class="ot">=</span> <span class="fu">fmap</span> (forwardLN layer)</span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>    <span class="kw">where</span></span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a><span class="ot">      forwardLN ::</span> <span class="dt">LayerNorm</span> <span class="ot">-&gt;</span> <span class="dt">V</span> <span class="ot">-&gt;</span> <span class="dt">V</span></span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>      forwardLN (<span class="dt">LayerNorm</span> w b) x <span class="ot">=</span> y</span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>        <span class="kw">where</span></span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a>          n <span class="ot">=</span> <span class="fu">fromIntegral</span> (size x)</span>
+<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a>          mean <span class="ot">=</span> scalar (sumElements x <span class="op">/</span> n)</span>
+<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a>          cent <span class="ot">=</span> x <span class="op">-</span> mean</span>
+<span id="cb13-10"><a href="#cb13-10" aria-hidden="true" tabindex="-1"></a>          varx <span class="ot">=</span> sumElements (cent <span class="op">*</span> cent) <span class="op">/</span> n</span>
+<span id="cb13-11"><a href="#cb13-11" aria-hidden="true" tabindex="-1"></a>          fact <span class="ot">=</span> scalar (<span class="fu">sqrt</span> (varx <span class="op">+</span> <span class="fl">1e-5</span>))</span>
+<span id="cb13-12"><a href="#cb13-12" aria-hidden="true" tabindex="-1"></a>          y <span class="ot">=</span> ((x <span class="op">-</span> mean) <span class="op">/</span> fact) <span class="op">*</span> w <span class="op">+</span> b</span></code></pre></div>
+<h3 id="attention-1">Attention</h3>
+<p>We break this up into three parts.
+First, we apply the QKV linear transformation and break up the result into the individual Q, K, V components, and into the 12 individual heads.
+Second, we reassemble across the time dimension, so that we can construct the attention matrix for each head, each relating all tokens in time.
+Third, we flatten everything back out and apply another linear layer, ending back in the same shape we started with.</p>
+<p>This splitting and recombining corresponds to reshaping the tensor such that the heads are their own dimension, and then transposing it with the time (token) dimension.
+We do not have this capability, so we must make do, and this is the trickiest part of the code by far.</p>
+<div class="sourceCode" id="cb14"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="co">-- the first part of the attention head is a linear layer.</span></span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a><span class="co">-- Q,K,V weights and heads are combined and we have to take them apart here.</span></span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a><span class="ot">attnAtToken ::</span> <span class="dt">Attention</span> <span class="ot">-&gt;</span> <span class="dt">V</span> <span class="ot">-&gt;</span> ([<span class="dt">V</span>], [<span class="dt">V</span>], [<span class="dt">V</span>])</span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>attnAtToken (<span class="dt">Attention</span> w b _ _) x <span class="ot">=</span> (qh, kh, vh)</span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>  <span class="kw">where</span></span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>    y <span class="ot">=</span> (w <span class="op">#&gt;</span> x) <span class="op">+</span> b</span>
+<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a>    <span class="co">-- split apart into Q, K, V components</span></span>
+<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a>    (q, k, v) <span class="ot">=</span> <span class="kw">case</span> takesV [<span class="dv">768</span>, <span class="dv">768</span>, <span class="dv">768</span>] y <span class="kw">of</span></span>
+<span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a>      [x1, x2, x3] <span class="ot">-&gt;</span> (x1, x2, x3)</span>
+<span id="cb14-10"><a href="#cb14-10" aria-hidden="true" tabindex="-1"></a>      _ <span class="ot">-&gt;</span> <span class="fu">error</span> <span class="st">&quot;QKV could not be split&quot;</span></span>
+<span id="cb14-11"><a href="#cb14-11" aria-hidden="true" tabindex="-1"></a>    <span class="co">-- split into individual heads</span></span>
+<span id="cb14-12"><a href="#cb14-12" aria-hidden="true" tabindex="-1"></a>    qh <span class="ot">=</span> takesV (<span class="fu">replicate</span> <span class="dv">12</span> <span class="dv">64</span>) q</span>
+<span id="cb14-13"><a href="#cb14-13" aria-hidden="true" tabindex="-1"></a>    kh <span class="ot">=</span> takesV (<span class="fu">replicate</span> <span class="dv">12</span> <span class="dv">64</span>) k</span>
+<span id="cb14-14"><a href="#cb14-14" aria-hidden="true" tabindex="-1"></a>    vh <span class="ot">=</span> takesV (<span class="fu">replicate</span> <span class="dv">12</span> <span class="dv">64</span>) v</span>
+<span id="cb14-15"><a href="#cb14-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-16"><a href="#cb14-16" aria-hidden="true" tabindex="-1"></a><span class="co">-- this is the actual attention part where we construct the attention matrix.</span></span>
+<span id="cb14-17"><a href="#cb14-17" aria-hidden="true" tabindex="-1"></a><span class="ot">attnHead ::</span> (<span class="dt">M</span>, <span class="dt">M</span>, <span class="dt">M</span>) <span class="ot">-&gt;</span> <span class="dt">M</span></span>
+<span id="cb14-18"><a href="#cb14-18" aria-hidden="true" tabindex="-1"></a>attnHead (q, k, v) <span class="ot">=</span> z</span>
+<span id="cb14-19"><a href="#cb14-19" aria-hidden="true" tabindex="-1"></a>  <span class="kw">where</span></span>
+<span id="cb14-20"><a href="#cb14-20" aria-hidden="true" tabindex="-1"></a>    attnMatrix <span class="ot">=</span> tr q <span class="op">&lt;&gt;</span> k <span class="op">*</span> scalar (<span class="dv">1</span> <span class="op">/</span> <span class="dv">8</span>) <span class="co">-- 1 / sqrt (size k)</span></span>
+<span id="cb14-21"><a href="#cb14-21" aria-hidden="true" tabindex="-1"></a>    <span class="co">-- mask the upper right triangular to -inf (becomes 0 in softmax)</span></span>
+<span id="cb14-22"><a href="#cb14-22" aria-hidden="true" tabindex="-1"></a>    attnMasked <span class="ot">=</span> tril (rows attnMatrix) <span class="op">+</span> attnMatrix</span>
+<span id="cb14-23"><a href="#cb14-23" aria-hidden="true" tabindex="-1"></a>    <span class="co">-- no tensor library means we have to do this kinda stuff</span></span>
+<span id="cb14-24"><a href="#cb14-24" aria-hidden="true" tabindex="-1"></a>    attnSoftmax <span class="ot">=</span> fromRows (<span class="fu">fmap</span> softmax (toRows attnMasked))</span>
+<span id="cb14-25"><a href="#cb14-25" aria-hidden="true" tabindex="-1"></a>    z <span class="ot">=</span> attnSoftmax <span class="op">&lt;&gt;</span> tr v</span>
+<span id="cb14-26"><a href="#cb14-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-27"><a href="#cb14-27" aria-hidden="true" tabindex="-1"></a><span class="kw">instance</span> <span class="dt">Layer</span> <span class="dt">Attention</span> <span class="kw">where</span></span>
+<span id="cb14-28"><a href="#cb14-28" aria-hidden="true" tabindex="-1"></a>  forward at<span class="op">@</span>(<span class="dt">Attention</span> _ _ w b) xs <span class="ot">=</span> z</span>
+<span id="cb14-29"><a href="#cb14-29" aria-hidden="true" tabindex="-1"></a>    <span class="kw">where</span></span>
+<span id="cb14-30"><a href="#cb14-30" aria-hidden="true" tabindex="-1"></a>      (q, k, v) <span class="ot">=</span> <span class="fu">unzip3</span> (<span class="fu">fmap</span> (attnAtToken at) xs)</span>
+<span id="cb14-31"><a href="#cb14-31" aria-hidden="true" tabindex="-1"></a>      qh <span class="ot">=</span> <span class="fu">fmap</span> fromColumns (transpose q)</span>
+<span id="cb14-32"><a href="#cb14-32" aria-hidden="true" tabindex="-1"></a>      kh <span class="ot">=</span> <span class="fu">fmap</span> fromColumns (transpose k)</span>
+<span id="cb14-33"><a href="#cb14-33" aria-hidden="true" tabindex="-1"></a>      vh <span class="ot">=</span> <span class="fu">fmap</span> fromColumns (transpose v)</span>
+<span id="cb14-34"><a href="#cb14-34" aria-hidden="true" tabindex="-1"></a>      lm <span class="ot">=</span> <span class="fu">fmap</span> attnHead (<span class="fu">zip3</span> qh kh vh)</span>
+<span id="cb14-35"><a href="#cb14-35" aria-hidden="true" tabindex="-1"></a>      y <span class="ot">=</span> <span class="fu">fmap</span> vjoin (transpose (<span class="fu">fmap</span> toRows lm))</span>
+<span id="cb14-36"><a href="#cb14-36" aria-hidden="true" tabindex="-1"></a>      z <span class="ot">=</span> <span class="fu">fmap</span> ((<span class="op">+</span> b) <span class="op">.</span> (w <span class="op">#&gt;</span>)) y</span></code></pre></div>
+<h3 id="multi-layer-perceptron-1">Multi Layer Perceptron</h3>
+<p>Now we are back to classical Neural Networks, and it feels easy in comparison.</p>
+<div class="sourceCode" id="cb15"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="kw">instance</span> <span class="dt">Layer</span> <span class="dt">MLP</span> <span class="kw">where</span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>  forward (<span class="dt">MLP</span> wfc bfc wproj bproj) x <span class="ot">=</span> x3</span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>    <span class="kw">where</span></span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>      x1 <span class="ot">=</span> <span class="fu">fmap</span> ((<span class="op">+</span> bfc) <span class="op">.</span> (wfc <span class="op">#&gt;</span>)) x</span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>      x2 <span class="ot">=</span> <span class="fu">fmap</span> gelu x1</span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>      x3 <span class="ot">=</span> <span class="fu">fmap</span> ((<span class="op">+</span> bproj) <span class="op">.</span> (wproj <span class="op">#&gt;</span>)) x2</span></code></pre></div>
+<h3 id="block-layer">Block Layer</h3>
+<p>Finally we can assemble the Block.
+Here there is only one thing of note, the pass-through, usually called a residual or skip connection (as in ResNet), a trick that was discovered when looking for ways to successfully train deeper networks.</p>
+<div class="sourceCode" id="cb16"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="kw">instance</span> <span class="dt">Layer</span> <span class="dt">Block</span> <span class="kw">where</span></span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>  forward (<span class="dt">Block</span> l1 at l2 mp) xs <span class="ot">=</span> x4</span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>    <span class="kw">where</span></span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>      x1 <span class="ot">=</span> forward l1 xs</span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a>      x2 <span class="ot">=</span> <span class="fu">zipWith</span> (<span class="op">+</span>) xs (forward at x1)</span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a>      x3 <span class="ot">=</span> forward l2 x2</span>
+<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a>      x4 <span class="ot">=</span> <span class="fu">zipWith</span> (<span class="op">+</span>) x2 (forward mp x3)</span></code></pre></div>
+<h3 id="gpt-1">GPT</h3>
+<p>Putting it all together now, we embed, apply the blocks in sequence, just one more LayerNorm, and then we apply the token embedding to output logits which we will use to sample the next token in the sequence.
+Since we are doing forward pass only, there is no cross entropy or loss at the end of course.</p>
+<div class="sourceCode" id="cb17"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="ot">forwardModel ::</span> <span class="dt">GPT</span> <span class="ot">-&gt;</span> [<span class="dt">Token</span>] <span class="ot">-&gt;</span> [<span class="dt">V</span>]</span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>forwardModel model tokens <span class="ot">=</span> x3</span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>  <span class="kw">where</span></span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>    <span class="dt">TokenEmbedding</span> wtew <span class="ot">=</span> wte model</span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a>    emb <span class="ot">=</span> embedding (wte model) (wpe model) tokens</span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a>    x1 <span class="ot">=</span> <span class="fu">foldr</span> forward emb (blocks model)</span>
+<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a>    x2 <span class="ot">=</span> forward (lnf model) x1</span>
+<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a>    x3 <span class="ot">=</span> <span class="fu">fmap</span> (tr wtew <span class="op">#&gt;</span>) x2</span></code></pre></div>
+<p>The main trick in implementing such a thing is taking apart the reference implementation and inspecting it every single step of the way, the standard mechanical acts of reverse engineering.</p>
+<h2 id="they-call-me-the-sampler">They Call Me The Sampler</h2>
+<p>To actually get something useful from the model, we must take it’s output predictions and sample from them.
+This is another scenario where the lack of surrounding ecosystem in Haskell leaves us to our own devices.
+Luckily you can make a usable sampler out of leftover bits, and I will show you how.</p>
+<h3 id="maximum-sampler">Maximum Sampler</h3>
+<p>There is of course the cop out sampler, to simply take the highest scored token at every step.
+The results are quite bad, in fact it is rather instructive as to the importance of a good sampler, though this does work to test your model is working at all.
+We lift this into the IO monad only to be consistent with the following sampler which uses Random IO.</p>
+<div class="sourceCode" id="cb18"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="ot">sampleMax ::</span> <span class="dt">V</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> <span class="dt">Token</span></span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>sampleMax x <span class="ot">=</span> <span class="fu">return</span> <span class="op">$</span> <span class="fu">snd</span> <span class="op">$</span> maximumBy (comparing <span class="fu">fst</span>) (<span class="fu">zip</span> (toList x) [<span class="dv">0</span> <span class="op">..</span>])</span></code></pre></div>
+<h3 id="top-k-uniform-sampler">Top-K Uniform Sampler</h3>
+<p>We will use the approach given in the reference implementation, to limit ourselves to the top K (they use 200, I chose 50) values and sample them with their softmax probabilities.
+How do we sample from this list of probabilities?
+There is a nice way of doing just this, as the sum of probabilities must sum to one, we can associate each probability to a disjoint interval contained in <code>(0,1)</code>.
+The order is unimportant, we take the order we are given, and we construct the cumulative probabilities, which correspond to the right endpoints of these intervals.
+We can then sample with a uniform random sample from the unit interval, associate it with the greatest lower bound in our cumulative probabilites, it will correspond to a sample from our original distribution.
+Neat!</p>
+<div class="sourceCode" id="cb19"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="ot">topK ::</span> <span class="dt">V</span> <span class="ot">-&gt;</span> <span class="dt">V</span></span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>topK v <span class="ot">=</span> fromList (<span class="fu">map</span> f (toList v))</span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>  <span class="kw">where</span></span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>    k <span class="ot">=</span> sortBy (comparing <span class="dt">Down</span>) (toList v) <span class="op">!!</span> <span class="dv">50</span></span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a>    f x <span class="ot">=</span> <span class="kw">if</span> x <span class="op">&gt;</span> k <span class="kw">then</span> x <span class="op">/</span> <span class="dv">2</span> <span class="kw">else</span> <span class="op">-</span><span class="dv">1</span> <span class="op">/</span> <span class="dv">0</span> <span class="co">-- here 2 is the &quot;temperature&quot;</span></span>
+<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a><span class="ot">sampleLogits ::</span> <span class="dt">V</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> <span class="dt">Int</span></span>
+<span id="cb19-8"><a href="#cb19-8" aria-hidden="true" tabindex="-1"></a>sampleLogits v <span class="ot">=</span> <span class="kw">do</span></span>
+<span id="cb19-9"><a href="#cb19-9" aria-hidden="true" tabindex="-1"></a>  r <span class="ot">&lt;-</span> randomRIO (<span class="fl">0.0</span>, <span class="fl">1.0</span>)</span>
+<span id="cb19-10"><a href="#cb19-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span> <span class="op">$</span> findIndex r (<span class="fu">scanl1</span> (<span class="op">+</span>) (toList <span class="op">$</span> softmax <span class="op">$</span> topK v))</span>
+<span id="cb19-11"><a href="#cb19-11" aria-hidden="true" tabindex="-1"></a>  <span class="kw">where</span></span>
+<span id="cb19-12"><a href="#cb19-12" aria-hidden="true" tabindex="-1"></a>    findIndex r cumProbs <span class="ot">=</span> <span class="fu">length</span> (<span class="fu">takeWhile</span> (<span class="op">&lt;=</span> r) cumProbs)</span></code></pre></div>
+<p>We are now ready to start generating some fresh tokens.</p>
+<h2 id="running-the-model">Running The Model</h2>
+<p>Using all the pieces we’ve assembled so far, we can run the model with some straight forward IO event loop code.</p>
+<div class="sourceCode" id="cb20"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="ot">run ::</span> <span class="dt">GPT</span> <span class="ot">-&gt;</span> <span class="dt">TokenMap</span> <span class="ot">-&gt;</span> <span class="dt">Natural</span> <span class="ot">-&gt;</span> [<span class="dt">Token</span>] <span class="ot">-&gt;</span> <span class="dt">IO</span> [<span class="dt">Token</span>]</span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>run model tm iter tokens <span class="ot">=</span> <span class="kw">do</span></span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>  next <span class="ot">&lt;-</span> sampleLogits <span class="op">$</span> <span class="fu">last</span> <span class="op">$</span> forwardModel model tokens</span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a>  TIO.putStr (token tm [next])</span>
+<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a>  <span class="kw">if</span> iter <span class="op">==</span> <span class="dv">0</span> <span class="op">||</span> next <span class="op">==</span> <span class="dv">50256</span></span>
+<span id="cb20-6"><a href="#cb20-6" aria-hidden="true" tabindex="-1"></a>    <span class="co">-- this is short enough that end of list append is fine </span></span>
+<span id="cb20-7"><a href="#cb20-7" aria-hidden="true" tabindex="-1"></a>    <span class="kw">then</span> <span class="fu">return</span> (tokens <span class="op">++</span> [next])</span>
+<span id="cb20-8"><a href="#cb20-8" aria-hidden="true" tabindex="-1"></a>    <span class="kw">else</span> run model tm (iter <span class="op">-</span> <span class="dv">1</span>) (tokens <span class="op">++</span> [next])</span>
+<span id="cb20-9"><a href="#cb20-9" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb20-10"><a href="#cb20-10" aria-hidden="true" tabindex="-1"></a><span class="ot">main ::</span> <span class="dt">IO</span> ()</span>
+<span id="cb20-11"><a href="#cb20-11" aria-hidden="true" tabindex="-1"></a>main <span class="ot">=</span> <span class="kw">do</span></span>
+<span id="cb20-12"><a href="#cb20-12" aria-hidden="true" tabindex="-1"></a>  hSetBuffering stdout <span class="dt">NoBuffering</span></span>
+<span id="cb20-13"><a href="#cb20-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">putStrLn</span> <span class="st">&quot;λλμ: Now Loading...&quot;</span></span>
+<span id="cb20-14"><a href="#cb20-14" aria-hidden="true" tabindex="-1"></a>  tensors <span class="ot">&lt;-</span> readModel <span class="st">&quot;model.safetensors&quot;</span></span>
+<span id="cb20-15"><a href="#cb20-15" aria-hidden="true" tabindex="-1"></a>  vocab <span class="ot">&lt;-</span> readVocab <span class="st">&quot;vocab.json&quot;</span></span>
+<span id="cb20-16"><a href="#cb20-16" aria-hidden="true" tabindex="-1"></a>  <span class="kw">let</span> model <span class="ot">=</span> <span class="kw">case</span> tensors <span class="kw">of</span> <span class="dt">Right</span> gpt <span class="ot">-&gt;</span> gpt; <span class="dt">Left</span> err <span class="ot">-&gt;</span> <span class="fu">error</span> err</span>
+<span id="cb20-17"><a href="#cb20-17" aria-hidden="true" tabindex="-1"></a>  <span class="kw">let</span> tokenMap <span class="ot">=</span> <span class="kw">case</span> vocab <span class="kw">of</span> <span class="dt">Just</span> tm <span class="ot">-&gt;</span> tm; <span class="dt">Nothing</span> <span class="ot">-&gt;</span> <span class="fu">error</span> <span class="st">&quot;Couldn't parse vocab&quot;</span></span>
+<span id="cb20-18"><a href="#cb20-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">putStr</span> <span class="st">&quot;Hello, I am&quot;</span></span>
+<span id="cb20-19"><a href="#cb20-19" aria-hidden="true" tabindex="-1"></a>  <span class="co">-- Tokens for &quot;Hello, I am&quot;</span></span>
+<span id="cb20-20"><a href="#cb20-20" aria-hidden="true" tabindex="-1"></a>  generate <span class="ot">&lt;-</span> run model tokenMap <span class="dv">50</span> [<span class="dv">15496</span>, <span class="dv">11</span>, <span class="dv">314</span>, <span class="dv">716</span>]</span>
+<span id="cb20-21"><a href="#cb20-21" aria-hidden="true" tabindex="-1"></a>  <span class="fu">print</span> generate </span></code></pre></div>
+<p>Here is an example output, with typical small model weirdness. Note this is the smallest 124M parameter GPT-2 model.</p>
+<div class="sourceCode" id="cb21"><pre class="sourceCode md"><code class="sourceCode markdown"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>λλμ: Now Loading...</span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>Hello, I am not quite sure what this &quot;Theater at Heart of Harry Potter&quot; book of essays to which all children are prone must say to all adults; they, the characters in whom the books &quot;hates him.&quot;</span></code></pre></div>
+<p>That’s it, we wrote a forward pass for GPT-2!</p>
+<p>But wait, you might say, where did that <code>readModel</code> function come from, or the <code>token</code> function.
+For the tokens, I am simply using the <code>vocab.json</code> file provided with the model weights.
+This is not handled correctly, possibly due to Aeson disagreeing with encoding specifics of the unicode keys in the JSON, so I will not include it here.
+I did not even attempt the token encoder.
+Nobody likes the tokenizer!</p>
+<p>For the model loading, I chose to parse the <code>model.safetensors</code> format that Huggingface provides.
+The details are tedious, so they have been relegated to the appendix.</p>
+<h2 id="performance-considerations">Performance Considerations</h2>
+<p>The main performance issue I had was really my own blunder, in my haste to prototype the inference I neglected the loader.
+<code>hmatrix</code> does not come with a way to load a vector directly from a ByteString, so we must do some work with the lower level memory interfaces.
+If one wishes to attempt this themselves, the critical point is to map the vectors directly, else suffer the consequences of parsing through intermediaries.
+Using the available tools in <code>hmatrix</code> and <code>Data.Binary.Get</code> the obvious solution is parsing a bytestring to a list of floats, then to a vector.
+This is incredibly slow.
+Luckily the FFI in Haskell is quite nice, and we can index into the (strict!) bytestring with a pointer that can then be cast to the FFI <code>Storable</code> used by Vectors, without additional allocation.
+This gets the loading time down to a few seconds.</p>
+<p>In terms of inference performance, <code>hmatrix</code> does an admirable job, and BLAS parallelizes well enough to saturate all 8 of my cores without needing to use something like <code>parMap</code>.
+The main slowdown is the quadratic scaling of self attention, a fundamental time complexity issue that can be somewhat improved by things like FlashAttention and custom kernels.
+I’ll do none of those things here.
+I’m not sure there is much benefit in trying to optimize this further, as the <code>hmatrix</code> primitives are not really the right foundation for this work, and something closer to an array combinator DSL like <code>accellerate</code> or <code>futhark</code> would be a better direction, though the various options all have their drawbacks.
+There is also the question of training, and we would need to think about something like <a href="https://hackage.haskell.org/package/backprop">backprop</a>.</p>
+<h2 id="appendix--data-loading">Appendix : Data Loading</h2>
+<p>For the curious, I’ve included the full loading code.
+The <code>safetensors</code> format is quite simple, a leading <code>uint64</code> encoding the metadata length, followed by said metadata, which is just JSON.
+The remainder of the file is the tensors in binary form.
+This JSON contains a manifest of each layer, and their relative indices in the file, which we can use to load them.</p>
+<div class="sourceCode" id="cb22"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="kw">module</span> <span class="dt">Loader</span> <span class="kw">where</span></span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span> <span class="dt">Data.Aeson</span> (<span class="dt">FromJSON</span>, <span class="dt">ToJSON</span>, <span class="dt">Value</span>, eitherDecode, withObject, (.:))</span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span> <span class="dt">Data.Aeson.Encode.Pretty</span> (encodePretty)</span>
+<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span> <span class="kw">qualified</span> <span class="dt">Data.Aeson.Key</span> <span class="kw">as</span> <span class="dt">K</span></span>
+<span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span> <span class="kw">qualified</span> <span class="dt">Data.Aeson.KeyMap</span> <span class="kw">as</span> <span class="dt">KM</span></span>
+<span id="cb22-7"><a href="#cb22-7" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span> <span class="dt">Data.Aeson.Types</span> (<span class="dt">Parser</span>, parseEither)</span>
+<span id="cb22-8"><a href="#cb22-8" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span> <span class="dt">Data.Bifunctor</span> (bimap)</span>
+<span id="cb22-9"><a href="#cb22-9" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span> <span class="dt">Data.Binary.Get</span> (getWord64le, runGetOrFail)</span>
+<span id="cb22-10"><a href="#cb22-10" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span> <span class="kw">qualified</span> <span class="dt">Data.ByteString</span> <span class="kw">as</span> <span class="dt">BS</span></span>
+<span id="cb22-11"><a href="#cb22-11" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span> <span class="kw">qualified</span> <span class="dt">Data.ByteString.Internal</span> <span class="kw">as</span> <span class="dt">BS</span></span>
+<span id="cb22-12"><a href="#cb22-12" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span> <span class="kw">qualified</span> <span class="dt">Data.ByteString.Lazy</span> <span class="kw">as</span> <span class="dt">BL</span></span>
+<span id="cb22-13"><a href="#cb22-13" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span> <span class="kw">qualified</span> <span class="dt">Data.Vector.Generic</span> <span class="kw">as</span> <span class="dt">VG</span></span>
+<span id="cb22-14"><a href="#cb22-14" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span> <span class="kw">qualified</span> <span class="dt">Data.Vector.Storable</span> <span class="kw">as</span> <span class="dt">VS</span></span>
+<span id="cb22-15"><a href="#cb22-15" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span> <span class="dt">Data.Word</span> (<span class="dt">Word64</span>)</span>
+<span id="cb22-16"><a href="#cb22-16" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span> <span class="dt">Foreign.ForeignPtr</span> (castForeignPtr)</span>
+<span id="cb22-17"><a href="#cb22-17" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span> <span class="dt">Foreign.Storable</span> (<span class="dt">Storable</span>, sizeOf)</span>
+<span id="cb22-18"><a href="#cb22-18" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span> <span class="dt">GHC.Generics</span> (<span class="dt">Generic</span>)</span>
+<span id="cb22-19"><a href="#cb22-19" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span> <span class="dt">Model</span></span>
+<span id="cb22-20"><a href="#cb22-20" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span> <span class="dt">Numeric.LinearAlgebra</span> (reshape, tr)</span>
+<span id="cb22-21"><a href="#cb22-21" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span> <span class="dt">Prelude</span> <span class="kw">hiding</span> ((&lt;&gt;))</span>
+<span id="cb22-22"><a href="#cb22-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-23"><a href="#cb22-23" aria-hidden="true" tabindex="-1"></a><span class="co">-- simple sum type so we can load either vec or mat</span></span>
+<span id="cb22-24"><a href="#cb22-24" aria-hidden="true" tabindex="-1"></a><span class="co">-- I could probably use the generic Container from hmatrix but this is easy</span></span>
+<span id="cb22-25"><a href="#cb22-25" aria-hidden="true" tabindex="-1"></a><span class="kw">data</span> <span class="dt">Tensor</span> <span class="ot">=</span> <span class="dt">T1</span> <span class="dt">V</span> <span class="op">|</span> <span class="dt">T2</span> <span class="dt">M</span></span>
+<span id="cb22-26"><a href="#cb22-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-27"><a href="#cb22-27" aria-hidden="true" tabindex="-1"></a><span class="co">-- generate a keymap based on the safetensor metadata</span></span>
+<span id="cb22-28"><a href="#cb22-28" aria-hidden="true" tabindex="-1"></a><span class="kw">type</span> <span class="dt">TensorMap</span> <span class="ot">=</span> <span class="dt">KM.KeyMap</span> <span class="dt">Tensor</span></span>
+<span id="cb22-29"><a href="#cb22-29" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-30"><a href="#cb22-30" aria-hidden="true" tabindex="-1"></a><span class="co">-- metadata for an individual tensor (safetensor format)</span></span>
+<span id="cb22-31"><a href="#cb22-31" aria-hidden="true" tabindex="-1"></a><span class="kw">data</span> <span class="dt">TensorMetadata</span> <span class="ot">=</span> <span class="dt">TensorMetadata</span></span>
+<span id="cb22-32"><a href="#cb22-32" aria-hidden="true" tabindex="-1"></a>  {<span class="ot"> dtype ::</span> <span class="dt">String</span>,</span>
+<span id="cb22-33"><a href="#cb22-33" aria-hidden="true" tabindex="-1"></a><span class="ot">    shape ::</span> [<span class="dt">Int</span>],</span>
+<span id="cb22-34"><a href="#cb22-34" aria-hidden="true" tabindex="-1"></a><span class="ot">    dataOffsets ::</span> (<span class="dt">Int</span>, <span class="dt">Int</span>)</span>
+<span id="cb22-35"><a href="#cb22-35" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb22-36"><a href="#cb22-36" aria-hidden="true" tabindex="-1"></a>  <span class="kw">deriving</span> (<span class="dt">Show</span>, <span class="dt">Generic</span>, <span class="dt">FromJSON</span>, <span class="dt">ToJSON</span>)</span>
+<span id="cb22-37"><a href="#cb22-37" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-38"><a href="#cb22-38" aria-hidden="true" tabindex="-1"></a><span class="co">-- entire safetensors file including unmapped raw tensor data</span></span>
+<span id="cb22-39"><a href="#cb22-39" aria-hidden="true" tabindex="-1"></a><span class="kw">data</span> <span class="dt">SafeTensors</span> <span class="ot">=</span> <span class="dt">SafeTensors</span></span>
+<span id="cb22-40"><a href="#cb22-40" aria-hidden="true" tabindex="-1"></a>  {<span class="ot"> metadata ::</span> <span class="dt">KM.KeyMap</span> <span class="dt">TensorMetadata</span>,</span>
+<span id="cb22-41"><a href="#cb22-41" aria-hidden="true" tabindex="-1"></a><span class="ot">    binaryData ::</span> <span class="dt">BS.ByteString</span></span>
+<span id="cb22-42"><a href="#cb22-42" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb22-43"><a href="#cb22-43" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-44"><a href="#cb22-44" aria-hidden="true" tabindex="-1"></a><span class="co">-- we don't want to show the binary data, might as well have a pretty printer</span></span>
+<span id="cb22-45"><a href="#cb22-45" aria-hidden="true" tabindex="-1"></a><span class="kw">instance</span> <span class="dt">Show</span> <span class="dt">SafeTensors</span> <span class="kw">where</span></span>
+<span id="cb22-46"><a href="#cb22-46" aria-hidden="true" tabindex="-1"></a>  <span class="fu">show</span> safetensors <span class="ot">=</span> <span class="fu">show</span> <span class="op">$</span> encodePretty (metadata safetensors)</span>
+<span id="cb22-47"><a href="#cb22-47" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-48"><a href="#cb22-48" aria-hidden="true" tabindex="-1"></a><span class="co">-- Parse tensor metadata from JSON segment of file</span></span>
+<span id="cb22-49"><a href="#cb22-49" aria-hidden="true" tabindex="-1"></a><span class="ot">parseTensorMetadata ::</span> <span class="dt">Value</span> <span class="ot">-&gt;</span> <span class="dt">Parser</span> <span class="dt">TensorMetadata</span></span>
+<span id="cb22-50"><a href="#cb22-50" aria-hidden="true" tabindex="-1"></a>parseTensorMetadata <span class="ot">=</span> withObject <span class="st">&quot;TensorMetadata&quot;</span> <span class="op">$</span> \obj <span class="ot">-&gt;</span> <span class="kw">do</span></span>
+<span id="cb22-51"><a href="#cb22-51" aria-hidden="true" tabindex="-1"></a>  mdtype <span class="ot">&lt;-</span> obj <span class="op">.:</span> <span class="st">&quot;dtype&quot;</span></span>
+<span id="cb22-52"><a href="#cb22-52" aria-hidden="true" tabindex="-1"></a>  mshape <span class="ot">&lt;-</span> obj <span class="op">.:</span> <span class="st">&quot;shape&quot;</span></span>
+<span id="cb22-53"><a href="#cb22-53" aria-hidden="true" tabindex="-1"></a>  (i, j) <span class="ot">&lt;-</span> obj <span class="op">.:</span> <span class="st">&quot;data_offsets&quot;</span></span>
+<span id="cb22-54"><a href="#cb22-54" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span></span>
+<span id="cb22-55"><a href="#cb22-55" aria-hidden="true" tabindex="-1"></a>    ( <span class="dt">TensorMetadata</span></span>
+<span id="cb22-56"><a href="#cb22-56" aria-hidden="true" tabindex="-1"></a>        { shape <span class="ot">=</span> mshape,</span>
+<span id="cb22-57"><a href="#cb22-57" aria-hidden="true" tabindex="-1"></a>          dataOffsets <span class="ot">=</span> (i, j),</span>
+<span id="cb22-58"><a href="#cb22-58" aria-hidden="true" tabindex="-1"></a>          dtype <span class="ot">=</span> mdtype</span>
+<span id="cb22-59"><a href="#cb22-59" aria-hidden="true" tabindex="-1"></a>        }</span>
+<span id="cb22-60"><a href="#cb22-60" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb22-61"><a href="#cb22-61" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-62"><a href="#cb22-62" aria-hidden="true" tabindex="-1"></a><span class="ot">parseTensors ::</span> <span class="dt">BL.ByteString</span> <span class="ot">-&gt;</span> <span class="dt">Either</span> <span class="dt">String</span> <span class="dt">SafeTensors</span></span>
+<span id="cb22-63"><a href="#cb22-63" aria-hidden="true" tabindex="-1"></a>parseTensors bs <span class="ot">=</span> <span class="kw">do</span></span>
+<span id="cb22-64"><a href="#cb22-64" aria-hidden="true" tabindex="-1"></a>  <span class="co">-- the first 8 bytes are an uint specifiying length of JSON segment</span></span>
+<span id="cb22-65"><a href="#cb22-65" aria-hidden="true" tabindex="-1"></a>  numBytes <span class="ot">&lt;-</span> parseWord64 (BL.take <span class="dv">8</span> bs)</span>
+<span id="cb22-66"><a href="#cb22-66" aria-hidden="true" tabindex="-1"></a>  <span class="co">-- the next N bytes can be decoded directly with aeson</span></span>
+<span id="cb22-67"><a href="#cb22-67" aria-hidden="true" tabindex="-1"></a>  obj <span class="ot">&lt;-</span> eitherDecode (BL.take (<span class="fu">fromIntegral</span> numBytes) (BL.drop <span class="dv">8</span> bs))</span>
+<span id="cb22-68"><a href="#cb22-68" aria-hidden="true" tabindex="-1"></a>  <span class="co">-- this is the one key that isn't a tensor, easiest just to remove it</span></span>
+<span id="cb22-69"><a href="#cb22-69" aria-hidden="true" tabindex="-1"></a>  <span class="kw">let</span> tensors <span class="ot">=</span> KM.delete (K.fromString <span class="st">&quot;__metadata__&quot;</span>) obj</span>
+<span id="cb22-70"><a href="#cb22-70" aria-hidden="true" tabindex="-1"></a>  <span class="co">-- parse tensor metadata objects into our metadata type</span></span>
+<span id="cb22-71"><a href="#cb22-71" aria-hidden="true" tabindex="-1"></a>  x <span class="ot">&lt;-</span> <span class="fu">mapM</span> (parseEither parseTensorMetadata) tensors</span>
+<span id="cb22-72"><a href="#cb22-72" aria-hidden="true" tabindex="-1"></a>  <span class="co">-- return metadata keymap along with remaining raw bytes containing tensor data</span></span>
+<span id="cb22-73"><a href="#cb22-73" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span> (<span class="dt">SafeTensors</span> x (BS.toStrict (BL.drop (<span class="dv">8</span> <span class="op">+</span> <span class="fu">fromIntegral</span> numBytes) bs)))</span>
+<span id="cb22-74"><a href="#cb22-74" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-75"><a href="#cb22-75" aria-hidden="true" tabindex="-1"></a><span class="co">-- parse a Word64 from the head of the file (encodes length of JSON segment)</span></span>
+<span id="cb22-76"><a href="#cb22-76" aria-hidden="true" tabindex="-1"></a><span class="ot">parseWord64 ::</span> <span class="dt">BL.ByteString</span> <span class="ot">-&gt;</span> <span class="dt">Either</span> <span class="dt">String</span> <span class="dt">Word64</span></span>
+<span id="cb22-77"><a href="#cb22-77" aria-hidden="true" tabindex="-1"></a>parseWord64 bs <span class="ot">=</span> <span class="kw">case</span> runGetOrFail getWord64le bs <span class="kw">of</span></span>
+<span id="cb22-78"><a href="#cb22-78" aria-hidden="true" tabindex="-1"></a>  <span class="dt">Right</span> (_, _, w) <span class="ot">-&gt;</span> <span class="dt">Right</span> w</span>
+<span id="cb22-79"><a href="#cb22-79" aria-hidden="true" tabindex="-1"></a>  <span class="dt">Left</span> (_, _, s) <span class="ot">-&gt;</span> <span class="dt">Left</span> (<span class="st">&quot;Error reading leading uint64: &quot;</span> <span class="op">++</span> s)</span>
+<span id="cb22-80"><a href="#cb22-80" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-81"><a href="#cb22-81" aria-hidden="true" tabindex="-1"></a><span class="co">-- https://stackoverflow.com/questions/18682527/how-to-convert-between-bytestring-and-storable-vector</span></span>
+<span id="cb22-82"><a href="#cb22-82" aria-hidden="true" tabindex="-1"></a><span class="ot">byteStringToVector ::</span> (<span class="dt">Storable</span> a) <span class="ot">=&gt;</span> <span class="dt">BS.ByteString</span> <span class="ot">-&gt;</span> <span class="dt">VS.Vector</span> a</span>
+<span id="cb22-83"><a href="#cb22-83" aria-hidden="true" tabindex="-1"></a>byteStringToVector bs <span class="ot">=</span> vec</span>
+<span id="cb22-84"><a href="#cb22-84" aria-hidden="true" tabindex="-1"></a>  <span class="kw">where</span></span>
+<span id="cb22-85"><a href="#cb22-85" aria-hidden="true" tabindex="-1"></a>    vec <span class="ot">=</span> VS.unsafeFromForeignPtr (castForeignPtr fptr) (scale off) (scale len)</span>
+<span id="cb22-86"><a href="#cb22-86" aria-hidden="true" tabindex="-1"></a>    (fptr, off, len) <span class="ot">=</span> BS.toForeignPtr bs</span>
+<span id="cb22-87"><a href="#cb22-87" aria-hidden="true" tabindex="-1"></a>    scale <span class="ot">=</span> (<span class="ot">`div`</span> sizeOfElem vec)</span>
+<span id="cb22-88"><a href="#cb22-88" aria-hidden="true" tabindex="-1"></a>    sizeOfElem vect <span class="ot">=</span> sizeOf (<span class="fu">undefined</span> <span class="ot">`asTypeOf`</span> VS.head vect)</span>
+<span id="cb22-89"><a href="#cb22-89" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-90"><a href="#cb22-90" aria-hidden="true" tabindex="-1"></a><span class="ot">bytesToTensor ::</span> <span class="dt">BS.ByteString</span> <span class="ot">-&gt;</span> <span class="dt">TensorMetadata</span> <span class="ot">-&gt;</span> <span class="dt">Either</span> <span class="dt">String</span> <span class="dt">Tensor</span></span>
+<span id="cb22-91"><a href="#cb22-91" aria-hidden="true" tabindex="-1"></a>bytesToTensor bs meta <span class="ot">=</span> <span class="kw">case</span> shape meta <span class="kw">of</span></span>
+<span id="cb22-92"><a href="#cb22-92" aria-hidden="true" tabindex="-1"></a>  [n] <span class="ot">-&gt;</span> <span class="kw">if</span> VG.length vec <span class="op">==</span> n <span class="kw">then</span> <span class="dt">Right</span> (<span class="dt">T1</span> vec) <span class="kw">else</span> errmsg</span>
+<span id="cb22-93"><a href="#cb22-93" aria-hidden="true" tabindex="-1"></a>  [n, m] <span class="ot">-&gt;</span> <span class="kw">if</span> VG.length vec <span class="op">==</span> n <span class="op">*</span> m <span class="kw">then</span> <span class="dt">Right</span> (<span class="dt">T2</span> (reshape m vec)) <span class="kw">else</span> errmsg</span>
+<span id="cb22-94"><a href="#cb22-94" aria-hidden="true" tabindex="-1"></a>  [<span class="dv">1</span>, <span class="dv">1</span>, n, m] <span class="ot">-&gt;</span> <span class="kw">if</span> VG.length vec <span class="op">==</span> n <span class="op">*</span> m <span class="kw">then</span> <span class="dt">Right</span> (<span class="dt">T2</span> (reshape m vec)) <span class="kw">else</span> errmsg</span>
+<span id="cb22-95"><a href="#cb22-95" aria-hidden="true" tabindex="-1"></a>  _ <span class="ot">-&gt;</span> errmsg</span>
+<span id="cb22-96"><a href="#cb22-96" aria-hidden="true" tabindex="-1"></a>  <span class="kw">where</span></span>
+<span id="cb22-97"><a href="#cb22-97" aria-hidden="true" tabindex="-1"></a>    (startpos, endpos) <span class="ot">=</span> bimap <span class="fu">fromIntegral</span> <span class="fu">fromIntegral</span> (dataOffsets meta)</span>
+<span id="cb22-98"><a href="#cb22-98" aria-hidden="true" tabindex="-1"></a>    errmsg <span class="ot">=</span> <span class="dt">Left</span> (<span class="st">&quot;Wrong size while reading &quot;</span> <span class="op">++</span> <span class="fu">show</span> meta)</span>
+<span id="cb22-99"><a href="#cb22-99" aria-hidden="true" tabindex="-1"></a>    <span class="co">-- it would maybe be better to load them &quot;in order&quot; with splitAt but</span></span>
+<span id="cb22-100"><a href="#cb22-100" aria-hidden="true" tabindex="-1"></a>    <span class="co">-- the loading is fast enough with this now that the BS is cast directly</span></span>
+<span id="cb22-101"><a href="#cb22-101" aria-hidden="true" tabindex="-1"></a>    vec <span class="ot">=</span> byteStringToVector (BS.drop startpos (BS.take endpos bs))</span>
+<span id="cb22-102"><a href="#cb22-102" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-103"><a href="#cb22-103" aria-hidden="true" tabindex="-1"></a><span class="co">-- getting layer weights is straight forward. some matrices need to be transposed.</span></span>
+<span id="cb22-104"><a href="#cb22-104" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-105"><a href="#cb22-105" aria-hidden="true" tabindex="-1"></a><span class="ot">getMat ::</span> <span class="dt">TensorMap</span> <span class="ot">-&gt;</span> <span class="dt">String</span> <span class="ot">-&gt;</span> <span class="dt">Either</span> <span class="dt">String</span> <span class="dt">M</span></span>
+<span id="cb22-106"><a href="#cb22-106" aria-hidden="true" tabindex="-1"></a>getMat tm s <span class="ot">=</span> <span class="kw">case</span> KM.lookup (K.fromString s) tm <span class="kw">of</span></span>
+<span id="cb22-107"><a href="#cb22-107" aria-hidden="true" tabindex="-1"></a>  (<span class="dt">Just</span> (<span class="dt">T2</span> m)) <span class="ot">-&gt;</span> <span class="dt">Right</span> m</span>
+<span id="cb22-108"><a href="#cb22-108" aria-hidden="true" tabindex="-1"></a>  _ <span class="ot">-&gt;</span> <span class="dt">Left</span> (<span class="st">&quot;Error loading &quot;</span> <span class="op">++</span> s)</span>
+<span id="cb22-109"><a href="#cb22-109" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-110"><a href="#cb22-110" aria-hidden="true" tabindex="-1"></a><span class="ot">getVec ::</span> <span class="dt">TensorMap</span> <span class="ot">-&gt;</span> <span class="dt">String</span> <span class="ot">-&gt;</span> <span class="dt">Either</span> <span class="dt">String</span> <span class="dt">V</span></span>
+<span id="cb22-111"><a href="#cb22-111" aria-hidden="true" tabindex="-1"></a>getVec tm s <span class="ot">=</span> <span class="kw">case</span> KM.lookup (K.fromString s) tm <span class="kw">of</span></span>
+<span id="cb22-112"><a href="#cb22-112" aria-hidden="true" tabindex="-1"></a>  (<span class="dt">Just</span> (<span class="dt">T1</span> v)) <span class="ot">-&gt;</span> <span class="dt">Right</span> v</span>
+<span id="cb22-113"><a href="#cb22-113" aria-hidden="true" tabindex="-1"></a>  _ <span class="ot">-&gt;</span> <span class="dt">Left</span> (<span class="st">&quot;Error loading &quot;</span> <span class="op">++</span> s)</span>
+<span id="cb22-114"><a href="#cb22-114" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-115"><a href="#cb22-115" aria-hidden="true" tabindex="-1"></a><span class="ot">getTELayer ::</span> <span class="dt">TensorMap</span> <span class="ot">-&gt;</span> <span class="dt">Either</span> <span class="dt">String</span> <span class="dt">TokenEmbedding</span></span>
+<span id="cb22-116"><a href="#cb22-116" aria-hidden="true" tabindex="-1"></a>getTELayer tm <span class="ot">=</span> <span class="kw">do</span></span>
+<span id="cb22-117"><a href="#cb22-117" aria-hidden="true" tabindex="-1"></a>  m <span class="ot">&lt;-</span> getMat tm <span class="st">&quot;wte.weight&quot;</span></span>
+<span id="cb22-118"><a href="#cb22-118" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span> (<span class="dt">TokenEmbedding</span> (tr m))</span>
+<span id="cb22-119"><a href="#cb22-119" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-120"><a href="#cb22-120" aria-hidden="true" tabindex="-1"></a><span class="ot">getPELayer ::</span> <span class="dt">TensorMap</span> <span class="ot">-&gt;</span> <span class="dt">Either</span> <span class="dt">String</span> <span class="dt">PositionEmbedding</span></span>
+<span id="cb22-121"><a href="#cb22-121" aria-hidden="true" tabindex="-1"></a>getPELayer tm <span class="ot">=</span> <span class="kw">do</span></span>
+<span id="cb22-122"><a href="#cb22-122" aria-hidden="true" tabindex="-1"></a>  m <span class="ot">&lt;-</span> getMat tm <span class="st">&quot;wpe.weight&quot;</span></span>
+<span id="cb22-123"><a href="#cb22-123" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span>  (<span class="dt">PositionEmbedding</span> (tr m))</span>
+<span id="cb22-124"><a href="#cb22-124" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-125"><a href="#cb22-125" aria-hidden="true" tabindex="-1"></a><span class="ot">getLayerNorm ::</span> <span class="dt">TensorMap</span> <span class="ot">-&gt;</span> <span class="dt">String</span> <span class="ot">-&gt;</span> <span class="dt">Either</span> <span class="dt">String</span> <span class="dt">LayerNorm</span></span>
+<span id="cb22-126"><a href="#cb22-126" aria-hidden="true" tabindex="-1"></a>getLayerNorm tm s <span class="ot">=</span> <span class="kw">do</span></span>
+<span id="cb22-127"><a href="#cb22-127" aria-hidden="true" tabindex="-1"></a>  w <span class="ot">&lt;-</span> getVec tm (s <span class="op">++</span> <span class="st">&quot;.weight&quot;</span>)</span>
+<span id="cb22-128"><a href="#cb22-128" aria-hidden="true" tabindex="-1"></a>  b <span class="ot">&lt;-</span> getVec tm (s <span class="op">++</span> <span class="st">&quot;.bias&quot;</span>)</span>
+<span id="cb22-129"><a href="#cb22-129" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span> (<span class="dt">LayerNorm</span> w b)</span>
+<span id="cb22-130"><a href="#cb22-130" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-131"><a href="#cb22-131" aria-hidden="true" tabindex="-1"></a><span class="ot">getAttention ::</span> <span class="dt">TensorMap</span> <span class="ot">-&gt;</span> <span class="dt">String</span> <span class="ot">-&gt;</span> <span class="dt">Either</span> <span class="dt">String</span> <span class="dt">Attention</span></span>
+<span id="cb22-132"><a href="#cb22-132" aria-hidden="true" tabindex="-1"></a>getAttention tm layer <span class="ot">=</span> <span class="kw">do</span></span>
+<span id="cb22-133"><a href="#cb22-133" aria-hidden="true" tabindex="-1"></a>  aw <span class="ot">&lt;-</span> getMat tm (layer <span class="op">++</span> <span class="st">&quot;.attn.c_attn.weight&quot;</span>)</span>
+<span id="cb22-134"><a href="#cb22-134" aria-hidden="true" tabindex="-1"></a>  ab <span class="ot">&lt;-</span> getVec tm (layer <span class="op">++</span> <span class="st">&quot;.attn.c_attn.bias&quot;</span>)</span>
+<span id="cb22-135"><a href="#cb22-135" aria-hidden="true" tabindex="-1"></a>  pw <span class="ot">&lt;-</span> getMat tm (layer <span class="op">++</span> <span class="st">&quot;.attn.c_proj.weight&quot;</span>)</span>
+<span id="cb22-136"><a href="#cb22-136" aria-hidden="true" tabindex="-1"></a>  pb <span class="ot">&lt;-</span> getVec tm (layer <span class="op">++</span> <span class="st">&quot;.attn.c_proj.bias&quot;</span>)</span>
+<span id="cb22-137"><a href="#cb22-137" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span> (<span class="dt">Attention</span> (tr aw) ab (tr pw) pb)</span>
+<span id="cb22-138"><a href="#cb22-138" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-139"><a href="#cb22-139" aria-hidden="true" tabindex="-1"></a><span class="ot">getMLP ::</span> <span class="dt">TensorMap</span> <span class="ot">-&gt;</span> <span class="dt">String</span> <span class="ot">-&gt;</span> <span class="dt">Either</span> <span class="dt">String</span> <span class="dt">MLP</span></span>
+<span id="cb22-140"><a href="#cb22-140" aria-hidden="true" tabindex="-1"></a>getMLP tm layer <span class="ot">=</span> <span class="kw">do</span></span>
+<span id="cb22-141"><a href="#cb22-141" aria-hidden="true" tabindex="-1"></a>  aw <span class="ot">&lt;-</span> getMat tm (layer <span class="op">++</span> <span class="st">&quot;.mlp.c_fc.weight&quot;</span>)</span>
+<span id="cb22-142"><a href="#cb22-142" aria-hidden="true" tabindex="-1"></a>  ab <span class="ot">&lt;-</span> getVec tm (layer <span class="op">++</span> <span class="st">&quot;.mlp.c_fc.bias&quot;</span>)</span>
+<span id="cb22-143"><a href="#cb22-143" aria-hidden="true" tabindex="-1"></a>  pw <span class="ot">&lt;-</span> getMat tm (layer <span class="op">++</span> <span class="st">&quot;.mlp.c_proj.weight&quot;</span>)</span>
+<span id="cb22-144"><a href="#cb22-144" aria-hidden="true" tabindex="-1"></a>  pb <span class="ot">&lt;-</span> getVec tm (layer <span class="op">++</span> <span class="st">&quot;.mlp.c_proj.bias&quot;</span>)</span>
+<span id="cb22-145"><a href="#cb22-145" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span> (<span class="dt">MLP</span> (tr aw) ab (tr pw) pb)</span>
+<span id="cb22-146"><a href="#cb22-146" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-147"><a href="#cb22-147" aria-hidden="true" tabindex="-1"></a><span class="ot">getBlock ::</span> <span class="dt">TensorMap</span> <span class="ot">-&gt;</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Either</span> <span class="dt">String</span> <span class="dt">Block</span></span>
+<span id="cb22-148"><a href="#cb22-148" aria-hidden="true" tabindex="-1"></a>getBlock tm i <span class="ot">=</span> <span class="kw">do</span></span>
+<span id="cb22-149"><a href="#cb22-149" aria-hidden="true" tabindex="-1"></a>  <span class="kw">let</span> prefix <span class="ot">=</span> <span class="st">&quot;h.&quot;</span> <span class="op">++</span> <span class="fu">show</span> i</span>
+<span id="cb22-150"><a href="#cb22-150" aria-hidden="true" tabindex="-1"></a>  le1 <span class="ot">&lt;-</span> getLayerNorm tm (prefix <span class="op">++</span> <span class="st">&quot;.ln_1&quot;</span>)</span>
+<span id="cb22-151"><a href="#cb22-151" aria-hidden="true" tabindex="-1"></a>  le2 <span class="ot">&lt;-</span> getLayerNorm tm (prefix <span class="op">++</span> <span class="st">&quot;.ln_2&quot;</span>)</span>
+<span id="cb22-152"><a href="#cb22-152" aria-hidden="true" tabindex="-1"></a>  at <span class="ot">&lt;-</span> getAttention tm prefix</span>
+<span id="cb22-153"><a href="#cb22-153" aria-hidden="true" tabindex="-1"></a>  mp <span class="ot">&lt;-</span> getMLP tm prefix</span>
+<span id="cb22-154"><a href="#cb22-154" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span> (<span class="dt">Block</span> le1 at le2 mp)</span>
+<span id="cb22-155"><a href="#cb22-155" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-156"><a href="#cb22-156" aria-hidden="true" tabindex="-1"></a><span class="ot">constructModel ::</span> <span class="dt">TensorMap</span> <span class="ot">-&gt;</span> <span class="dt">Either</span> <span class="dt">String</span> <span class="dt">GPT</span></span>
+<span id="cb22-157"><a href="#cb22-157" aria-hidden="true" tabindex="-1"></a>constructModel tm <span class="ot">=</span> <span class="kw">do</span></span>
+<span id="cb22-158"><a href="#cb22-158" aria-hidden="true" tabindex="-1"></a>  pe <span class="ot">&lt;-</span> getPELayer tm</span>
+<span id="cb22-159"><a href="#cb22-159" aria-hidden="true" tabindex="-1"></a>  te <span class="ot">&lt;-</span> getTELayer tm</span>
+<span id="cb22-160"><a href="#cb22-160" aria-hidden="true" tabindex="-1"></a>  block <span class="ot">&lt;-</span> <span class="fu">mapM</span> (getBlock tm) [<span class="dv">11</span>, <span class="dv">10</span> <span class="op">..</span> <span class="dv">0</span>]</span>
+<span id="cb22-161"><a href="#cb22-161" aria-hidden="true" tabindex="-1"></a>  ln <span class="ot">&lt;-</span> getLayerNorm tm <span class="st">&quot;ln_f&quot;</span></span>
+<span id="cb22-162"><a href="#cb22-162" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span> (<span class="dt">GPT</span> pe te block ln)</span>
+<span id="cb22-163"><a href="#cb22-163" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-164"><a href="#cb22-164" aria-hidden="true" tabindex="-1"></a><span class="ot">getTensorMap ::</span> <span class="dt">SafeTensors</span> <span class="ot">-&gt;</span> <span class="dt">Either</span> <span class="dt">String</span> <span class="dt">TensorMap</span></span>
+<span id="cb22-165"><a href="#cb22-165" aria-hidden="true" tabindex="-1"></a>getTensorMap ten <span class="ot">=</span> <span class="fu">mapM</span> (bytesToTensor (binaryData ten)) (metadata ten)</span>
+<span id="cb22-166"><a href="#cb22-166" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-167"><a href="#cb22-167" aria-hidden="true" tabindex="-1"></a><span class="ot">parseModel ::</span> <span class="dt">BL.ByteString</span> <span class="ot">-&gt;</span> <span class="dt">Either</span> <span class="dt">String</span> <span class="dt">GPT</span></span>
+<span id="cb22-168"><a href="#cb22-168" aria-hidden="true" tabindex="-1"></a>parseModel bytes <span class="ot">=</span> <span class="kw">do</span></span>
+<span id="cb22-169"><a href="#cb22-169" aria-hidden="true" tabindex="-1"></a>  safeTensors <span class="ot">&lt;-</span> parseTensors bytes</span>
+<span id="cb22-170"><a href="#cb22-170" aria-hidden="true" tabindex="-1"></a>  tensorMap <span class="ot">&lt;-</span> getTensorMap safeTensors</span>
+<span id="cb22-171"><a href="#cb22-171" aria-hidden="true" tabindex="-1"></a>  constructModel tensorMap</span>
+<span id="cb22-172"><a href="#cb22-172" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-173"><a href="#cb22-173" aria-hidden="true" tabindex="-1"></a><span class="ot">readModel ::</span> <span class="dt">String</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> (<span class="dt">Either</span> <span class="dt">String</span> <span class="dt">GPT</span>)</span>
+<span id="cb22-174"><a href="#cb22-174" aria-hidden="true" tabindex="-1"></a>readModel filePath <span class="ot">=</span> <span class="kw">do</span></span>
+<span id="cb22-175"><a href="#cb22-175" aria-hidden="true" tabindex="-1"></a>  contents <span class="ot">&lt;-</span> BL.readFile filePath</span>
+<span id="cb22-176"><a href="#cb22-176" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span> (parseModel contents)</span></code></pre></div>
+    </section>
+  </article>
+</main>
+
+    <script defer src="../js/script.js"></script>
+  </body>
+  <footer>
+  <div>
+      <p>
+      Generated with Hakyll &copy 2024
+      </p>
+  </div>
+  </footer>
+</html>
